@@ -106,6 +106,12 @@ namespace Tetris.GameObjects
             _maxArea = lastArea - cntClear;
             return cntClear;
         }
+
+        public void Dispose()
+        {
+            foreach (var figure in _figures)
+                figure.Dispose();
+        }
     }
 }
     

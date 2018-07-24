@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
 
 namespace Tetris.Interfaces
 {
-    public interface IStackFigures
+    public interface IStackFigures : IDisposable
     {
         int MaxArea { get; }
         int Add(IFigure[] figuresArg);
