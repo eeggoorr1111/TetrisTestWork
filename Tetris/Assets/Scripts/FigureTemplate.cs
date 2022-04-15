@@ -8,8 +8,11 @@ namespace Tetris
     public class FigureTemplate : ScriptableObject
     {
         public IReadOnlyList<Vector2Int> Blocks => _blocks;
+        public float WeightGenerate => _weightGenerate;
+
 
         [SerializeField] protected List<Vector2Int> _blocks;
+        [SerializeField] protected float _weightGenerate;
     }
 }
 

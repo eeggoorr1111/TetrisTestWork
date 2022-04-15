@@ -15,32 +15,33 @@ namespace Tetris
         {
             _model = modelArg;
             _view = viewArg;
+            _isGame = false;
         }
 
 
         protected Model _model;
         protected View _view;
         protected Vector3 _posFigure;
+        protected bool _isGame;
 
 
-        [ContextMenu("Craete figure with 1 tempalte")]
-        protected void Test()
-        {
-            _posFigure = Vector3.up * 3;
-            _view.NewFigure(0, _posFigure);
-        }
         protected void Update()
         {
-            _model.NewFrame();
-            if (_model.IsGameOver)
-                GameOver();
+            if (_isGame)
+            {
+                FigureModel newFigure = null;
+                bool isGameOver;
 
-            _view.UpdateCustom();
-            _view.SetScores(_model.Scores);
-
-            _posFigure += Vector3.down * Time.deltaTime * 2;
-            _view.MoveFigure(_posFigure);
-
+                _model.ContinueFallFigure(false, ref newFigure, out isGameOver);
+                if (isGameOver)
+                    GameOver();
+                else
+                {
+                    if (newFigure != null)
+                        _view.NewFigure(newFigure.IdxTemplate, newFigure.Bounds.center);
+                    _view.NextFrame(_model.Scores, _model.Figure.Bounds.center);
+                }
+            }
         }
         protected void OnEnable()
         {
@@ -58,11 +59,15 @@ namespace Tetris
         }
         protected void GameOver()
         {
-
+            _isGame = false;
         }
         protected void StartGame(int indexGameModeArg)
         {
+            FigureModel figure = null;
 
+            _isGame = true;
+            _model.StartGame(indexGameModeArg, ref figure);
+            _view.NewFigure(figure.IdxTemplate, figure.Bounds.center);
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using System;
-using TMPro;
 
 
 namespace Tetris
@@ -14,32 +13,20 @@ namespace Tetris
     public class View : MonoBehaviour
     {
         [Inject]
-        protected void Constructor(IReadOnlyList<FigureTemplate> templatesFigureArg, FigureView.Pool figuresPoolArg)
+        protected void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg, 
+                                    FigureView.Pool figuresPoolArg,
+                                    Camera cameraArg,
+                                    UI uiArg,
+                                    [Inject(Id = "maxIdxGameMod")] int maxIdxGameMod)
         {
             _figureTemplates = templatesFigureArg;
             _figuresPool = figuresPoolArg;
-
-            if (_lblScores == null)
-                Debug.LogError("Label scores is null", this);
-
-            if (_camera == null)
-                Debug.LogError("Camera is null", this);
-
-            if (_gameUi == null)
-                Debug.LogError("Game UI is null", this);
-
-            if (_menu == null)
-                Debug.LogError("Menu is null", this);
+            _maxIdxGameMods = maxIdxGameMod;
+            _camera = cameraArg;
+            _ui = uiArg;
         }
 
         public bool IsExistsMonoB => this != null;
-
-
-        [SerializeField] protected TextMeshProUGUI _lblScores;
-        [SerializeField] protected Camera _camera;
-        [SerializeField] protected Canvas _gameUi;
-        [SerializeField] protected Canvas _menu;
-
 
 
         protected event Action<UserAction> _onUserAction;
@@ -48,44 +35,33 @@ namespace Tetris
         protected IReadOnlyList<FigureTemplate> _figureTemplates;
         protected FigureView.Pool _figuresPool;
         protected FigureView _curFigure;
+        protected int _maxIdxGameMods;
+        protected Camera _camera;
+        protected UI _ui;
+
 
 
         public void NewFigure(int idxTemplateArg, Vector3 posArg)
         {
-            if (_figureTemplates.IsValidIndex(idxTemplateArg))
-            {
-                _curFigure = _figuresPool.Spawn(posArg, _figureTemplates[idxTemplateArg]);
-                _curFigure.SubscribeOnRemovedAllBlocks(RemovedAllBlocks);
-            }
-            else
-                Debug.LogError($"Index template {idxTemplateArg} not valid. Min index 0. Max index {_figureTemplates.Count}", this);
-        }
-        public void MoveFigure(Vector3 newPosArg)
-        {
-            if (_curFigure == null)
-            {
-                Debug.LogError("Try move not setted figure", this);
-                return;
-            }
-
-            _curFigure.Transf.position = newPosArg;
+            _curFigure = _figuresPool.Spawn(posArg, _figureTemplates[idxTemplateArg]);
+            _curFigure.SubscribeOnRemovedAllBlocks(RemovedAllBlocks);
         }
         public void Exit()
         {
             Application.Quit();
         }
-        public void StartGame(int indexModeArg)
+        public void StartGame(int idxModeArg)
         {
-            _menu.enabled = false;
-            _gameUi.enabled = true;
+            int idxMode = idxModeArg;
+            if (idxMode < 0 || idxMode > _maxIdxGameMods)
+            {
+                Debug.LogError($"Try play to game mode with index {idxMode}. Min index 0, max index {_maxIdxGameMods}. Play mode with index 0", this);
+                idxMode = 0;
+            }
 
+            _ui.StartGame();
             if (_onStartGame != null)
-                _onStartGame.Invoke(indexModeArg);
-        }
-        public void SetScores(int scoresArg)
-        {
-            if (_lblScores != null)
-                _lblScores.text = scoresArg.ToString();
+                _onStartGame.Invoke(idxMode);
         }
         public void Subscribe(Action<UserAction> onUserActionArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {
@@ -120,39 +96,37 @@ namespace Tetris
         }
         public void GoToMenu()
         {
-            _menu.enabled = true;
-            _gameUi.enabled = false;
+            _ui.EndGame();
 
             if (_onGoToMenu != null)
                 _onGoToMenu.Invoke();
         }
-        public void UpdateCustom()
+        public void NextFrame(int scoresArg, Vector3 newPosFigureArg)
+        {
+            _ui.SetScores(scoresArg);
+            _curFigure.Transf.position = newPosFigureArg;
+
+            InputCheck();
+        }
+
+
+        protected void InputCheck()
         {
             if (_onUserAction == null)
                 return;
 
-            KeyCode keyDown = KeyCode.D;
-            switch (keyDown)
-            {
-                case KeyCode.D:
-                    _onUserAction.Invoke(UserAction.ToMove(new Vector3Int(1, 0, 0)));
-                    break;
+            if (Input.GetKeyDown(KeyCode.D))
+                _onUserAction.Invoke(UserAction.ToMove(new Vector3Int(1, 0, 0)));
 
-                case KeyCode.A:
-                    _onUserAction.Invoke(UserAction.ToMove(new Vector3Int(-1, 0, 0)));
-                    break;
+            else if (Input.GetKeyDown(KeyCode.A))
+                _onUserAction.Invoke(UserAction.ToMove(new Vector3Int(-1, 0, 0)));
 
-                case KeyCode.Q:
-                    _onUserAction.Invoke(UserAction.ToRotate(RotateKey.CtrClockwise));
-                    break;
+            else if(Input.GetKeyDown(KeyCode.Q))
+                _onUserAction.Invoke(UserAction.ToRotate(RotateKey.CtrClockwise));
 
-                case KeyCode.E:
-                    _onUserAction.Invoke(UserAction.ToRotate(RotateKey.Clockwise));
-                    break;
-            }
+            else if (Input.GetKeyDown(KeyCode.E))
+                _onUserAction.Invoke(UserAction.ToRotate(RotateKey.Clockwise));
         }
-
-
         protected void OnEnable()
         {
             if (_curFigure != null)
@@ -160,7 +134,8 @@ namespace Tetris
         }
         protected void OnDisable()
         {
-            _curFigure.UnsubscribeOnRemovedAllBlocks(RemovedAllBlocks);
+            if (_curFigure != null)
+                _curFigure.UnsubscribeOnRemovedAllBlocks(RemovedAllBlocks);
         }
         protected void OnDestroy()
         {

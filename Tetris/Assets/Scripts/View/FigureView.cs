@@ -67,7 +67,7 @@ namespace Tetris
                 Block block = _poolBlocks.Spawn(blockPos);
 
                 block.Transf.SetParent(_transf);
-                block.Transf.position = new Vector3Int(blockPos.x, blockPos.y, 0);
+                block.Transf.localPosition = new Vector3Int(blockPos.x, blockPos.y, 0);
             }
         }
         protected void ClearBlocks()

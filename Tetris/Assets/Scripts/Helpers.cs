@@ -20,6 +20,10 @@ namespace Tetris
 
             return false;
         }
+        public static Bounds WithDeltaPos(this Bounds boundsArg, Vector3 deltaArg)
+        {
+            return new Bounds(boundsArg.center + deltaArg, boundsArg.size);
+        }
     }
 }
 
