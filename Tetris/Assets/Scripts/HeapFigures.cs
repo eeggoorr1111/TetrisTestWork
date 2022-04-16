@@ -14,7 +14,7 @@ namespace Tetris
         }
 
 
-        public int BottomByY => _map.Bounds.min.y;
+        public float BottomByY => _map.BottomByY;
         public float TopByY => _topByY;
         public Bounds Bounds => _bounds;
         public IReadOnlyList<Bounds> BoundsOfTop => _boundsTop;

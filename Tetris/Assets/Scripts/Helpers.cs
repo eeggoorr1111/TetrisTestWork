@@ -24,6 +24,14 @@ namespace Tetris
         {
             return new Bounds(boundsArg.center + deltaArg, boundsArg.size);
         }
+        public static Vector3 WithX(this Vector3 vector, float xArg)
+        {
+            return new Vector3(xArg, vector.y, vector.z);
+        }
+        public static Vector3 WithY(this Vector3 vector, float yArg)
+        {
+            return new Vector3(vector.x, yArg, vector.z);
+        }
     }
 }
 

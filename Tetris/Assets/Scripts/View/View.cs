@@ -17,11 +17,11 @@ namespace Tetris
                                     FigureView.Pool figuresPoolArg,
                                     Camera cameraArg,
                                     UI uiArg,
-                                    [Inject(Id = "maxIdxGameMod")] int maxIdxGameMod)
+                                    [Inject(Id = "maxIdxGameMod")] int maxIdxGameModArg)
         {
             _figureTemplates = templatesFigureArg;
             _figuresPool = figuresPoolArg;
-            _maxIdxGameMods = maxIdxGameMod;
+            _maxIdxGameMods = maxIdxGameModArg;
             _camera = cameraArg;
             _ui = uiArg;
         }

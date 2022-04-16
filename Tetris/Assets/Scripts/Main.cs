@@ -46,7 +46,7 @@ namespace Tetris
         protected void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
-            if (_model.Figure != null)
+            if (_model != null && _model.Figure != null)
                 Gizmos.DrawCube(_model.Figure.Bounds.center, _model.Figure.Bounds.size);
         }
         protected void OnEnable()

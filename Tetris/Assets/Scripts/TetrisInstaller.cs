@@ -17,11 +17,16 @@ namespace Tetris
         [SerializeField] protected FigureView _figureView;
         [SerializeField] protected Block _block;
         [SerializeField] protected Camera _camera;
+        [SerializeField] protected Vector3 _sizeBlock = new Vector3(1f, 1f, 1f);
+
+        [Header("MODEL")]
+        [SerializeField] protected Vector3 _sizeBoundsBlock = new Vector3(1f, 1f, 1f);
 
         [Header("UI")]
         [SerializeField] protected TextMeshProUGUI _lblScores;
         [SerializeField] protected Canvas _gameUi;
         [SerializeField] protected Canvas _menu;
+        [SerializeField] protected MeshRenderer _border;
 
 
         [Header("DIFFICULTY")]
@@ -35,7 +40,6 @@ namespace Tetris
 
             Container.Bind<IReadOnlyList<FigureTemplate>>().FromInstance(_templatesFigures).AsSingle();
             Container.Bind<Difficulty>().FromInstance(_difficulty).AsSingle();
-            Container.Bind<Map>().FromInstance(GetMap()).AsSingle();
 
             InstallModel();
             InstallView();
@@ -48,10 +52,13 @@ namespace Tetris
             Container.Bind<Rotator>().FromNew().AsSingle();
             Container.Bind<HeapFigures>().FromNew().AsSingle();
             Container.Bind<FigureGenerator>().FromNew().AsSingle();
+            Container.Bind<Map>().FromInstance(GetMap()).AsSingle();
 
             IReadOnlyList<Mover> movers = CreateMovers();
             Container.Bind<IReadOnlyList<Mover>>().FromInstance(movers).AsSingle();
             Container.Bind<int>().WithId("maxIdxGameMod").FromInstance(movers.Count - 1).AsSingle();
+
+            Container.Bind<Vector3>().WithId("sizeBoundsBlock").FromInstance(_sizeBoundsBlock).AsTransient();
         }
         protected void InstallView()
         {
@@ -60,6 +67,8 @@ namespace Tetris
             Container.BindMemoryPool<FigureView, FigureView.Pool>().WithInitialSize(10).FromComponentInNewPrefab(_figureView);
             Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(40).FromComponentInNewPrefab(_block);
 
+            Container.Bind<Vector3>().WithId("sizeBlock").FromInstance(_sizeBlock).AsTransient();
+
             InstallUI();
         }
         protected void InstallUI()
@@ -67,6 +76,7 @@ namespace Tetris
             Container.Bind<TextMeshProUGUI>().WithId("lblScores").FromInstance(_lblScores).AsSingle();
             Container.Bind<Canvas>().WithId("gameUI").FromInstance(_gameUi).AsTransient();
             Container.Bind<Canvas>().WithId("menu").FromInstance(_menu).AsTransient();
+            Container.Bind<MeshRenderer>().WithId("border").FromInstance(_border).AsTransient();
             
             Container.Bind<UI>().FromNew().AsSingle();
         }
@@ -85,7 +95,7 @@ namespace Tetris
             bounds.SetMinMax(new Vector3Int(_minMap.x, _minMap.y, 0), 
                              new Vector3Int(_maxMap.x, _maxMap.y, 0));
 
-            return new Map(bounds);
+            return new Map(bounds, _sizeBoundsBlock);
         }
         protected bool IsValidInputData()
         {
@@ -182,7 +192,24 @@ namespace Tetris
                 Debug.LogError("Menu is null", this);
                 valid = false;
             }
-                
+
+            if (_border == null)
+            {
+                Debug.LogError("Border is null", this);
+                valid = false;
+            }
+
+            if (_sizeBlock.x < float.Epsilon || _sizeBlock.y < float.Epsilon || _sizeBlock.z < float.Epsilon)
+            {
+                Debug.LogError("Each of the block size axes must be > 0", this);
+                valid = false;
+            }
+
+            if (_sizeBoundsBlock.x < float.Epsilon || _sizeBoundsBlock.y < float.Epsilon || _sizeBoundsBlock.z < float.Epsilon)
+            {
+                Debug.LogError("Each of the block bounds size axes must be > 0", this);
+                valid = false;
+            }
 
             return valid;
         }

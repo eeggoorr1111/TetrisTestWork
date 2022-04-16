@@ -6,57 +6,19 @@ namespace Tetris
 {
     public class FigureModel
     {
-        public static readonly Vector3 SizeBlock = new Vector3(1f, 1f, 0.5f);
-        public static Vector3 HalfSizeBlock => SizeBlock / 2;
-
-
-        public static Bounds GetBounds(FigureTemplate templateArg)
+        public FigureModel(FigureTemplate templateArg, int idxTemplateArg, Vector3 posArg, Vector3 sizeBlockArg)
         {
-            Vector3 min, max;
-            Bounds bounds = new Bounds();
-
-            GetMinMax(templateArg, out min, out max);
-            bounds.SetMinMax(min, max);
-
-            return bounds;
-        }
-        public static void GetMinMax(FigureTemplate templateArg, out Vector3 min, out Vector3 max)
-        {
-            Vector2Int minInt = new Vector2Int(int.MaxValue, int.MaxValue);
-            Vector2Int maxInt = new Vector2Int(int.MinValue, int.MinValue);
-
-            foreach (var block in templateArg.Blocks)
-            {
-                if (block.x < minInt.x)
-                    minInt.x = block.x;
-
-                if (block.y < minInt.y)
-                    minInt.y = block.y;
-
-                if (block.x > maxInt.x)
-                    maxInt.x = block.x;
-
-                if (block.y > maxInt.y)
-                    maxInt.y = block.y;
-            }
-
-            min = new Vector3(minInt.x - HalfSizeBlock.x, minInt.y - HalfSizeBlock.y, -HalfSizeBlock.z);
-            max = new Vector3(maxInt.x + HalfSizeBlock.x, maxInt.y + HalfSizeBlock.y, HalfSizeBlock.z);
-        }
-
-
-        public FigureModel(FigureTemplate templateArg, int idxTemplateArg, Vector3 posArg)
-        {
-            Bounds bounds = GetBounds(templateArg);
+            Bounds bounds = GetBounds(templateArg, sizeBlockArg);
             Vector3 localCenter = bounds.center;
+            Vector3 pivotWorld = posArg;
 
             _bounds = bounds;
-            _bounds.center = posArg;
-            _deltaPivot = -localCenter;
+            _bounds.center = pivotWorld + bounds.center;
+            _deltaPivot = pivotWorld - _bounds.center;
             _idxTemplate = idxTemplateArg;
             _boundsBottom = new List<Bounds>();
 
-            FillBoundsBlocks(templateArg.Blocks);
+            FillBoundsBlocks(templateArg.Blocks, sizeBlockArg);
             FillIdxsOfBottomBlocks(templateArg.Blocks);
         }
 
@@ -117,16 +79,50 @@ namespace Tetris
             foreach (var pair in idxsBlocks)
                 _boundsBottomIdxs.Add(pair.Value);
         }
-        protected void FillBoundsBlocks(IReadOnlyList<Vector2Int> blocksArg)
+        protected void FillBoundsBlocks(IReadOnlyList<Vector2Int> blocksArg, Vector3 sizeBlockArg)
         {
             _boundsBlocks = new List<Bounds>();
             foreach (var block in blocksArg)
             {
                 Vector3 pos = new Vector3(block.x, block.y, 0);
-                Bounds boundsBlock = new Bounds(pos + _bounds.center, SizeBlock);
+                Bounds boundsBlock = new Bounds(pos + _bounds.center, sizeBlockArg);
 
                 _boundsBlocks.Add(boundsBlock);
             }
+        }
+        protected Bounds GetBounds(FigureTemplate templateArg, Vector3 sizeBlockArg)
+        {
+            Vector3 min, max;
+            Bounds bounds = new Bounds();
+
+            GetMinMax(templateArg, sizeBlockArg, out min, out max);
+            bounds.SetMinMax(min, max);
+
+            return bounds;
+        }
+        protected void GetMinMax(FigureTemplate templateArg, Vector3 sizeBlockArg, out Vector3 min, out Vector3 max)
+        {
+            Vector2Int minInt = new Vector2Int(int.MaxValue, int.MaxValue);
+            Vector2Int maxInt = new Vector2Int(int.MinValue, int.MinValue);
+            Vector3 halfSizeBlock = sizeBlockArg / 2;
+
+            foreach (var block in templateArg.Blocks)
+            {
+                if (block.x < minInt.x)
+                    minInt.x = block.x;
+
+                if (block.y < minInt.y)
+                    minInt.y = block.y;
+
+                if (block.x > maxInt.x)
+                    maxInt.x = block.x;
+
+                if (block.y > maxInt.y)
+                    maxInt.y = block.y;
+            }
+
+            min = new Vector3(minInt.x - halfSizeBlock.x, minInt.y - halfSizeBlock.y, -halfSizeBlock.z);
+            max = new Vector3(maxInt.x + halfSizeBlock.x, maxInt.y + halfSizeBlock.y, halfSizeBlock.z);
         }
     }
 }

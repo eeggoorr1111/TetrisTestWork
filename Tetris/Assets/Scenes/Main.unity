@@ -2169,12 +2169,15 @@ MonoBehaviour:
     type: 3}
   _block: {fileID: 2693925678498958770, guid: 0c05b10ba9e81ec46809f40bb34b5406, type: 3}
   _camera: {fileID: 1342129008}
+  _sizeBlock: {x: 1, y: 1, z: 1}
+  _sizeBoundsBlock: {x: 1, y: 1, z: 1}
   _lblScores: {fileID: 50477359}
   _gameUi: {fileID: 1561081827}
   _menu: {fileID: 756696093}
+  _border: {fileID: 5934021131239367978, guid: 8bb9ecb93218c70488ff67e3e17f7d19, type: 3}
   _difficulty:
     _intervalGenerate: 0
-    _speedFalling: 1
+    _speedFalling: 10
     _speedFallingBoost: 2
     _speedMoveToSide: 1
 --- !u!114 &1288264636
