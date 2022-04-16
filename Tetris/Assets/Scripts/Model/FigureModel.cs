@@ -6,41 +6,53 @@ namespace Tetris
 {
     public class FigureModel
     {
-        public static readonly Vector3 SizeBlock = new Vector3(1f, 1f, 0.1f);
+        public static readonly Vector3 SizeBlock = new Vector3(1f, 1f, 0.5f);
         public static Vector3 HalfSizeBlock => SizeBlock / 2;
 
 
         public static Bounds GetBounds(FigureTemplate templateArg)
         {
-            Vector2Int min = new Vector2Int(int.MaxValue, int.MaxValue);
-            Vector2Int max = new Vector2Int(int.MinValue, int.MinValue);
+            Vector3 min, max;
             Bounds bounds = new Bounds();
+
+            GetMinMax(templateArg, out min, out max);
+            bounds.SetMinMax(min, max);
+
+            return bounds;
+        }
+        public static void GetMinMax(FigureTemplate templateArg, out Vector3 min, out Vector3 max)
+        {
+            Vector2Int minInt = new Vector2Int(int.MaxValue, int.MaxValue);
+            Vector2Int maxInt = new Vector2Int(int.MinValue, int.MinValue);
 
             foreach (var block in templateArg.Blocks)
             {
-                if (block.x < min.x)
-                    min.x = block.x;
+                if (block.x < minInt.x)
+                    minInt.x = block.x;
 
-                if (block.y < min.y)
-                    min.y = block.y;
+                if (block.y < minInt.y)
+                    minInt.y = block.y;
 
-                if (block.x > max.x)
-                    max.x = block.x;
+                if (block.x > maxInt.x)
+                    maxInt.x = block.x;
 
-                if (block.y > max.y)
-                    max.y = block.y;
+                if (block.y > maxInt.y)
+                    maxInt.y = block.y;
             }
 
-            bounds.SetMinMax(   new Vector3(min.x - HalfSizeBlock.x, min.y - HalfSizeBlock.y, 0), 
-                                new Vector3(max.x + HalfSizeBlock.x, max.y + HalfSizeBlock.y, 0));
-            return bounds;
+            min = new Vector3(minInt.x - HalfSizeBlock.x, minInt.y - HalfSizeBlock.y, -HalfSizeBlock.z);
+            max = new Vector3(maxInt.x + HalfSizeBlock.x, maxInt.y + HalfSizeBlock.y, HalfSizeBlock.z);
         }
 
 
         public FigureModel(FigureTemplate templateArg, int idxTemplateArg, Vector3 posArg)
         {
-            _bounds = GetBounds(templateArg);
+            Bounds bounds = GetBounds(templateArg);
+            Vector3 localCenter = bounds.center;
+
+            _bounds = bounds;
             _bounds.center = posArg;
+            _deltaPivot = -localCenter;
             _idxTemplate = idxTemplateArg;
             _boundsBottom = new List<Bounds>();
 
@@ -50,6 +62,7 @@ namespace Tetris
 
 
         public Bounds Bounds => _bounds;
+        public Vector3 Pivot => _bounds.center + _deltaPivot;
         public IReadOnlyList<Bounds> BoundsBlocks => _boundsBlocks;
         public IReadOnlyList<Bounds> BoundsOfBottom
         {
@@ -70,6 +83,7 @@ namespace Tetris
         protected List<int> _boundsBottomIdxs;
         protected Bounds _bounds;
         protected int _idxTemplate;
+        protected Vector3 _deltaPivot;
 
 
         public bool MoveToSide(Mover moverArg)
@@ -109,9 +123,9 @@ namespace Tetris
             foreach (var block in blocksArg)
             {
                 Vector3 pos = new Vector3(block.x, block.y, 0);
-                Bounds bounds = new Bounds(pos + _bounds.center, SizeBlock);
+                Bounds boundsBlock = new Bounds(pos + _bounds.center, SizeBlock);
 
-                _boundsBlocks.Add(bounds);
+                _boundsBlocks.Add(boundsBlock);
             }
         }
     }

@@ -38,10 +38,16 @@ namespace Tetris
                 else
                 {
                     if (newFigure != null)
-                        _view.NewFigure(newFigure.IdxTemplate, newFigure.Bounds.center);
-                    _view.NextFrame(_model.Scores, _model.Figure.Bounds.center);
+                        _view.NewFigure(newFigure.IdxTemplate, newFigure.Pivot);
+                    _view.NextFrame(_model.Scores, _model.Figure.Pivot);
                 }
             }
+        }
+        protected void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            if (_model.Figure != null)
+                Gizmos.DrawCube(_model.Figure.Bounds.center, _model.Figure.Bounds.size);
         }
         protected void OnEnable()
         {
@@ -67,7 +73,7 @@ namespace Tetris
 
             _isGame = true;
             _model.StartGame(indexGameModeArg, ref figure);
-            _view.NewFigure(figure.IdxTemplate, figure.Bounds.center);
+            _view.NewFigure(figure.IdxTemplate, figure.Pivot);
         }
     }
 }
