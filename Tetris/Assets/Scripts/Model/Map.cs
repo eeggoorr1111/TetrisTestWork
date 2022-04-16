@@ -13,7 +13,7 @@ namespace Tetris
 
 
         public BoundsInt Bounds => _bounds;
-        public float TopByY => _bounds.max.y;
+        public int TopByY => _bounds.max.y;
 
 
         protected BoundsInt _bounds;

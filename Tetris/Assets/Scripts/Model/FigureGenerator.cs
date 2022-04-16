@@ -44,13 +44,26 @@ namespace Tetris
 
         protected Vector3 GetSpawnPoint(FigureTemplate templateArg)
         {
-            Vector3 sizeFigure = FigureModel.GetBounds(templateArg).size;
-            float halfSizeX = sizeFigure.x / 2;
-            float halfSizeY = sizeFigure.y / 2;
-            float posX = Random.Range(  _map.Bounds.min.x + halfSizeX,
-                                        _map.Bounds.max.x - halfSizeX);
+            int fromZeroBlockToLeft = 0;
+            int fromZeroBlockToRight = 0;
+            int fromZeroBlockToBottom = 0;
 
-            return new Vector3(posX, _map.TopByY + halfSizeY, 0);
+            foreach (var block in templateArg.Blocks)
+            {
+                if (block.x > fromZeroBlockToRight)
+                    fromZeroBlockToRight = block.x;
+
+                if (block.x < fromZeroBlockToLeft)
+                    fromZeroBlockToLeft = block.x;
+
+                if (block.y < fromZeroBlockToBottom)
+                    fromZeroBlockToBottom = block.y;
+            }
+                
+            float posX = Random.Range(  _map.Bounds.min.x + Mathf.Abs(fromZeroBlockToLeft),
+                                        _map.Bounds.max.x - fromZeroBlockToRight + 1);
+
+            return new Vector3(posX, _map.TopByY + Mathf.Abs(fromZeroBlockToBottom), 0);
         }
     }
 }
