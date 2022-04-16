@@ -11,23 +11,26 @@ namespace Tetris
                             [Inject(Id = "sizeBoundsBlock")] Vector3 sizeBlockArg)
         {
             _map = mapArg;
-            _boundsTopBlocks = new Dictionary<int, Bounds>();
+            _topBlocks = new Dictionary<int, Bounds>();
 
             _minCell = new Vector3Int(int.MaxValue, int.MaxValue, 0);
             _maxCell = new Vector3Int(int.MinValue, int.MinValue, 0);
 
             _halfSizeBlockXY = (sizeBlockArg / 2).WithZ(0);
+            _blocks = new List<Bounds>();
         }
 
 
         public float BottomByY => _map.BottomByY;
         public float TopByY => _bounds.max.y;
+        public IReadOnlyList<Bounds> Blocks => _blocks;
         public Bounds Bounds => _bounds;
-        public IReadOnlyDictionary<int, Bounds> BoundsOfTop => _boundsTopBlocks;
+        public IReadOnlyDictionary<int, Bounds> TopBlocks => _topBlocks;
         public int Ranges => 0;
 
 
-        protected Dictionary<int, Bounds> _boundsTopBlocks;
+        protected Dictionary<int, Bounds> _topBlocks;
+        protected List<Bounds> _blocks;
         protected Bounds _bounds;
         protected Map _map;
         protected Vector3Int _minCell;
@@ -43,13 +46,13 @@ namespace Tetris
                 int blockY = Mathf.RoundToInt(block.center.y);
                 Bounds boundsTop;
 
-                if (_boundsTopBlocks.TryGetValue(blockX, out boundsTop))
+                if (_topBlocks.TryGetValue(blockX, out boundsTop))
                 { 
                     if (block.center.y > boundsTop.center.y)
-                        _boundsTopBlocks[blockX] = block;
+                        _topBlocks[blockX] = block;
                 }
                 else
-                    _boundsTopBlocks[blockX] = block;
+                    _topBlocks[blockX] = block;
 
                 if (blockX < _minCell.x)
                     _minCell.x = blockX;
@@ -60,6 +63,8 @@ namespace Tetris
                     _minCell.y = blockY;
                 else if (blockY > _maxCell.y)
                     _maxCell.y = blockY;
+
+                _blocks.Add(block);
             }
 
             _bounds.SetMinMax(_minCell - _halfSizeBlockXY, _maxCell + _halfSizeBlockXY);

@@ -155,7 +155,7 @@ namespace Tetris
                 valid = false;
             }
 
-            if (_difficulty.SpeedMoveToSide < float.Epsilon)
+            if (_difficulty.TimeMoveToSide < float.Epsilon)
             {
                 Debug.LogError("Speed move figure to side <= 0", this);
                 valid = false;

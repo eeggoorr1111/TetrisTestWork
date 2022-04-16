@@ -72,7 +72,7 @@ namespace Tetris
         }
         public void MoveFigure(bool toRightArg)
         {
-            _figure.MoveToSide(_mover);
+            _figure.MoveToSide(_mover, toRightArg);
         }
 
 

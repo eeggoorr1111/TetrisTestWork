@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 namespace Tetris
 {
@@ -20,11 +21,15 @@ namespace Tetris
         protected HeapFigures _heapFigures;
         protected Difficulty _difficulty;
         protected Map _map;
+        protected Tween _moveToSide;
 
 
-        public bool ToFall(bool boostedFallArg, IReadOnlyList<Bounds> boundsBottomArg, List<Bounds> boundsBlocks, ref Bounds boundsFigure)
+        public bool ToFall(bool boostedFallArg, BoundsFigure bounds)
         {
-            float distance = GetDistanceToNearestObstruction(boundsFigure, boundsBottomArg);
+            if (_moveToSide.IsActive())
+                return true;
+
+            float distance = GetDistanceToNearestObstruction(bounds.Figure, bounds.BlocksBottom);
             if (distance < float.Epsilon)
                 return false;
 
@@ -36,21 +41,19 @@ namespace Tetris
             if (Mathf.Abs(delta.y) > distance)
                 delta.y = -distance;
 
-            boundsFigure = boundsFigure.WithDeltaPos(delta);
-            for (int i = 0; i < boundsBlocks.Count; i++)
-                boundsBlocks[i] = boundsBlocks[i].WithDeltaPos(delta);
+            bounds.Move(delta);
 
             return true;
 
         }
-        public abstract bool ToMove(bool toRightArg);
+        public abstract bool MoveToSide(bool toRightArg, BoundsFigure bounds);
 
 
         protected float GetDistanceToNearestObstruction(Bounds boundsFigureArg, IReadOnlyList<Bounds> blocksFigureArg)
         {
             float distance = boundsFigureArg.min.y - _map.BottomByY;
 
-            IReadOnlyDictionary<int, Bounds> blocksTopHeap = _heapFigures.BoundsOfTop;
+            IReadOnlyDictionary<int, Bounds> blocksTopHeap = _heapFigures.TopBlocks;
             for (int i = 0; i < blocksFigureArg.Count; i++)
             {
                 int posX = Mathf.RoundToInt(blocksFigureArg[i].center.x);

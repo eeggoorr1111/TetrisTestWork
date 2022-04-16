@@ -2176,9 +2176,9 @@ MonoBehaviour:
   _border: {fileID: 5934021131239367978, guid: 8bb9ecb93218c70488ff67e3e17f7d19, type: 3}
   _difficulty:
     _intervalGenerate: 0
-    _speedFalling: 10
+    _speedFalling: 1
     _speedFallingBoost: 2
-    _speedMoveToSide: 1
+    _timeMoveToSide: 0.1
 --- !u!114 &1288264636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2304,7 +2304,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342129005}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 2.5, y: 4.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1461537258}

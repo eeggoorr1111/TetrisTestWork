@@ -21,9 +21,8 @@ namespace Tetris
             _map = mapArg;
 
             Vector3 sizeBorder = borderArg.transform.localScale;
-            Vector3 halfSizeBlock = sizeBlockArg / 2;
-            Vector3 marginBorderH = new Vector3(sizeBorder.x / 2 + halfSizeBlock.x, 0, 0);
-            Vector3 marginBorderV = new Vector3(0, sizeBorder.x / 2 + halfSizeBlock.y, 0);
+            Vector3 marginBorderH = new Vector3(sizeBorder.x / 2, 0, 0);
+            Vector3 marginBorderV = new Vector3(0, sizeBorder.x / 2, 0);
 
             _leftBorder = GameObject.Instantiate(borderArg, _map.CenterLeft - marginBorderH, Quaternion.identity);
             _rightBorder = GameObject.Instantiate(borderArg, _map.CenterRight + marginBorderH, Quaternion.identity);

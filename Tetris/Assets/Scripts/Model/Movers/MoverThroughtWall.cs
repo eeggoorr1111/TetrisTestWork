@@ -9,9 +9,9 @@ namespace Tetris
         public MoverThroughtWall(HeapFigures heapArg, Difficulty difficultyArg, Map mapArg) : base(heapArg, difficultyArg, mapArg) { }
 
 
-        public override bool ToMove(bool toRightArg)
+        public override bool MoveToSide(bool toRightArg, BoundsFigure bounds)
         {
-            return false;
+            throw new System.NotImplementedException();
         }
     }
 }

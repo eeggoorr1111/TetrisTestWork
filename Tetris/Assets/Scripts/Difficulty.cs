@@ -8,13 +8,13 @@ namespace Tetris
         public float IntervalGenerate => _intervalGenerate;
         public float SpeedFalling => _speedFalling;
         public float SpeedFallingBoosted => _speedFallingBoost;
-        public float SpeedMoveToSide => _speedMoveToSide;
+        public float TimeMoveToSide => _timeMoveToSide;
 
 
         [SerializeField] protected float _intervalGenerate;
         [SerializeField] protected float _speedFalling;
         [SerializeField] protected float _speedFallingBoost;
-        [SerializeField] protected float _speedMoveToSide;
+        [SerializeField] protected float _timeMoveToSide;
     }
 }
 

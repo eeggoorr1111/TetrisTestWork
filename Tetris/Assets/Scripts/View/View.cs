@@ -29,7 +29,8 @@ namespace Tetris
         public bool IsExistsMonoB => this != null;
 
 
-        protected event Action<UserAction> _onUserAction;
+        protected event Action<bool> _onRotate;
+        protected event Action<bool> _onMove;
         protected event Action _onGoToMenu;
         protected event Action<int> _onStartGame;
         protected IReadOnlyList<FigureTemplate> _figureTemplates;
@@ -63,36 +64,26 @@ namespace Tetris
             if (_onStartGame != null)
                 _onStartGame.Invoke(idxMode);
         }
-        public void Subscribe(Action<UserAction> onUserActionArg, Action onGoToMenuArg, Action<int> onStartGameArg)
+        public void Subscribe(Action<bool> onRotateArg, Action<bool> onMoveArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {
-            if (onUserActionArg != null)
-            {
-                _onUserAction -= onUserActionArg;
-                _onUserAction += onUserActionArg;
-            }
-           
-            if (onGoToMenuArg != null)
-            {
-                _onGoToMenu -= onGoToMenuArg;
-                _onGoToMenu += onGoToMenuArg;
-            }
-            
-            if (onStartGameArg != null)
-            {
-                _onStartGame -= onStartGameArg;
-                _onStartGame += onStartGameArg;
-            }
+            _onRotate -= onRotateArg;
+            _onRotate += onRotateArg;
+
+            _onMove -= onMoveArg;
+            _onMove += onMoveArg;
+
+            _onGoToMenu -= onGoToMenuArg;
+            _onGoToMenu += onGoToMenuArg;
+
+            _onStartGame -= onStartGameArg;
+            _onStartGame += onStartGameArg;
         }
-        public void Unsubscribe(Action<UserAction> onUserActionArg, Action onGoToMenuArg, Action<int> onStartGameArg)
+        public void Unsubscribe(Action<bool> onUserActionArg, Action<bool> onMoveArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {
-            if (onUserActionArg != null)
-                _onUserAction -= onUserActionArg;
-
-            if (onGoToMenuArg != null)
-                _onGoToMenu -= onGoToMenuArg;
-
-            if (onStartGameArg != null)
-                _onStartGame -= onStartGameArg;
+            _onRotate -= onUserActionArg;
+            _onMove -= onMoveArg;
+            _onGoToMenu -= onGoToMenuArg;
+            _onStartGame -= onStartGameArg;
         }
         public void GoToMenu()
         {
@@ -112,20 +103,20 @@ namespace Tetris
 
         protected void InputCheck()
         {
-            if (_onUserAction == null)
+            if (_onRotate == null || _onMove == null)
                 return;
 
             if (Input.GetKeyDown(KeyCode.D))
-                _onUserAction.Invoke(UserAction.ToMove(new Vector3Int(1, 0, 0)));
+                _onMove.Invoke(true);
 
             else if (Input.GetKeyDown(KeyCode.A))
-                _onUserAction.Invoke(UserAction.ToMove(new Vector3Int(-1, 0, 0)));
+                _onMove.Invoke(false);
 
             else if(Input.GetKeyDown(KeyCode.Q))
-                _onUserAction.Invoke(UserAction.ToRotate(RotateKey.CtrClockwise));
+                _onRotate.Invoke(false);
 
             else if (Input.GetKeyDown(KeyCode.E))
-                _onUserAction.Invoke(UserAction.ToRotate(RotateKey.Clockwise));
+                _onRotate.Invoke(true);
         }
         protected void OnEnable()
         {
@@ -139,7 +130,8 @@ namespace Tetris
         }
         protected void OnDestroy()
         {
-            _onUserAction = null;
+            _onRotate = null;
+            _onMove = null;
             _onGoToMenu = null;
             _onStartGame = null;
         }

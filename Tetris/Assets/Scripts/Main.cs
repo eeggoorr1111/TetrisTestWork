@@ -46,7 +46,7 @@ namespace Tetris
         protected void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
-            if (_model != null && false)
+            if (_model != null)
             {
                 if (!_model.Figure.BoundsBlocks.IsEmpty())
                     foreach (var block in _model.Figure.BoundsBlocks)
@@ -58,15 +58,15 @@ namespace Tetris
         }
         protected void OnEnable()
         {
-            _view.Subscribe(NewUserAction, GameOver, StartGame);
+            _view.Subscribe(OnRotate, _model.MoveFigure, GameOver, StartGame);
         }
         protected void OnDisable()
         {
             if (_view != null && _view.IsExistsMonoB)
-                _view.Unsubscribe(NewUserAction, GameOver, StartGame);
+                _view.Unsubscribe(OnRotate, _model.MoveFigure, GameOver, StartGame);
         }
 
-        protected void NewUserAction(UserAction actionArg)
+        protected void OnRotate(bool byClockwiseArg)
         {
 
         }
