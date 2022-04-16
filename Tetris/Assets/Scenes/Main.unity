@@ -2162,8 +2162,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _templatesFigures:
   - {fileID: 11400000, guid: 7a2422ff70485a14693357a11d19a71d, type: 2}
-  _minMap: {x: -5, y: -5}
-  _maxMap: {x: 5, y: 10}
+  _minCellMap: {x: -5, y: -5}
+  _maxCellMap: {x: 5, y: 10}
   _view: {fileID: 1461537259}
   _figureView: {fileID: 1571276055973249039, guid: bba421f234571194dbb66b7f4ce88c8f,
     type: 3}

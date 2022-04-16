@@ -9,8 +9,8 @@ namespace Tetris
     {
         [Header("COMMON")]
         [SerializeField] protected List<FigureTemplate> _templatesFigures;
-        [SerializeField] protected Vector2Int _minMap;
-        [SerializeField] protected Vector2Int _maxMap;
+        [SerializeField] protected Vector2Int _minCellMap;
+        [SerializeField] protected Vector2Int _maxCellMap;
 
         [Header("VIEW")]
         [SerializeField] protected View _view;
@@ -40,6 +40,7 @@ namespace Tetris
 
             Container.Bind<IReadOnlyList<FigureTemplate>>().FromInstance(_templatesFigures).AsSingle();
             Container.Bind<Difficulty>().FromInstance(_difficulty).AsSingle();
+            Container.Bind<Map>().FromInstance(GetMap()).AsSingle();
 
             InstallModel();
             InstallView();
@@ -52,7 +53,6 @@ namespace Tetris
             Container.Bind<Rotator>().FromNew().AsSingle();
             Container.Bind<HeapFigures>().FromNew().AsSingle();
             Container.Bind<FigureGenerator>().FromNew().AsSingle();
-            Container.Bind<Map>().FromInstance(GetMap()).AsSingle();
 
             IReadOnlyList<Mover> movers = CreateMovers();
             Container.Bind<IReadOnlyList<Mover>>().FromInstance(movers).AsSingle();
@@ -92,8 +92,8 @@ namespace Tetris
         protected Map GetMap()
         {
             BoundsInt bounds = new BoundsInt();
-            bounds.SetMinMax(new Vector3Int(_minMap.x, _minMap.y, 0), 
-                             new Vector3Int(_maxMap.x, _maxMap.y, 0));
+            bounds.SetMinMax(new Vector3Int(_minCellMap.x, _minCellMap.y, 0), 
+                             new Vector3Int(_maxCellMap.x, _maxCellMap.y, 0));
 
             return new Map(bounds, _sizeBoundsBlock);
         }
@@ -162,7 +162,7 @@ namespace Tetris
                 valid = false;
             }
 
-            Vector2Int sizeMap = _maxMap - _minMap;
+            Vector2Int sizeMap = _maxCellMap - _minCellMap;
             if (sizeMap.x < 4 || sizeMap.y < 10)
             {
                 Debug.LogError("Map size must be >= 4 in x and >= 10 in y", this);
