@@ -27,6 +27,7 @@ namespace Tetris
 
 
         public FigureModel Figure => _figure;
+        public HeapFigures HeapFigures => _heapFigures;
         public int Scores => _scores;
 
 
@@ -57,7 +58,7 @@ namespace Tetris
 
                 if (newRangesCount < oldRangesCount)
                     _scores++;
-                else if (_heapFigures.TopByY > _map.Bounds.max.y)
+                else if (_heapFigures.TopByY > _map.TopByY)
                 {
                     isGameOver = true;
                     GameOver();

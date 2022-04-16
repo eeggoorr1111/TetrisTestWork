@@ -13,7 +13,9 @@ namespace Tetris
         }
 
 
-        public BoundsInt Bounds => _bounds;
+        public Vector3Int MinCell => _bounds.min;
+        public Vector3 MinPoint =>  (_bounds.min - _sizeBlock).WithZ(_bounds.min.z);
+        public Vector3Int MaxCell => _bounds.max;
         public float TopByY => TopCell + _sizeBlock.y / 2;
         public float BottomByY => BottomCell - _sizeBlock.y / 2;
         public int TopCell => _bounds.max.y;

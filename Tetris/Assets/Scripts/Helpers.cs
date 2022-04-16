@@ -32,6 +32,10 @@ namespace Tetris
         {
             return new Vector3(vector.x, yArg, vector.z);
         }
+        public static Vector3 WithZ(this Vector3 vector, float zArg)
+        {
+            return new Vector3(vector.x, vector.y, zArg);
+        }
     }
 }
 

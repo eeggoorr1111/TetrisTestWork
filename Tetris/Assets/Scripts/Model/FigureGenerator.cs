@@ -46,7 +46,7 @@ namespace Tetris
         }
 
 
-        protected Vector3 GetSpawnPoint(FigureTemplate templateArg)
+        protected Vector2Int GetSpawnPoint(FigureTemplate templateArg)
         {
             int fromZeroBlockToLeft = 0;
             int fromZeroBlockToRight = 0;
@@ -64,10 +64,10 @@ namespace Tetris
                     fromZeroBlockToBottom = block.y;
             }
                 
-            float posX = Random.Range(  _map.Bounds.min.x + Mathf.Abs(fromZeroBlockToLeft),
-                                        _map.Bounds.max.x - fromZeroBlockToRight + 1);
+            int cellX = Random.Range(  _map.MinCell.x + Mathf.Abs(fromZeroBlockToLeft),
+                                       _map.MaxCell.x - fromZeroBlockToRight + 1);
 
-            return new Vector3(posX, _map.TopCell + Mathf.Abs(fromZeroBlockToBottom) + 1, 0);
+            return new Vector2Int(cellX, _map.TopCell + Mathf.Abs(fromZeroBlockToBottom) + 1);
         }
     }
 }

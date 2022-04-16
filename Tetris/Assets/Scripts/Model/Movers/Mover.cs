@@ -9,21 +9,23 @@ namespace Tetris
         protected static readonly Vector3 _fallDirection = Vector3Int.down;
 
 
-        public Mover(HeapFigures heapArg, Difficulty difficultyArg)
+        public Mover(HeapFigures heapArg, Difficulty difficultyArg, Map mapArg)
         {
             _heapFigures = heapArg;
             _difficulty = difficultyArg;
+            _map = mapArg;
         }
 
 
         protected HeapFigures _heapFigures;
         protected Difficulty _difficulty;
+        protected Map _map;
 
 
         public bool ToFall(bool boostedFallArg, IReadOnlyList<Bounds> boundsBottomArg, List<Bounds> boundsBlocks, ref Bounds boundsFigure)
         {
-            float distanceToBottomHeap = boundsFigure.min.y - _heapFigures.BottomByY;
-            if (distanceToBottomHeap < float.Epsilon)
+            float distance = GetDistanceToNearestObstruction(boundsFigure, boundsBottomArg);
+            if (distance < float.Epsilon)
                 return false;
 
             float speed = _difficulty.SpeedFalling;
@@ -31,14 +33,10 @@ namespace Tetris
                 speed = _difficulty.SpeedFallingBoosted;
 
             Vector3 delta = _fallDirection * speed * Time.deltaTime;
-            if (Mathf.Abs(delta.y) > distanceToBottomHeap)
-                delta.y = -distanceToBottomHeap;
+            if (Mathf.Abs(delta.y) > distance)
+                delta.y = -distance;
 
-            Bounds newBoundsFigure = boundsFigure.WithDeltaPos(delta);
-            if (IsCollisionWithHeap(newBoundsFigure, boundsBottomArg, delta))
-                return false;
-
-            boundsFigure = newBoundsFigure;
+            boundsFigure = boundsFigure.WithDeltaPos(delta);
             for (int i = 0; i < boundsBlocks.Count; i++)
                 boundsBlocks[i] = boundsBlocks[i].WithDeltaPos(delta);
 
@@ -48,21 +46,26 @@ namespace Tetris
         public abstract bool ToMove(bool toRightArg);
 
 
-        protected bool IsCollisionWithHeap(Bounds boundsFigureArg, IReadOnlyList<Bounds> boundsArg, Vector3 deltaArg)
+        protected float GetDistanceToNearestObstruction(Bounds boundsFigureArg, IReadOnlyList<Bounds> blocksFigureArg)
         {
-            if (!boundsFigureArg.Intersects(_heapFigures.Bounds))
-                return false;
+            float distance = boundsFigureArg.min.y - _map.BottomByY;
 
-            for (int i = 0; i < boundsArg.Count; i++)
-                for (int j = 0; j < _heapFigures.BoundsOfTop.Count; j++)
+            IReadOnlyDictionary<int, Bounds> blocksTopHeap = _heapFigures.BoundsOfTop;
+            for (int i = 0; i < blocksFigureArg.Count; i++)
+            {
+                int posX = Mathf.RoundToInt(blocksFigureArg[i].center.x);
+                Bounds blockFigure = blocksFigureArg[i];
+                Bounds blockTopHeap;
+
+                if (blocksTopHeap.TryGetValue(posX, out blockTopHeap))
                 {
-                    Bounds newBounds = boundsArg[i].WithDeltaPos(deltaArg);
-                    if (newBounds.Intersects(_heapFigures.BoundsOfTop[j]))
-                        return true;
+                    float distanceToHeap = Mathf.Abs(blockTopHeap.max.y - blockFigure.min.y);
+                    if (distanceToHeap < distance)
+                        distance = distanceToHeap;
                 }
-                    
+            }
 
-            return false;
+            return distance;
         }
     }
 }

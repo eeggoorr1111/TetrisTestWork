@@ -6,25 +6,30 @@ namespace Tetris
 {
     public class FigureModel
     {
-        public FigureModel(FigureTemplate templateArg, int idxTemplateArg, Vector3 posArg, Vector3 sizeBlockArg)
+        public FigureModel(FigureTemplate templateArg, int idxTemplateArg, Vector2Int cellSpawnArg, Vector3 sizeBlockArg)
         {
             Bounds bounds = GetBounds(templateArg, sizeBlockArg);
-            Vector3 localCenter = bounds.center;
-            Vector3 pivotWorld = posArg;
-
+            
+            _pivotInt = cellSpawnArg;
             _bounds = bounds;
-            _bounds.center = pivotWorld + bounds.center;
-            _deltaPivot = pivotWorld - _bounds.center;
+            _bounds.center = new Vector3(_pivotInt.x, _pivotInt.y, 0) + bounds.center;
+            _deltaPivot = new Vector3(_pivotInt.x, _pivotInt.y, 0) - _bounds.center;
             _idxTemplate = idxTemplateArg;
             _boundsBottom = new List<Bounds>();
 
             FillBoundsBlocks(templateArg.Blocks, sizeBlockArg);
             FillIdxsOfBottomBlocks(templateArg.Blocks);
+
+            _blocks = new List<Vector2Int>();
+            foreach (var block in templateArg.Blocks)
+                _blocks.Add(block);
         }
 
 
+        public IReadOnlyList<Vector2Int> Blocks => _blocks;
         public Bounds Bounds => _bounds;
         public Vector3 Pivot => _bounds.center + _deltaPivot;
+        public Vector2Int PivotInt => _pivotInt;
         public IReadOnlyList<Bounds> BoundsBlocks => _boundsBlocks;
         public IReadOnlyList<Bounds> BoundsOfBottom
         {
@@ -46,6 +51,8 @@ namespace Tetris
         protected Bounds _bounds;
         protected int _idxTemplate;
         protected Vector3 _deltaPivot;
+        protected List<Vector2Int> _blocks;
+        protected Vector2Int _pivotInt;
 
 
         public bool MoveToSide(Mover moverArg)
@@ -85,7 +92,7 @@ namespace Tetris
             foreach (var block in blocksArg)
             {
                 Vector3 pos = new Vector3(block.x, block.y, 0);
-                Bounds boundsBlock = new Bounds(pos + _bounds.center, sizeBlockArg);
+                Bounds boundsBlock = new Bounds(pos + Pivot, sizeBlockArg);
 
                 _boundsBlocks.Add(boundsBlock);
             }

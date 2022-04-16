@@ -9,8 +9,7 @@ namespace Tetris
     {
         [Header("COMMON")]
         [SerializeField] protected List<FigureTemplate> _templatesFigures;
-        [SerializeField] protected Vector2Int _minCellMap;
-        [SerializeField] protected Vector2Int _maxCellMap;
+        [SerializeField] protected Vector2Int _sizeMap;
 
         [Header("VIEW")]
         [SerializeField] protected View _view;
@@ -49,6 +48,8 @@ namespace Tetris
 
         protected void InstallModel()
         {
+            Container.Bind<Vector3>().WithId("sizeBoundsBlock").FromInstance(_sizeBoundsBlock).AsTransient();
+
             Container.Bind<Model>().FromNew().AsSingle();
             Container.Bind<Rotator>().FromNew().AsSingle();
             Container.Bind<HeapFigures>().FromNew().AsSingle();
@@ -57,8 +58,6 @@ namespace Tetris
             IReadOnlyList<Mover> movers = CreateMovers();
             Container.Bind<IReadOnlyList<Mover>>().FromInstance(movers).AsSingle();
             Container.Bind<int>().WithId("maxIdxGameMod").FromInstance(movers.Count - 1).AsSingle();
-
-            Container.Bind<Vector3>().WithId("sizeBoundsBlock").FromInstance(_sizeBoundsBlock).AsTransient();
         }
         protected void InstallView()
         {
@@ -92,8 +91,8 @@ namespace Tetris
         protected Map GetMap()
         {
             BoundsInt bounds = new BoundsInt();
-            bounds.SetMinMax(new Vector3Int(_minCellMap.x, _minCellMap.y, 0), 
-                             new Vector3Int(_maxCellMap.x, _maxCellMap.y, 0));
+            bounds.SetMinMax(new Vector3Int(0, 0, 0), 
+                             new Vector3Int(_sizeMap.x, _sizeMap.y, 0));
 
             return new Map(bounds, _sizeBoundsBlock);
         }
@@ -162,8 +161,7 @@ namespace Tetris
                 valid = false;
             }
 
-            Vector2Int sizeMap = _maxCellMap - _minCellMap;
-            if (sizeMap.x < 4 || sizeMap.y < 10)
+            if (_sizeMap.x < 4 || _sizeMap.y < 10)
             {
                 Debug.LogError("Map size must be >= 4 in x and >= 10 in y", this);
                 valid = false;
