@@ -23,7 +23,7 @@ namespace Tetris
         protected View _view;
         protected Vector3 _posFigure;
         protected bool _isGame;
-
+        protected bool _isBoostingFall;
 
         protected void Start()
         {
@@ -36,7 +36,7 @@ namespace Tetris
                 FigureModel newFigure = null;
                 bool isGameOver;
 
-                _model.ContinueFallFigure(false, ref newFigure, out isGameOver);
+                _model.ContinueFallFigure(_isBoostingFall, ref newFigure, out isGameOver);
                 if (isGameOver)
                     GameOver();
                 else
@@ -65,12 +65,16 @@ namespace Tetris
         }
         protected void OnEnable()
         {
-            _view.Subscribe(OnRotate, _model.MoveFigure, GameOver, StartGame);
+            _view.Subscribe(OnRotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
         }
         protected void OnDisable()
         {
             if (_view != null && _view.IsExistsMonoB)
-                _view.Unsubscribe(OnRotate, _model.MoveFigure, GameOver, StartGame);
+                _view.Unsubscribe(OnRotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
+        }
+        protected void OnBoostFall(bool statusArg)
+        {
+            _isBoostingFall = statusArg;
         }
 
         protected void OnRotate(bool byClockwiseArg)
@@ -85,6 +89,7 @@ namespace Tetris
         {
             FigureModel figure = null;
 
+            _isBoostingFall = false;
             _isGame = true;
             _model.StartGame(indexGameModeArg, ref figure);
             _view.NewFigure(figure.IdxTemplate, figure.Pivot);

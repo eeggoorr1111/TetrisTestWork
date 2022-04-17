@@ -31,6 +31,7 @@ namespace Tetris
 
         protected event Action<bool> _onRotate;
         protected event Action<bool> _onMove;
+        protected event Action<bool> _onBoostFall;
         protected event Action _onGoToMenu;
         protected event Action<int> _onStartGame;
         protected IReadOnlyList<FigureTemplate> _figureTemplates;
@@ -69,7 +70,7 @@ namespace Tetris
             if (_onStartGame != null)
                 _onStartGame.Invoke(idxMode);
         }
-        public void Subscribe(Action<bool> onRotateArg, Action<bool> onMoveArg, Action onGoToMenuArg, Action<int> onStartGameArg)
+        public void Subscribe(Action<bool> onRotateArg, Action<bool> onMoveArg, Action<bool> onBoostFallArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {
             _onRotate -= onRotateArg;
             _onRotate += onRotateArg;
@@ -77,16 +78,20 @@ namespace Tetris
             _onMove -= onMoveArg;
             _onMove += onMoveArg;
 
+            _onBoostFall -= onBoostFallArg;
+            _onBoostFall += onBoostFallArg;
+
             _onGoToMenu -= onGoToMenuArg;
             _onGoToMenu += onGoToMenuArg;
 
             _onStartGame -= onStartGameArg;
             _onStartGame += onStartGameArg;
         }
-        public void Unsubscribe(Action<bool> onUserActionArg, Action<bool> onMoveArg, Action onGoToMenuArg, Action<int> onStartGameArg)
+        public void Unsubscribe(Action<bool> onUserActionArg, Action<bool> onMoveArg, Action<bool> onBoostFallArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {
             _onRotate -= onUserActionArg;
             _onMove -= onMoveArg;
+            _onBoostFall -= onBoostFallArg;
             _onGoToMenu -= onGoToMenuArg;
             _onStartGame -= onStartGameArg;
         }
@@ -108,7 +113,7 @@ namespace Tetris
 
         protected void InputCheck()
         {
-            if (_onRotate == null || _onMove == null)
+            if (_onRotate == null || _onMove == null || _onBoostFall == null)
                 return;
 
             if (Input.GetKeyDown(KeyCode.D))
@@ -117,11 +122,18 @@ namespace Tetris
             else if (Input.GetKeyDown(KeyCode.A))
                 _onMove.Invoke(false);
 
-            else if(Input.GetKeyDown(KeyCode.Q))
+            else if (Input.GetKeyDown(KeyCode.Q))
                 _onRotate.Invoke(false);
 
             else if (Input.GetKeyDown(KeyCode.E))
                 _onRotate.Invoke(true);
+
+            else if (Input.GetKeyDown(KeyCode.S))
+                _onBoostFall.Invoke(true);
+
+            /// a separate if in case of simultaneously down, for example D key and up S key
+            if (Input.GetKeyUp(KeyCode.S))
+                _onBoostFall.Invoke(false);
         }
         protected void OnEnable()
         {
