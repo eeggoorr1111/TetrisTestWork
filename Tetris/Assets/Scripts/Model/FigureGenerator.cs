@@ -8,13 +8,11 @@ namespace Tetris
     public class FigureGenerator
     {
         public FigureGenerator( IReadOnlyList<FigureTemplate> templatesArg,
-                                Map mapArg,
-                                [Inject(Id = "sizeBoundsBlock")] Vector3 sizeBoundsBlockArg)
+                                Map mapArg)
         {
             _templates = templatesArg;
             _map = mapArg;
             _sumWeights = 0;
-            _sizeBlock = sizeBoundsBlockArg;
 
             foreach (var template in _templates)
                 _sumWeights += template.WeightGenerate;
@@ -24,13 +22,12 @@ namespace Tetris
         protected IReadOnlyList<FigureTemplate> _templates;
         protected float _sumWeights = 0;
         protected Map _map;
-        protected Vector3 _sizeBlock;
 
 
         public FigureModel NewFigure()
         {
             if (_templates.Count == 1)
-                return new FigureModel(_templates[0], 0, GetSpawnPoint(_templates[0]), _sizeBlock);
+                return new FigureModel(_templates[0], 0, GetSpawnPoint(_templates[0]), _map.SizeBlock);
 
             float rand = Random.Range(0, _sumWeights);
             float prevWeights = 0f;
@@ -39,7 +36,7 @@ namespace Tetris
             {
                 prevWeights += _templates[i].WeightGenerate;
                 if (rand < prevWeights)
-                    return new FigureModel(_templates[i], i, GetSpawnPoint(_templates[i]), _sizeBlock);
+                    return new FigureModel(_templates[i], i, GetSpawnPoint(_templates[i]), _map.SizeBlock);
             }
 
             return null;

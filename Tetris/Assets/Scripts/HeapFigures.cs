@@ -7,15 +7,13 @@ namespace Tetris
 {
     public class HeapFigures
     {
-        public HeapFigures( Map mapArg,
-                            [Inject(Id = "sizeBoundsBlock")] Vector3 sizeBlockArg)
+        public HeapFigures(Map mapArg)
         {
             _map = mapArg;
 
             _minCell = new Vector3Int(int.MaxValue, int.MaxValue, 0);
             _maxCell = new Vector3Int(int.MinValue, int.MinValue, 0);
 
-            _halfSizeBlockXY = (sizeBlockArg / 2).WithZ(0);
             _blocks = new Dictionary<Vector2Int, Bounds>();
         }
 
@@ -31,7 +29,6 @@ namespace Tetris
         protected Map _map;
         protected Vector3Int _minCell;
         protected Vector3Int _maxCell;
-        protected Vector3 _halfSizeBlockXY;
 
 
         public int Add(FigureModel figureArg)
@@ -55,7 +52,7 @@ namespace Tetris
                 _blocks[pos] = block;
             }
 
-            _bounds.SetMinMax(_minCell - _halfSizeBlockXY, _maxCell + _halfSizeBlockXY);
+            _bounds.SetMinMax(_minCell - _map.HalfSizeBlockXY, _maxCell + _map.HalfSizeBlockXY);
 
             return 0;
         }

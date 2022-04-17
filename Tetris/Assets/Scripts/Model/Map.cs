@@ -12,10 +12,13 @@ namespace Tetris
         /// то не париться и сделать единую переменную для размера блока. Если не получиться,
         /// тогда надо думать разделять сущность Map на сущност для View и для Model
         /// </summary>
-        public Map( BoundsInt boundsArg, Vector3 sizeBlockArg)
+        public Map( Difficulty difficultyArg, CalculateParams paramsArg)
         {
-            _bounds = boundsArg;
-            _sizeBlock = sizeBlockArg;
+            Vector2Int sizeMap = difficultyArg.SizeMap;
+
+            _bounds = new BoundsInt();
+            _bounds.SetMinMax(Vector3Int.zero, new Vector3Int(sizeMap.x - 1, sizeMap.y - 1, 0));
+            _sizeBlock = paramsArg.SizeBoundsBlock;
         }
 
 
@@ -33,6 +36,8 @@ namespace Tetris
         public Vector3 CenterBottom => _bounds.center.WithY(BottomCell - _sizeBlock.y / 2);
         public Vector3 CenterLeft => _bounds.center.WithX(_bounds.min.x - _sizeBlock.x / 2);
         public Vector3 CenterRight => _bounds.center.WithX(_bounds.max.x + _sizeBlock.x / 2);
+        public Vector3 SizeBlock => _sizeBlock;
+        public Vector3 HalfSizeBlockXY => (_sizeBlock / 2).WithZ(0);
 
 
         protected BoundsInt _bounds;

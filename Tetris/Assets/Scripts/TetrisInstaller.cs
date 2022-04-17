@@ -9,8 +9,8 @@ namespace Tetris
     {
         [Header("COMMON")]
         [SerializeField] protected List<FigureTemplate> _templatesFigures;
-        [SerializeField] protected Vector2Int _sizeMap;
         [SerializeField] protected CalculateParams _calculateParams;
+        [SerializeField] protected Difficulty _difficulty;
 
         [Header("VIEW")]
         [SerializeField] protected View _view;
@@ -19,18 +19,12 @@ namespace Tetris
         [SerializeField] protected Camera _camera;
         [SerializeField] protected Vector3 _sizeBlock = new Vector3(1f, 1f, 1f);
 
-        [Header("MODEL")]
-        [SerializeField] protected Vector3 _sizeBoundsBlock = new Vector3(1f, 1f, 1f);
-
         [Header("UI")]
         [SerializeField] protected TextMeshProUGUI _lblScores;
         [SerializeField] protected GameUi _gameUi;
         [SerializeField] protected Canvas _menu;
         [SerializeField] protected MeshRenderer _border;
-
-
-        [Header("DIFFICULTY")]
-        [SerializeField] protected Difficulty _difficulty;
+        
 
 
         public override void InstallBindings()
@@ -41,7 +35,7 @@ namespace Tetris
             Container.Bind<IReadOnlyList<FigureTemplate>>().FromInstance(_templatesFigures).AsSingle();
             Container.Bind<Difficulty>().FromInstance(_difficulty).AsSingle();
             Container.Bind<CalculateParams>().FromInstance(_calculateParams).AsSingle();
-            Container.Bind<Map>().FromInstance(GetMap()).AsSingle();
+            Container.Bind<Map>().FromNew().AsSingle();
 
             InstallModel();
             InstallView();
@@ -50,8 +44,6 @@ namespace Tetris
 
         protected void InstallModel()
         {
-            Container.Bind<Vector3>().WithId("sizeBoundsBlock").FromInstance(_sizeBoundsBlock).AsTransient();
-
             Container.Bind<Model>().FromNew().AsSingle();
             Container.Bind<Rotator>().FromNew().AsSingle();
             Container.Bind<HeapFigures>().FromNew().AsSingle();
@@ -89,14 +81,6 @@ namespace Tetris
             movers.Add(Container.Instantiate<MoverThroughtWall>());
 
             return movers;
-        }
-        protected Map GetMap()
-        {
-            BoundsInt bounds = new BoundsInt();
-            bounds.SetMinMax(new Vector3Int(0, 0, 0), 
-                             new Vector3Int(_sizeMap.x, _sizeMap.y, 0));
-
-            return new Map(bounds, _sizeBoundsBlock);
         }
         protected bool IsValidInputData()
         {
@@ -145,25 +129,7 @@ namespace Tetris
                 valid = false;
             }
 
-            if (_difficulty.SpeedFalling < float.Epsilon)
-            {
-                Debug.LogError("Speed falling <= 0", this);
-                valid = false;
-            }
-
-            if (_difficulty.SpeedFallingBoosted < float.Epsilon)
-            {
-                Debug.LogError("Speed falling boost <= 0", this);
-                valid = false;
-            }
-
-            if (_difficulty.TimeMoveToSide < float.Epsilon)
-            {
-                Debug.LogError("Speed move figure to side <= 0", this);
-                valid = false;
-            }
-
-            if (_sizeMap.x < 4 || _sizeMap.y < 10)
+            if (_difficulty.SizeMap.x < 5 || _difficulty.SizeMap.y < 10)
             {
                 Debug.LogError("Map size must be >= 4 in x and >= 10 in y", this);
                 valid = false;
@@ -199,21 +165,43 @@ namespace Tetris
                 valid = false;
             }
 
-            if (_sizeBlock.x < float.Epsilon || _sizeBlock.y < float.Epsilon || _sizeBlock.z < float.Epsilon)
-            {
-                Debug.LogError("Each of the block size axes must be > 0", this);
-                valid = false;
-            }
-
-            if (_sizeBoundsBlock.x < float.Epsilon || _sizeBoundsBlock.y < float.Epsilon || _sizeBoundsBlock.z < float.Epsilon)
-            {
-                Debug.LogError("Each of the block bounds size axes must be > 0", this);
-                valid = false;
-            }
-
             if (_calculateParams == null || _calculateParams.AllowedError < float.Epsilon)
             {
                 Debug.LogError("Not setted AllowedError in Calculated params", this);
+                valid = false;
+            }
+
+            if (_sizeBlock.x < _calculateParams.AllowedError || 
+                _sizeBlock.y < _calculateParams.AllowedError || 
+                _sizeBlock.z < _calculateParams.AllowedError)
+            {
+                Debug.LogError($"Each of the block size axes must be >  {_calculateParams.AllowedError}", this);
+                valid = false;
+            }
+
+            if (_calculateParams.SizeBoundsBlock.x < _calculateParams.AllowedError || 
+                _calculateParams.SizeBoundsBlock.y < _calculateParams.AllowedError || 
+                _calculateParams.SizeBoundsBlock.z < _calculateParams.AllowedError)
+            {
+                Debug.LogError($"Each of the block bounds size axes must be > {_calculateParams.AllowedError}", this);
+                valid = false;
+            }
+
+            if (_difficulty.SpeedFalling < _calculateParams.AllowedError)
+            {
+                Debug.LogError($"Speed falling must be >{_calculateParams.AllowedError}", this);
+                valid = false;
+            }
+
+            if (_difficulty.SpeedFallingBoosted < _calculateParams.AllowedError)
+            {
+                Debug.LogError($"Speed falling boost must be > {_calculateParams.AllowedError}", this);
+                valid = false;
+            }
+
+            if (_difficulty.TimeMoveToSide < _calculateParams.AllowedError)
+            {
+                Debug.LogError($"Speed move figure to side must be > {_calculateParams.AllowedError}", this);
                 valid = false;
             }
 

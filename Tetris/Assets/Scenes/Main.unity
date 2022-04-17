@@ -2162,24 +2162,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _templatesFigures:
   - {fileID: 11400000, guid: 7a2422ff70485a14693357a11d19a71d, type: 2}
-  _sizeMap: {x: 10, y: 15}
   _calculateParams:
     _allowedError: 0.0001
+    _sizeBoundsBlock: {x: 1, y: 1, z: 1}
+  _difficulty:
+    _speedFalling: 1
+    _speedFallingBoost: 15
+    _timeMoveToSide: 0.1
+    _sizeMap: {x: 10, y: 15}
   _view: {fileID: 1461537259}
   _figureView: {fileID: 1571276055973249039, guid: bba421f234571194dbb66b7f4ce88c8f,
     type: 3}
   _block: {fileID: 2693925678498958770, guid: 0c05b10ba9e81ec46809f40bb34b5406, type: 3}
   _camera: {fileID: 1342129008}
   _sizeBlock: {x: 1, y: 1, z: 1}
-  _sizeBoundsBlock: {x: 1, y: 1, z: 1}
   _lblScores: {fileID: 50477359}
   _gameUi: {fileID: 1561081829}
   _menu: {fileID: 756696093}
   _border: {fileID: 5934021131239367978, guid: 8bb9ecb93218c70488ff67e3e17f7d19, type: 3}
-  _difficulty:
-    _speedFalling: 1
-    _speedFallingBoost: 15
-    _timeMoveToSide: 0.1
 --- !u!114 &1288264636
 MonoBehaviour:
   m_ObjectHideFlags: 0
