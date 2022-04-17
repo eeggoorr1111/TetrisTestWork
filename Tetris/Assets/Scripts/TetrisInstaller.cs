@@ -23,7 +23,7 @@ namespace Tetris
 
         [Header("UI")]
         [SerializeField] protected TextMeshProUGUI _lblScores;
-        [SerializeField] protected Canvas _gameUi;
+        [SerializeField] protected GameUi _gameUi;
         [SerializeField] protected Canvas _menu;
         [SerializeField] protected MeshRenderer _border;
 
@@ -73,7 +73,7 @@ namespace Tetris
         protected void InstallUI()
         {
             Container.Bind<TextMeshProUGUI>().WithId("lblScores").FromInstance(_lblScores).AsSingle();
-            Container.Bind<Canvas>().WithId("gameUI").FromInstance(_gameUi).AsTransient();
+            Container.Bind<GameUi>().FromInstance(_gameUi).AsTransient();
             Container.Bind<Canvas>().WithId("menu").FromInstance(_menu).AsTransient();
             Container.Bind<MeshRenderer>().WithId("border").FromInstance(_border).AsTransient();
             

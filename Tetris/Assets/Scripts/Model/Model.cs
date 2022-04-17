@@ -29,6 +29,7 @@ namespace Tetris
         public FigureModel Figure => _figure;
         public HeapFigures HeapFigures => _heapFigures;
         public int Scores => _scores;
+        public Map Map => _map;
 
 
         private int _scores = 0;

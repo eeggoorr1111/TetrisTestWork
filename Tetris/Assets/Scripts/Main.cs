@@ -25,6 +25,10 @@ namespace Tetris
         protected bool _isGame;
 
 
+        protected void Start()
+        {
+            _view.StartCustom();
+        }
         protected void Update()
         {
             if (_isGame)
@@ -48,9 +52,12 @@ namespace Tetris
             Gizmos.color = Color.red;
             if (_model != null)
             {
-                if (!_model.Figure.BoundsBlocks.IsEmpty())
+                if (_model.Figure != null && !_model.Figure.BoundsBlocks.IsEmpty())
                     foreach (var block in _model.Figure.BoundsBlocks)
                         Gizmos.DrawCube(block.center, block.size);
+
+                Gizmos.DrawSphere(_model.Map.MinPoint, 0.1f);
+                Gizmos.DrawSphere(_model.Map.MaxPoint, 0.1f);
 
                 if (_model.HeapFigures != null)
                     Gizmos.DrawCube(_model.HeapFigures.Bounds.center, _model.HeapFigures.Bounds.size);

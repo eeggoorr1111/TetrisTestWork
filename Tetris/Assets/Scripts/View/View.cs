@@ -15,15 +15,15 @@ namespace Tetris
         [Inject]
         protected void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg, 
                                     FigureView.Pool figuresPoolArg,
-                                    Camera cameraArg,
                                     UI uiArg,
+                                    GameUi gameUiArg,
                                     [Inject(Id = "maxIdxGameMod")] int maxIdxGameModArg)
         {
             _figureTemplates = templatesFigureArg;
             _figuresPool = figuresPoolArg;
             _maxIdxGameMods = maxIdxGameModArg;
-            _camera = cameraArg;
             _ui = uiArg;
+            _gameUi = gameUiArg;
         }
 
         public bool IsExistsMonoB => this != null;
@@ -37,11 +37,16 @@ namespace Tetris
         protected FigureView.Pool _figuresPool;
         protected FigureView _curFigure;
         protected int _maxIdxGameMods;
-        protected Camera _camera;
         protected UI _ui;
+        protected GameUi _gameUi;
 
 
 
+        public void StartCustom()
+        {
+            _gameUi.StartCustom();
+            _ui.SetCameraAndBorders();
+        }
         public void NewFigure(int idxTemplateArg, Vector3 posArg)
         {
             _curFigure = _figuresPool.Spawn(posArg, _figureTemplates[idxTemplateArg]);

@@ -2171,7 +2171,7 @@ MonoBehaviour:
   _sizeBlock: {x: 1, y: 1, z: 1}
   _sizeBoundsBlock: {x: 1, y: 1, z: 1}
   _lblScores: {fileID: 50477359}
-  _gameUi: {fileID: 1561081827}
+  _gameUi: {fileID: 1561081829}
   _menu: {fileID: 756696093}
   _border: {fileID: 5934021131239367978, guid: 8bb9ecb93218c70488ff67e3e17f7d19, type: 3}
   _difficulty:
@@ -2278,7 +2278,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 30
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -2370,6 +2370,7 @@ GameObject:
   - component: {fileID: 1561081827}
   - component: {fileID: 1561081826}
   - component: {fileID: 1561081825}
+  - component: {fileID: 1561081829}
   m_Layer: 5
   m_Name: GameUI
   m_TagString: Untagged
@@ -2457,6 +2458,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1561081829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561081824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3333bcffdd8170845b7125118863cc48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _img: {fileID: 479963516}
 --- !u!1 &1695011897
 GameObject:
   m_ObjectHideFlags: 0
