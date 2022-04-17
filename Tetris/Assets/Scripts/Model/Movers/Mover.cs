@@ -10,11 +10,12 @@ namespace Tetris
         protected static readonly Vector3 _fallDirection = Vector3Int.down;
 
 
-        public Mover(HeapFigures heapArg, Difficulty difficultyArg, Map mapArg)
+        public Mover(HeapFigures heapArg, Difficulty difficultyArg, Map mapArg, CalculateParams paramsArg)
         {
             _heapFigures = heapArg;
             _difficulty = difficultyArg;
             _map = mapArg;
+            _params = paramsArg;
         }
 
 
@@ -22,6 +23,7 @@ namespace Tetris
         protected Difficulty _difficulty;
         protected Map _map;
         protected Tween _moveToSide;
+        protected CalculateParams _params;
 
 
         public bool ToFall(bool boostedFallArg, BoundsFigure bounds)
@@ -66,7 +68,7 @@ namespace Tetris
                 if (_heapFigures.GetUpperBlock(posX, figureBlock.center.y, out heapBlock))
                 {
                     float distanceToHeap = figureBlock.min.y - heapBlock.max.y;
-                    if (distanceToHeap < _difficulty.ErrorCalculate)
+                    if (distanceToHeap < _params.AllowedError)
                         return 0f;
 
                     if (distanceToHeap < distance)

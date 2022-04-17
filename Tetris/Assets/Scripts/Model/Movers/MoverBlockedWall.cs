@@ -7,7 +7,7 @@ namespace Tetris
 {
     public class MoverBlockedWall : Mover
     {
-        public MoverBlockedWall(HeapFigures heapArg, Difficulty difficultyArg, Map mapArg) : base(heapArg, difficultyArg, mapArg) { }
+        public MoverBlockedWall(HeapFigures heapArg, Difficulty difficultyArg, Map mapArg, CalculateParams paramsArg) : base(heapArg, difficultyArg, mapArg, paramsArg) { }
 
 
         public override bool MoveToSide(bool toRightArg, BoundsFigure bounds)

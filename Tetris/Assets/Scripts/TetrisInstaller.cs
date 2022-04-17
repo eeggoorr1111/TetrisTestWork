@@ -10,6 +10,7 @@ namespace Tetris
         [Header("COMMON")]
         [SerializeField] protected List<FigureTemplate> _templatesFigures;
         [SerializeField] protected Vector2Int _sizeMap;
+        [SerializeField] protected CalculateParams _calculateParams;
 
         [Header("VIEW")]
         [SerializeField] protected View _view;
@@ -39,6 +40,7 @@ namespace Tetris
 
             Container.Bind<IReadOnlyList<FigureTemplate>>().FromInstance(_templatesFigures).AsSingle();
             Container.Bind<Difficulty>().FromInstance(_difficulty).AsSingle();
+            Container.Bind<CalculateParams>().FromInstance(_calculateParams).AsSingle();
             Container.Bind<Map>().FromInstance(GetMap()).AsSingle();
 
             InstallModel();
@@ -206,6 +208,12 @@ namespace Tetris
             if (_sizeBoundsBlock.x < float.Epsilon || _sizeBoundsBlock.y < float.Epsilon || _sizeBoundsBlock.z < float.Epsilon)
             {
                 Debug.LogError("Each of the block bounds size axes must be > 0", this);
+                valid = false;
+            }
+
+            if (_calculateParams == null || _calculateParams.AllowedError < float.Epsilon)
+            {
+                Debug.LogError("Not setted AllowedError in Calculated params", this);
                 valid = false;
             }
 
