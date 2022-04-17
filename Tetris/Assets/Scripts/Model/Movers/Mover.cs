@@ -29,8 +29,8 @@ namespace Tetris
             if (_moveToSide.IsActive())
                 return true;
 
-            float distance = GetDistanceToNearestObstruction(bounds.Figure, bounds.BlocksBottom);
-            if (distance < float.Epsilon)
+            float distance = GetDistanceToNearestObstruction(bounds);
+            if (Mathf.Approximately(distance, 0f))
                 return false;
 
             float speed = _difficulty.SpeedFalling;
@@ -49,23 +49,26 @@ namespace Tetris
         public abstract bool MoveToSide(bool toRightArg, BoundsFigure bounds);
 
 
-        protected float GetDistanceToNearestObstruction(Bounds boundsFigureArg, IReadOnlyList<Bounds> blocksFigureArg)
+        protected float GetDistanceToNearestObstruction(BoundsFigure boundsArg)
         {
-            float distance = boundsFigureArg.min.y - _map.BottomByY;
+            float distance = boundsArg.Figure.min.y - _map.BottomByY;
+            float distanceToBoundsHeap = boundsArg.Figure.min.y - _heapFigures.Bounds.max.y;
 
-            IReadOnlyDictionary<int, Bounds> blocksTopHeap = _heapFigures.TopBlocks;
-            for (int i = 0; i < blocksFigureArg.Count; i++)
+            if (distanceToBoundsHeap > float.Epsilon)
+                return distanceToBoundsHeap;
+
+            for (int i = 0; i < boundsArg.Blocks.Count; i++)
             {
-                int posX = Mathf.RoundToInt(blocksFigureArg[i].center.x);
-                Bounds blockFigure = blocksFigureArg[i];
-                Bounds blockTopHeap;
+                int posX = Mathf.RoundToInt(boundsArg.Blocks[i].center.x);
+                Bounds figureBlock = boundsArg.Blocks[i];
+                Bounds heapBlock;
 
-                if (blocksTopHeap.TryGetValue(posX, out blockTopHeap))
+                if (_heapFigures.GetUpperBlock(posX, figureBlock.center.y, out heapBlock))
                 {
-                    float distanceToHeap = blockFigure.min.y - blockTopHeap.max.y;
-                    if (distanceToHeap < 0f)
+                    float distanceToHeap = figureBlock.min.y - heapBlock.max.y;
+                    if (distanceToHeap < _difficulty.ErrorCalculate)
                         return 0f;
-                    
+
                     if (distanceToHeap < distance)
                         distance = distanceToHeap;
                 }

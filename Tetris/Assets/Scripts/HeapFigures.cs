@@ -11,26 +11,22 @@ namespace Tetris
                             [Inject(Id = "sizeBoundsBlock")] Vector3 sizeBlockArg)
         {
             _map = mapArg;
-            _topBlocks = new Dictionary<int, Bounds>();
 
             _minCell = new Vector3Int(int.MaxValue, int.MaxValue, 0);
             _maxCell = new Vector3Int(int.MinValue, int.MinValue, 0);
 
             _halfSizeBlockXY = (sizeBlockArg / 2).WithZ(0);
-            _blocks = new List<Bounds>();
+            _blocks = new Dictionary<Vector2Int, Bounds>();
         }
 
 
         public float BottomByY => _map.BottomByY;
         public float TopByY => _bounds.max.y;
-        public IReadOnlyList<Bounds> Blocks => _blocks;
         public Bounds Bounds => _bounds;
-        public IReadOnlyDictionary<int, Bounds> TopBlocks => _topBlocks;
         public int Ranges => 0;
 
 
-        protected Dictionary<int, Bounds> _topBlocks;
-        protected List<Bounds> _blocks;
+        protected Dictionary<Vector2Int, Bounds> _blocks;
         protected Bounds _bounds;
         protected Map _map;
         protected Vector3Int _minCell;
@@ -44,15 +40,7 @@ namespace Tetris
             {
                 int blockX = Mathf.RoundToInt(block.center.x);
                 int blockY = Mathf.RoundToInt(block.center.y);
-                Bounds boundsTop;
-
-                if (_topBlocks.TryGetValue(blockX, out boundsTop))
-                { 
-                    if (block.center.y > boundsTop.center.y)
-                        _topBlocks[blockX] = block;
-                }
-                else
-                    _topBlocks[blockX] = block;
+                Vector2Int pos = new Vector2Int(blockX, blockY);
 
                 if (blockX < _minCell.x)
                     _minCell.x = blockX;
@@ -64,12 +52,41 @@ namespace Tetris
                 else if (blockY > _maxCell.y)
                     _maxCell.y = blockY;
 
-                _blocks.Add(block);
+                _blocks[pos] = block;
             }
 
             _bounds.SetMinMax(_minCell - _halfSizeBlockXY, _maxCell + _halfSizeBlockXY);
 
             return 0;
+        }
+        /// <summary>
+        /// For example, if player build a structure like to symbol "C", we must give the opportunity to put a new figure on the lower arc "C"
+        /// </summary>
+        public bool GetUpperBlock(int byXArg, float bellowYArg, out Bounds upperBlock)
+        {
+            upperBlock = new Bounds();
+            int checkFromY = Mathf.FloorToInt(bellowYArg);
+
+            for (int y = checkFromY; y >= 0; y--)
+            {
+                Vector2Int check = new Vector2Int(byXArg, y);
+                if (_blocks.TryGetValue(check, out upperBlock))
+                    return true;
+            }
+
+            return false;
+        }
+        public bool Intersect(Bounds blockArg)
+        {
+            int x = Mathf.RoundToInt(blockArg.center.x);
+            int topY = Mathf.CeilToInt(blockArg.center.y);
+            int bottomY = Mathf.FloorToInt(blockArg.center.y);
+
+            if (_blocks.ContainsKey(new Vector2Int(x, topY)) ||
+                _blocks.ContainsKey(new Vector2Int(x, bottomY)))
+                return true;
+
+            return false;
         }
     }
 }

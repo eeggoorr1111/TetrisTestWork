@@ -2175,9 +2175,9 @@ MonoBehaviour:
   _menu: {fileID: 756696093}
   _border: {fileID: 5934021131239367978, guid: 8bb9ecb93218c70488ff67e3e17f7d19, type: 3}
   _difficulty:
-    _intervalGenerate: 0
+    _errorCalculate: 0.0001
     _speedFalling: 1
-    _speedFallingBoost: 5
+    _speedFallingBoost: 15
     _timeMoveToSide: 0.1
 --- !u!114 &1288264636
 MonoBehaviour:

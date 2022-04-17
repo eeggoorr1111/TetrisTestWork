@@ -27,10 +27,12 @@ namespace Tetris
 
             if (_heapFigures.Bounds.Intersects(figure))
             {
-                foreach (var heapBlock in _heapFigures.Blocks)
-                    foreach (var figureBlock in bounds.Blocks)
-                        if (heapBlock.Intersects(figureBlock.WithDeltaPos(deltaMoveWithFall)))
-                            return false;
+                foreach (var figureBlock in bounds.Blocks)
+                {
+                    Bounds movedBlock = figureBlock.WithDeltaPos(deltaMoveWithFall);
+                    if (_heapFigures.Intersect(movedBlock))
+                        return false;
+                }
             }
 
             _moveToSide = DOTween.To(() => bounds.Center, (pos) => bounds.MoveTo(pos), figure.center, timeMoveToSide).SetEase(Ease.OutSine);
