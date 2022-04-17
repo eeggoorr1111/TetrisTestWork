@@ -62,7 +62,10 @@ namespace Tetris
 
                 if (blocksTopHeap.TryGetValue(posX, out blockTopHeap))
                 {
-                    float distanceToHeap = Mathf.Abs(blockTopHeap.max.y - blockFigure.min.y);
+                    float distanceToHeap = blockFigure.min.y - blockTopHeap.max.y;
+                    if (distanceToHeap < 0f)
+                        return 0f;
+                    
                     if (distanceToHeap < distance)
                         distance = distanceToHeap;
                 }
