@@ -20,6 +20,21 @@ namespace Tetris
 
             return false;
         }
+        public static bool WithItems<T>(this IReadOnlyCollection<T> collection)
+        {
+            if (collection == null || collection.Count == 0)
+                return false;
+
+            return true;
+        }
+        public static bool Contains<T>(this IReadOnlyCollection<T> collection, T itemArg)
+        {
+            foreach (var item in collection)
+                if (item.Equals(itemArg))
+                    return true;
+
+            return false;
+        }
         public static Bounds WithDeltaPos(this Bounds boundsArg, Vector3 deltaArg)
         {
             return new Bounds(boundsArg.center + deltaArg, boundsArg.size);

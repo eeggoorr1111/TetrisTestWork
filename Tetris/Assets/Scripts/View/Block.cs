@@ -8,7 +8,6 @@ namespace Tetris
     public class Block : MonoBehaviour
     {
         public Transform Transf => _transf;
-        public Vector2Int PosInFigure => _posInFigure;
 
 
         protected Transform _transf;

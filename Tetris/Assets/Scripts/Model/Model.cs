@@ -49,17 +49,15 @@ namespace Tetris
 
             newFigure = _figure;
         }
-        public void ContinueFallFigure(bool boostedFallArg, ref FigureModel newFigure, out bool isGameOver)
+        public void ContinueFallFigure(bool boostedFallArg, ref FigureModel newFigure, ref IReadOnlyList<int> deleteRanges, out bool isGameOver)
         {
             isGameOver = false;
             if (!_figure.ToFall(_mover, boostedFallArg))
             {
-                int oldRangesCount = _heapFigures.Ranges;
-                int newRangesCount = _heapFigures.Add(_figure);
+                deleteRanges = _heapFigures.Add(_figure);
 
-                if (newRangesCount < oldRangesCount)
-                    _scores++;
-                else if (_heapFigures.TopByY > _map.TopByY)
+                _scores += deleteRanges.Count;
+                if (_heapFigures.TopByY > _map.TopByY)
                 {
                     isGameOver = true;
                     GameOver();

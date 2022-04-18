@@ -56,11 +56,10 @@ namespace Tetris
         protected void InstallView()
         {
             int countBlocks = Mathf.RoundToInt(_difficulty.SizeMap.x * _difficulty.SizeMap.y * 0.5f);
-            int countFigures = Mathf.RoundToInt(countBlocks / 6f);
 
             Container.Bind<View>().FromInstance(_view).AsSingle();
             Container.Bind<Camera>().FromInstance(_camera).AsSingle();
-            Container.BindMemoryPool<FigureView, FigureView.Pool>().WithInitialSize(countFigures).FromComponentInNewPrefab(_figureView);
+            Container.Bind<FigureView>().FromNewComponentOnNewPrefab(_figureView).AsSingle();
             Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(countBlocks).FromComponentInNewPrefab(_block);
 
             Container.Bind<Vector3>().WithId("sizeBlock").FromInstance(_sizeBlock).AsTransient();

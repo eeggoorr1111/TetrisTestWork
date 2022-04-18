@@ -13,17 +13,23 @@ namespace Tetris
     public class View : MonoBehaviour
     {
         [Inject]
-        protected void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg, 
-                                    FigureView.Pool figuresPoolArg,
+        protected void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg,
+                                    FigureView figureArg,
+                                    Block.Pool poolBlockArg,
+                                    Map mapArg,
                                     UI uiArg,
                                     GameUi gameUiArg,
                                     [Inject(Id = "maxIdxGameMod")] int maxIdxGameModArg)
         {
             _figureTemplates = templatesFigureArg;
-            _figuresPool = figuresPoolArg;
             _maxIdxGameMods = maxIdxGameModArg;
             _ui = uiArg;
             _gameUi = gameUiArg;
+            _heap = new Dictionary<Vector2Int, Block>();
+            _figure = figureArg;
+            _poolBlocks = poolBlockArg;
+            _map = mapArg;
+            _lastRange = 0;
         }
 
         public bool IsExistsMonoB => this != null;
@@ -35,23 +41,32 @@ namespace Tetris
         protected event Action _onGoToMenu;
         protected event Action<int> _onStartGame;
         protected IReadOnlyList<FigureTemplate> _figureTemplates;
-        protected FigureView.Pool _figuresPool;
-        protected FigureView _curFigure;
+        protected Dictionary<Vector2Int, Block> _heap;
+        protected FigureView _figure;
         protected int _maxIdxGameMods;
         protected UI _ui;
         protected GameUi _gameUi;
+        protected Block.Pool _poolBlocks;
+        protected int _lastRange;
+        protected Map _map;
+        protected Transform _transf;
 
 
 
         public void StartCustom()
         {
+            _figure.StartCustom();
             _gameUi.StartCustom();
             _ui.SetCameraAndBorders();
+
+            _transf = GetComponent<Transform>();
         }
         public void NewFigure(int idxTemplateArg, Vector3 posArg)
         {
-            _curFigure = _figuresPool.Spawn(posArg, _figureTemplates[idxTemplateArg]);
-            _curFigure.SubscribeOnRemovedAllBlocks(RemovedAllBlocks);
+            if (_figure.Blocks.WithItems())
+                AddToHeap(_figure.Blocks);
+
+            _figure.NewFigrue(posArg, _figureTemplates[idxTemplateArg]);
         }
         public void Exit()
         {
@@ -105,12 +120,65 @@ namespace Tetris
         public void NextFrame(int scoresArg, Vector3 newPosFigureArg)
         {
             _ui.SetScores(scoresArg);
-            _curFigure.Transf.position = newPosFigureArg;
+            _figure.Transf.position = newPosFigureArg;
 
             InputCheck();
         }
+        public void Delete(IReadOnlyList<int> rangesArg)
+        {
+            int putDown = 0;
+            for (int y = rangesArg[0]; y <= _lastRange; y++)
+            {
+                bool remove = rangesArg.Contains(y);
+                if (remove)
+                    putDown++;
+
+                for (int x = 0; x < _map.SizeMap.x; x++)
+                {
+                    Vector2Int cell = new Vector2Int(x, y);
+
+                    if (_heap.ContainsKey(cell))
+                    {
+                        if (remove)
+                        {
+                            _poolBlocks.Despawn(_heap[cell]);
+                            _heap.Remove(cell);
+                        }
+                        else
+                            PutDownBlock(cell, putDown);
+                    }
+                }
+            }
+
+            _lastRange -= rangesArg.Count;
+        }
 
 
+        protected void PutDownBlock(Vector2Int cellArg, int putDownArg)
+        {
+            Vector2Int newCell = new Vector2Int(cellArg.x, cellArg.y - putDownArg);
+            Block block = _heap[cellArg];
+
+            block.Transf.position = new Vector3(newCell.x, newCell.y, block.Transf.position.z);
+            
+            _heap.Remove(cellArg);
+            _heap[newCell] = block;
+        }
+        protected void AddToHeap(IReadOnlyList<Block> blocksArg)
+        {
+            foreach (var block in blocksArg)
+            {
+                int blockX = Mathf.RoundToInt(block.Transf.position.x);
+                int blockY = Mathf.RoundToInt(block.Transf.position.y);
+                Vector2Int pos = new Vector2Int(blockX, blockY);
+
+                if (blockY > _lastRange)
+                    _lastRange = blockY;
+
+                _heap[pos] = block;
+                block.Transf.SetParent(_transf);
+            }
+        }
         protected void InputCheck()
         {
             if (_onRotate == null || _onMove == null || _onBoostFall == null)
@@ -135,26 +203,12 @@ namespace Tetris
             if (Input.GetKeyUp(KeyCode.S))
                 _onBoostFall.Invoke(false);
         }
-        protected void OnEnable()
-        {
-            if (_curFigure != null)
-                _curFigure.SubscribeOnRemovedAllBlocks(RemovedAllBlocks);
-        }
-        protected void OnDisable()
-        {
-            if (_curFigure != null)
-                _curFigure.UnsubscribeOnRemovedAllBlocks(RemovedAllBlocks);
-        }
         protected void OnDestroy()
         {
             _onRotate = null;
             _onMove = null;
             _onGoToMenu = null;
             _onStartGame = null;
-        }
-        protected void RemovedAllBlocks(FigureView ofFigureArg)
-        {
-            _figuresPool.Despawn(ofFigureArg);
         }
     }
 }

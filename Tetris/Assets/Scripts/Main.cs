@@ -15,28 +15,41 @@ namespace Tetris
         {
             _model = modelArg;
             _view = viewArg;
-            _isGame = false;
+            _gameStatus = GameStatusKey.Menu;
         }
 
 
         protected Model _model;
         protected View _view;
         protected Vector3 _posFigure;
-        protected bool _isGame;
+        protected GameStatusKey _gameStatus;
         protected bool _isBoostingFall;
 
+
+        protected void OnApplicationFocus(bool focusArg)
+        {
+            if (!focusArg && _gameStatus == GameStatusKey.Game)
+            {
+                _isBoostingFall = false;
+                _gameStatus = GameStatusKey.Pause;
+            }
+            else if (focusArg && _gameStatus == GameStatusKey.Pause)
+                _gameStatus = GameStatusKey.Game;
+        }
         protected void Start()
         {
             _view.StartCustom();
         }
         protected void Update()
         {
-            if (_isGame)
+            if (_gameStatus == GameStatusKey.Game)
             {
                 FigureModel newFigure = null;
+                IReadOnlyList<int> ranges = null;
                 bool isGameOver;
 
-                _model.ContinueFallFigure(_isBoostingFall, ref newFigure, out isGameOver);
+                _model.ContinueFallFigure(_isBoostingFall, ref newFigure, ref ranges, out isGameOver);
+                
                 if (isGameOver)
                     GameOver();
                 else
@@ -45,6 +58,9 @@ namespace Tetris
                         _view.NewFigure(newFigure.IdxTemplate, newFigure.Pivot);
                     _view.NextFrame(_model.Scores, _model.Figure.Pivot);
                 }
+
+                if (ranges.WithItems())
+                    _view.Delete(ranges);
             }
         }
         protected void OnDrawGizmos()
@@ -83,14 +99,14 @@ namespace Tetris
         }
         protected void GameOver()
         {
-            _isGame = false;
+            _gameStatus = GameStatusKey.Menu;
         }
         protected void StartGame(int indexGameModeArg)
         {
             FigureModel figure = null;
 
             _isBoostingFall = false;
-            _isGame = true;
+            _gameStatus = GameStatusKey.Game;
             _model.StartGame(indexGameModeArg, ref figure);
             _view.NewFigure(figure.IdxTemplate, figure.Pivot);
         }
