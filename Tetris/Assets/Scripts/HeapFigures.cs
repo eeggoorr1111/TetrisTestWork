@@ -128,6 +128,12 @@ namespace Tetris
             _minCell = new Vector3Int(int.MaxValue, int.MaxValue, 0);
             _maxCell = new Vector3Int(int.MinValue, int.MinValue, 0);
 
+            if (_blocks.IsEmpty())
+            {
+                _bounds = new Bounds();
+                return;
+            }
+
             foreach (var pair in _blocks)
             {
                 int blockX = pair.Key.x;
