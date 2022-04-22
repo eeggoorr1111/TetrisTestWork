@@ -15,7 +15,7 @@ namespace Tetris
         public Model(   Rotator rotatorArg, 
                         IReadOnlyList<Mover> moversArg, 
                         HeapFigures heapFiguresArg, 
-                        Map mapArg,
+                        MapData mapArg,
                         FigureGenerator generatorArg)
         {
             _movers = moversArg;
@@ -29,7 +29,7 @@ namespace Tetris
         public FigureModel Figure => _figure;
         public HeapFigures HeapFigures => _heapFigures;
         public int Scores => _scores;
-        public Map Map => _map;
+        public MapData Map => _map;
 
 
         private int _scores = 0;
@@ -39,7 +39,7 @@ namespace Tetris
         private FigureModel _figure;
         private HeapFigures _heapFigures;
         private FigureGenerator _generator;
-        private Map _map;
+        private MapData _map;
 
         
         public void StartGame(int indexMoverArg, ref FigureModel newFigure)
@@ -71,7 +71,11 @@ namespace Tetris
         }
         public void MoveFigure(bool toRightArg)
         {
-            _figure.MoveToSide(_mover, toRightArg);
+            _figure.ToMoveToSide(_mover, toRightArg);
+        }
+        public void Rotate()
+        {
+            _figure.ToRotate();
         }
 
 

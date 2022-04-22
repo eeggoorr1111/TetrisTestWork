@@ -16,7 +16,7 @@ namespace Tetris
         protected void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg,
                                     FigureView figureArg,
                                     Block.Pool poolBlockArg,
-                                    Map mapArg,
+                                    MapData mapArg,
                                     UI uiArg,
                                     GameUi gameUiArg,
                                     [Inject(Id = "maxIdxGameMod")] int maxIdxGameModArg)
@@ -48,7 +48,7 @@ namespace Tetris
         protected GameUi _gameUi;
         protected Block.Pool _poolBlocks;
         protected int _lastRange;
-        protected Map _map;
+        protected MapData _map;
         protected Transform _transf;
 
 

@@ -7,7 +7,7 @@ namespace Tetris
 {
     public class HeapFigures
     {
-        public HeapFigures(Map mapArg)
+        public HeapFigures(MapData mapArg)
         {
             _map = mapArg;
 
@@ -29,7 +29,7 @@ namespace Tetris
 
         protected Dictionary<Vector2Int, Bounds> _blocks;
         protected Bounds _bounds;
-        protected Map _map;
+        protected MapData _map;
         protected Vector3Int _minCell;
         protected Vector3Int _maxCell;
         protected Dictionary<int, int> _blocksInRange;

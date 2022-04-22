@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public class Map
+    public class MapData
     {
         /// <summary>
         /// Если тут задать в качесвте sizeBlock уменьшенные блоки, то границы UI будут криво отображаться. 
@@ -12,7 +12,7 @@ namespace Tetris
         /// то не париться и сделать единую переменную для размера блока. Если не получиться,
         /// тогда надо думать разделять сущность Map на сущност для View и для Model
         /// </summary>
-        public Map( Difficulty difficultyArg, CalculateParams paramsArg)
+        public MapData( Difficulty difficultyArg, CalculateParams paramsArg)
         {
             _sizeMap = difficultyArg.SizeMap;
             _bounds = new BoundsInt();

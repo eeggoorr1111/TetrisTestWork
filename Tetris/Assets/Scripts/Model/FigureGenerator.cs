@@ -8,11 +8,13 @@ namespace Tetris
     public class FigureGenerator
     {
         public FigureGenerator( IReadOnlyList<FigureTemplate> templatesArg,
-                                Map mapArg)
+                                MapData mapArg,
+                                Rotator rotatorArg)
         {
             _templates = templatesArg;
             _map = mapArg;
             _sumWeights = 0;
+            _rotator = rotatorArg;
 
             foreach (var template in _templates)
                 _sumWeights += template.WeightGenerate;
@@ -21,13 +23,14 @@ namespace Tetris
 
         protected IReadOnlyList<FigureTemplate> _templates;
         protected float _sumWeights = 0;
-        protected Map _map;
+        protected MapData _map;
+        protected Rotator _rotator;
 
 
         public FigureModel NewFigure()
         {
             if (_templates.Count == 1)
-                return new FigureModel(_templates[0], 0, GetSpawnPoint(_templates[0]), _map.SizeBlock);
+                return CreateFigure(0);
 
             float rand = Random.Range(0, _sumWeights);
             float prevWeights = 0f;
@@ -36,7 +39,7 @@ namespace Tetris
             {
                 prevWeights += _templates[i].WeightGenerate;
                 if (rand < prevWeights)
-                    return new FigureModel(_templates[i], i, GetSpawnPoint(_templates[i]), _map.SizeBlock);
+                    return CreateFigure(i);
             }
 
             return null;
@@ -65,6 +68,95 @@ namespace Tetris
                                        _map.MaxCell.x - fromZeroBlockToRight + 1);
 
             return new Vector2Int(cellX, _map.TopCell + Mathf.Abs(fromZeroBlockToBottom) + 1);
+        }
+        protected FigureModel CreateFigure(int idxTemplateArg)
+        {
+            FigureTemplate template = _templates[idxTemplateArg];
+            Vector2Int cellSpawn = GetSpawnPoint(template);
+            Vector3 pointSpawn = new Vector3(cellSpawn.x, cellSpawn.y, 0);
+            Bounds boundsFigure = GetBounds(template, _map.SizeBlock).WithDeltaPos(pointSpawn);
+            Vector3 deltaPivot = pointSpawn - boundsFigure.center;
+            Bounds[] blocks = GetBlocks(template.Blocks, _map.SizeBlock, boundsFigure.center + deltaPivot);
+            int[] idxsBottom = GetBottomIdxs(blocks, boundsFigure);
+            ColliderFigure collider = new ColliderFigure(boundsFigure, blocks, idxsBottom);
+
+            return new FigureModel(_rotator, idxTemplateArg, collider, deltaPivot);
+        }
+        protected Bounds GetBounds(FigureTemplate templateArg, Vector3 sizeBlockArg)
+        {
+            Vector3 min, max;
+            Bounds bounds = new Bounds();
+
+            GetMinMax(templateArg, sizeBlockArg, out min, out max);
+            bounds.SetMinMax(min, max);
+
+            return bounds;
+        }
+        protected void GetMinMax(FigureTemplate templateArg, Vector3 sizeBlockArg, out Vector3 min, out Vector3 max)
+        {
+            Vector2Int minInt = new Vector2Int(int.MaxValue, int.MaxValue);
+            Vector2Int maxInt = new Vector2Int(int.MinValue, int.MinValue);
+            Vector3 halfSizeBlock = sizeBlockArg / 2;
+
+            foreach (var block in templateArg.Blocks)
+            {
+                if (block.x < minInt.x)
+                    minInt.x = block.x;
+
+                if (block.y < minInt.y)
+                    minInt.y = block.y;
+
+                if (block.x > maxInt.x)
+                    maxInt.x = block.x;
+
+                if (block.y > maxInt.y)
+                    maxInt.y = block.y;
+            }
+
+            min = new Vector3(minInt.x - halfSizeBlock.x, minInt.y - halfSizeBlock.y, -halfSizeBlock.z);
+            max = new Vector3(maxInt.x + halfSizeBlock.x, maxInt.y + halfSizeBlock.y, halfSizeBlock.z);
+        }
+        protected Bounds[] GetBlocks(IReadOnlyList<Vector2Int> blocksArg, Vector3 sizeBlockArg, Vector3 pivotArg)
+        {
+            Bounds[] boundsBlocks = new Bounds[blocksArg.Count];
+            for (int i = 0; i < blocksArg.Count; i++)
+            {
+                Vector2Int block = blocksArg[i];
+                Vector3 pos = new Vector3(block.x, block.y, 0);
+                Bounds boundsBlock = new Bounds(pos + pivotArg, sizeBlockArg);
+
+                boundsBlocks[i] = boundsBlock;
+            }
+
+            return boundsBlocks;
+        }
+        protected int[] GetBottomIdxs(IReadOnlyList<Bounds> blocksArg, Bounds boundsArg)
+        {
+            Dictionary<int, int> idxsBlocks = new Dictionary<int, int>();
+
+            for (int i = 0; i < blocksArg.Count; i++)
+            {
+                int xPos = Mathf.RoundToInt(blocksArg[i].center.x);
+                if (idxsBlocks.ContainsKey(xPos))
+                {
+                    int idxLowerBlock = idxsBlocks[xPos];
+                    if (blocksArg[i].center.y < blocksArg[idxLowerBlock].center.y)
+                        idxsBlocks[xPos] = i;
+                }
+                else
+                    idxsBlocks[xPos] = i;
+            }
+
+            int index = 0;
+
+            int[] bottomBlocksIdx = new int[idxsBlocks.Count];
+            foreach (var pair in idxsBlocks)
+            {
+                bottomBlocksIdx[index] = pair.Value;
+                index++;
+            }
+
+            return bottomBlocksIdx;
         }
     }
 }

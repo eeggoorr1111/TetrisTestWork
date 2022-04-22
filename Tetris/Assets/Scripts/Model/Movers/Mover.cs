@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System;
 
 namespace Tetris
 {
@@ -10,7 +11,7 @@ namespace Tetris
         protected static readonly Vector3 _fallDirection = Vector3Int.down;
 
 
-        public Mover(HeapFigures heapArg, Difficulty difficultyArg, Map mapArg, CalculateParams paramsArg)
+        public Mover(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg)
         {
             _heapFigures = heapArg;
             _difficulty = difficultyArg;
@@ -21,17 +22,17 @@ namespace Tetris
 
         protected HeapFigures _heapFigures;
         protected Difficulty _difficulty;
-        protected Map _map;
+        protected MapData _map;
         protected Tween _moveToSide;
         protected CalculateParams _params;
 
 
-        public bool ToFall(bool boostedFallArg, BoundsFigure bounds)
+        public bool ToFall(bool boostedFallArg, ColliderFigure colliderArg)
         {
             if (_moveToSide.IsActive())
                 return true;
 
-            float distance = GetDistanceToNearestObstruction(bounds);
+            float distance = GetDistanceToNearestObstruction(colliderArg);
             if (Mathf.Approximately(distance, 0f))
                 return false;
 
@@ -43,26 +44,26 @@ namespace Tetris
             if (Mathf.Abs(delta.y) > distance)
                 delta.y = -distance;
 
-            bounds.Move(delta);
+            colliderArg.ToMove(delta);
 
             return true;
 
         }
-        public abstract bool MoveToSide(bool toRightArg, BoundsFigure bounds);
+        public abstract bool MoveToSide(bool toRightArg, ColliderFigure colliderArg);
 
 
-        protected float GetDistanceToNearestObstruction(BoundsFigure boundsArg)
+        protected float GetDistanceToNearestObstruction(ColliderFigure colliderArg)
         {
-            float distance = boundsArg.Figure.min.y - _map.BottomByY;
-            float distanceToBoundsHeap = boundsArg.Figure.min.y - _heapFigures.Bounds.max.y;
+            float distance = colliderArg.Bounds.min.y - _map.BottomByY;
+            float distanceToBoundsHeap = colliderArg.Bounds.min.y - _heapFigures.Bounds.max.y;
 
             if (distanceToBoundsHeap > float.Epsilon)
                 return distanceToBoundsHeap;
 
-            for (int i = 0; i < boundsArg.Blocks.Count; i++)
+            for (int i = 0; i < colliderArg.Blocks.Count; i++)
             {
-                int posX = Mathf.RoundToInt(boundsArg.Blocks[i].center.x);
-                Bounds figureBlock = boundsArg.Blocks[i];
+                int posX = Mathf.RoundToInt(colliderArg.Blocks[i].center.x);
+                Bounds figureBlock = colliderArg.Blocks[i];
                 Bounds heapBlock;
 
                 if (_heapFigures.GetUpperBlock(posX, figureBlock.center.y, out heapBlock))

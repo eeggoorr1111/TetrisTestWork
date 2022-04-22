@@ -12,7 +12,7 @@ namespace Tetris
                     [Inject(Id = "menu")] Canvas menuArg,
                     [Inject(Id = "border")] MeshRenderer borderArg,
                     GameUi gameUiArg,
-                    Map mapArg,
+                    MapData mapArg,
                     Camera cameraArg)
         {
             _lblScores = lblScoresArg;
@@ -27,7 +27,7 @@ namespace Tetris
         protected TextMeshProUGUI _lblScores;
         protected GameUi _gameUi;
         protected Canvas _menu;
-        protected Map _map;
+        protected MapData _map;
         protected Camera _camera;
         protected MeshRenderer _borderSample;
         protected MeshRenderer _leftBorder;

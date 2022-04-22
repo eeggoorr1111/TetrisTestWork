@@ -35,7 +35,7 @@ namespace Tetris
             Container.Bind<IReadOnlyList<FigureTemplate>>().FromInstance(_templatesFigures).AsSingle();
             Container.Bind<Difficulty>().FromInstance(_difficulty).AsSingle();
             Container.Bind<CalculateParams>().FromInstance(_calculateParams).AsSingle();
-            Container.Bind<Map>().FromNew().AsSingle();
+            Container.Bind<MapData>().FromNew().AsSingle();
 
             InstallModel();
             InstallView();
