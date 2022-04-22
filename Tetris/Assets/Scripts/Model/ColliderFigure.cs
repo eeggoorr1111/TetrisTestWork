@@ -27,6 +27,9 @@ namespace Tetris
         public Vector3 Pivot => _blocks[_idxPivotBlock].center;
         public Quaternion Rotate { get; private set; }
         public IReadOnlyList<Bounds> Blocks => _blocks;
+        public int RightCell => Mathf.RoundToInt(Bounds.center.x + (Bounds.size.x - 1) / 2);
+        public int LeftCell => Mathf.RoundToInt(Bounds.center.x - (Bounds.size.x - 1) / 2);
+
 
 
         private readonly Bounds[] _blocks;

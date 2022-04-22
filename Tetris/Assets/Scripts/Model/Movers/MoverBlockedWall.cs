@@ -14,10 +14,11 @@ namespace Tetris
         {
             if (_moveToSide.IsActive())
                 return false;
-            else if (toRightArg && collider.Bounds.max.x + 1 > _map.CenterRight.x + float.Epsilon)
-                return false;
-            else if (!toRightArg && collider.Bounds.min.x - 1 < _map.CenterLeft.x - float.Epsilon)
-                return false;
+            else if (toRightArg && collider.RightCell + 1 > _map.MaxCell.x)
+                    return false;
+            else if (!toRightArg && collider.LeftCell - 1 < _map.MinCell.x)
+                    return false;
+            
 
             float timeMoveToSide = _difficulty.TimeMoveToSide;
             Vector3 deltaMove = toRightArg ? Vector3.right : Vector3.left;
