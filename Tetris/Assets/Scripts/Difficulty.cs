@@ -8,6 +8,7 @@ namespace Tetris
         public float SpeedFalling => _speedFalling;
         public float SpeedFallingBoosted => _speedFallingBoost;
         public float TimeMoveToSide => _timeMoveToSide;
+        public float TimeRotate => _timeRotate;
         public Vector2Int SizeMap => _sizeMap;
         
 
@@ -15,6 +16,7 @@ namespace Tetris
         [SerializeField] protected float _speedFalling;
         [SerializeField] protected float _speedFallingBoost;
         [SerializeField] protected float _timeMoveToSide;
+        [SerializeField] protected float _timeRotate;
         [SerializeField] protected Vector2Int _sizeMap;
         
     }

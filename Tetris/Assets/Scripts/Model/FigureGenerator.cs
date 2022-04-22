@@ -74,47 +74,22 @@ namespace Tetris
             FigureTemplate template = _templates[idxTemplateArg];
             Vector2Int cellSpawn = GetSpawnPoint(template);
             Vector3 pointSpawn = new Vector3(cellSpawn.x, cellSpawn.y, 0);
-            Bounds boundsFigure = GetBounds(template, _map.SizeBlock).WithDeltaPos(pointSpawn);
+            Bounds boundsFigure = Helpers.GetBounds(template.Blocks, _map.SizeBlock).WithDeltaPos(pointSpawn);
             Vector3 deltaPivot = pointSpawn - boundsFigure.center;
             Bounds[] blocks = GetBlocks(template.Blocks, _map.SizeBlock, boundsFigure.center + deltaPivot);
             int[] idxsBottom = GetBottomIdxs(blocks, boundsFigure);
-            ColliderFigure collider = new ColliderFigure(boundsFigure, blocks, idxsBottom);
+            int idxPivot = GetIdxPivotBlock(template.Blocks);
+            ColliderFigure collider = new ColliderFigure(boundsFigure, blocks, template.GetNewArrayBlocks(), idxsBottom, idxPivot);
 
-            return new FigureModel(_rotator, idxTemplateArg, collider, deltaPivot);
+            return new FigureModel(_rotator, idxTemplateArg, collider);
         }
-        protected Bounds GetBounds(FigureTemplate templateArg, Vector3 sizeBlockArg)
+        protected int GetIdxPivotBlock(IReadOnlyList<Vector2Int> blocksArg)
         {
-            Vector3 min, max;
-            Bounds bounds = new Bounds();
+            for (int i = 0; i < blocksArg.Count; i++)
+                if (blocksArg[i].x == 0 && blocksArg[i].y == 0)
+                    return i;
 
-            GetMinMax(templateArg, sizeBlockArg, out min, out max);
-            bounds.SetMinMax(min, max);
-
-            return bounds;
-        }
-        protected void GetMinMax(FigureTemplate templateArg, Vector3 sizeBlockArg, out Vector3 min, out Vector3 max)
-        {
-            Vector2Int minInt = new Vector2Int(int.MaxValue, int.MaxValue);
-            Vector2Int maxInt = new Vector2Int(int.MinValue, int.MinValue);
-            Vector3 halfSizeBlock = sizeBlockArg / 2;
-
-            foreach (var block in templateArg.Blocks)
-            {
-                if (block.x < minInt.x)
-                    minInt.x = block.x;
-
-                if (block.y < minInt.y)
-                    minInt.y = block.y;
-
-                if (block.x > maxInt.x)
-                    maxInt.x = block.x;
-
-                if (block.y > maxInt.y)
-                    maxInt.y = block.y;
-            }
-
-            min = new Vector3(minInt.x - halfSizeBlock.x, minInt.y - halfSizeBlock.y, -halfSizeBlock.z);
-            max = new Vector3(maxInt.x + halfSizeBlock.x, maxInt.y + halfSizeBlock.y, halfSizeBlock.z);
+            return 0;
         }
         protected Bounds[] GetBlocks(IReadOnlyList<Vector2Int> blocksArg, Vector3 sizeBlockArg, Vector3 pivotArg)
         {

@@ -40,7 +40,7 @@ namespace Tetris
         public IReadOnlyList<int> Add(FigureModel figureArg)
         {
             _deleteRanges.Clear();
-            foreach (var block in figureArg.BoundsBlocks)
+            foreach (var block in figureArg.Blocks)
             {
                 int blockX = Mathf.RoundToInt(block.center.x);
                 int blockY = Mathf.RoundToInt(block.center.y);

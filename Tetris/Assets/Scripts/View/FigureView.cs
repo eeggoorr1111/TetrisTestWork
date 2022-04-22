@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using System;
+using DG.Tweening;
 
 namespace Tetris
 {
@@ -24,7 +25,7 @@ namespace Tetris
         protected Block.Pool _poolBlocks;
         protected List<Block> _blocks;
 
-        
+
         public void StartCustom()
         {
             _transf = GetComponent<Transform>();
@@ -41,6 +42,7 @@ namespace Tetris
 
                 block.Transf.SetParent(_transf);
                 block.Transf.localPosition = new Vector3Int(blockPos.x, blockPos.y, 0);
+                block.Transf.rotation = Quaternion.Euler(0f, 0f, 0f);
 
                 _blocks.Add(block);
             }

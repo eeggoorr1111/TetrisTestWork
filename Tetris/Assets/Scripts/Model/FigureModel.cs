@@ -9,27 +9,21 @@ namespace Tetris
     {
         public FigureModel( Rotator rotatorArg, 
                             int idxTemplateArg, 
-                            ColliderFigure colliderArg,
-                            Vector3 deltaPivotArg)
+                            ColliderFigure colliderArg)
         {
+            IdxTemplate = idxTemplateArg;
+
             _rotator = rotatorArg;
-            _idxTemplate = idxTemplateArg;
             _collider = colliderArg;
-            _deltaPivot = deltaPivotArg;
         }
 
-
-        public Vector3 Pivot => _collider.Bounds.center + _deltaPivot;
-        public IReadOnlyList<Bounds> BoundsBlocks => _collider.Blocks;
-        public int IdxTemplate => _idxTemplate;
-        public Bounds Bounds => _collider.Bounds;
+        public int IdxTemplate { get; }
+        public Vector3 Pivot => _collider.Pivot;
         public IReadOnlyList<Bounds> Blocks => _collider.Blocks;
+        public Bounds Bounds => _collider.Bounds;
         public Quaternion Rotate => _collider.Rotate;
 
 
-        
-        private readonly int _idxTemplate;
-        private readonly Vector3 _deltaPivot;
         private readonly Rotator _rotator;
         private readonly ColliderFigure _collider;
 

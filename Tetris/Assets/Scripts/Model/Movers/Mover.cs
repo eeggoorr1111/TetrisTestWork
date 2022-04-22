@@ -29,12 +29,16 @@ namespace Tetris
 
         public bool ToFall(bool boostedFallArg, ColliderFigure colliderArg)
         {
+            bool isMove = true;
             if (_moveToSide.IsActive())
-                return true;
+                return isMove;
 
             float distance = GetDistanceToNearestObstruction(colliderArg);
             if (Mathf.Approximately(distance, 0f))
-                return false;
+            {
+                isMove = false;
+                return isMove;
+            }
 
             float speed = _difficulty.SpeedFalling;
             if (boostedFallArg)
@@ -46,8 +50,7 @@ namespace Tetris
 
             colliderArg.ToMove(delta);
 
-            return true;
-
+            return isMove;
         }
         public abstract bool MoveToSide(bool toRightArg, ColliderFigure colliderArg);
 

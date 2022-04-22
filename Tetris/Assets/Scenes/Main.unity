@@ -2307,6 +2307,7 @@ MonoBehaviour:
     _speedFalling: 1
     _speedFallingBoost: 15
     _timeMoveToSide: 0.1
+    _timeRotate: 0.1
     _sizeMap: {x: 10, y: 15}
   _view: {fileID: 1461537259}
   _figureView: {fileID: 1571276055973249039, guid: bba421f234571194dbb66b7f4ce88c8f,

@@ -13,6 +13,12 @@ namespace Tetris
 
         [SerializeField] protected List<Vector2Int> _blocks;
         [SerializeField] protected float _weightGenerate;
+
+
+        public Vector2Int[] GetNewArrayBlocks()
+        {
+            return _blocks.ToArray();
+        }
     }
 }
 

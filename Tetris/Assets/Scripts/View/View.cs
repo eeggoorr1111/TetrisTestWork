@@ -35,7 +35,7 @@ namespace Tetris
         public bool IsExistsMonoB => this != null;
 
 
-        protected event Action<bool> _onRotate;
+        protected event Action _onRotate;
         protected event Action<bool> _onMove;
         protected event Action<bool> _onBoostFall;
         protected event Action _onGoToMenu;
@@ -85,7 +85,7 @@ namespace Tetris
             if (_onStartGame != null)
                 _onStartGame.Invoke(idxMode);
         }
-        public void Subscribe(Action<bool> onRotateArg, Action<bool> onMoveArg, Action<bool> onBoostFallArg, Action onGoToMenuArg, Action<int> onStartGameArg)
+        public void Subscribe(Action onRotateArg, Action<bool> onMoveArg, Action<bool> onBoostFallArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {
             _onRotate -= onRotateArg;
             _onRotate += onRotateArg;
@@ -102,9 +102,9 @@ namespace Tetris
             _onStartGame -= onStartGameArg;
             _onStartGame += onStartGameArg;
         }
-        public void Unsubscribe(Action<bool> onUserActionArg, Action<bool> onMoveArg, Action<bool> onBoostFallArg, Action onGoToMenuArg, Action<int> onStartGameArg)
+        public void Unsubscribe(Action onRotateArg, Action<bool> onMoveArg, Action<bool> onBoostFallArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {
-            _onRotate -= onUserActionArg;
+            _onRotate -= onRotateArg;
             _onMove -= onMoveArg;
             _onBoostFall -= onBoostFallArg;
             _onGoToMenu -= onGoToMenuArg;
@@ -117,10 +117,11 @@ namespace Tetris
             if (_onGoToMenu != null)
                 _onGoToMenu.Invoke();
         }
-        public void NextFrame(int scoresArg, Vector3 newPosFigureArg)
+        public void NextFrame(int scoresArg, Vector3 newPosFigureArg, Quaternion rotateArg)
         {
             _ui.SetScores(scoresArg);
             _figure.Transf.position = newPosFigureArg;
+            _figure.Transf.rotation = rotateArg;
 
             InputCheck();
         }
@@ -190,11 +191,8 @@ namespace Tetris
             else if (Input.GetKeyDown(KeyCode.A))
                 _onMove.Invoke(false);
 
-            else if (Input.GetKeyDown(KeyCode.Q))
-                _onRotate.Invoke(false);
-
-            else if (Input.GetKeyDown(KeyCode.E))
-                _onRotate.Invoke(true);
+            else if (Input.GetKeyDown(KeyCode.W))
+                _onRotate.Invoke();
 
             else if (Input.GetKeyDown(KeyCode.S))
                 _onBoostFall.Invoke(true);

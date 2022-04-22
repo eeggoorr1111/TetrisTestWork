@@ -56,7 +56,7 @@ namespace Tetris
                 {
                     if (newFigure != null)
                         _view.NewFigure(newFigure.IdxTemplate, newFigure.Pivot);
-                    _view.NextFrame(_model.Scores, _model.Figure.Pivot);
+                    _view.NextFrame(_model.Scores, _model.Figure.Pivot, _model.Figure.Rotate);
                 }
 
                 if (ranges.WithItems())
@@ -68,9 +68,13 @@ namespace Tetris
             Gizmos.color = Color.red;
             if (_model != null)
             {
-                if (_model.Figure != null && !_model.Figure.BoundsBlocks.IsEmpty())
-                    foreach (var block in _model.Figure.BoundsBlocks)
+                if (_model.Figure != null && !_model.Figure.Blocks.IsEmpty())
+                {
+                    Gizmos.DrawCube(_model.Figure.Bounds.center, _model.Figure.Bounds.size);
+                    foreach (var block in _model.Figure.Blocks)
                         Gizmos.DrawCube(block.center, block.size);
+                }
+                    
 
                 Gizmos.DrawSphere(_model.Map.MinPoint, 0.1f);
                 Gizmos.DrawSphere(_model.Map.MaxPoint, 0.1f);
@@ -81,21 +85,16 @@ namespace Tetris
         }
         protected void OnEnable()
         {
-            _view.Subscribe(OnRotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
+            _view.Subscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
         }
         protected void OnDisable()
         {
             if (_view != null && _view.IsExistsMonoB)
-                _view.Unsubscribe(OnRotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
+                _view.Unsubscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
         }
         protected void OnBoostFall(bool statusArg)
         {
             _isBoostingFall = statusArg;
-        }
-
-        protected void OnRotate(bool byClockwiseArg)
-        {
-
         }
         protected void GameOver()
         {
