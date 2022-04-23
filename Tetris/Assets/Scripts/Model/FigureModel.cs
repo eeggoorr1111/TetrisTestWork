@@ -7,13 +7,11 @@ namespace Tetris
 {
     public sealed class FigureModel
     {
-        public FigureModel( Rotator rotatorArg, 
-                            int idxTemplateArg, 
+        public FigureModel( int idxTemplateArg, 
                             ColliderFigure colliderArg)
         {
             IdxTemplate = idxTemplateArg;
 
-            _rotator = rotatorArg;
             _collider = colliderArg;
         }
 
@@ -24,21 +22,20 @@ namespace Tetris
         public Quaternion Rotate => _collider.Rotate;
 
 
-        private readonly Rotator _rotator;
         private readonly ColliderFigure _collider;
 
 
-        public void ToMoveToSide(Mover moverArg, bool toRightArg)
+        public void ToMoveToSide(Transformator transfArg, bool toRightArg)
         {
-            moverArg.MoveToSide(toRightArg, _collider);
+            transfArg.MoveToSide(toRightArg, _collider);
         }
-        public bool ToFall(Mover moverArg, bool boostedFallArg)
+        public bool ToFall(Transformator transfArg, bool boostedFallArg)
         {
-            return moverArg.ToFall(boostedFallArg, _collider);
+            return transfArg.ToFall(boostedFallArg, _collider);
         }
-        public void ToRotate()
+        public void ToRotate(Transformator transfArg)
         {
-            _rotator.Rotate(_collider);
+            transfArg.Rotate(_collider);
         }
     }
 }

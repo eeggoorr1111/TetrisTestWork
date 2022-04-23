@@ -5,9 +5,9 @@ using DG.Tweening;
 
 namespace Tetris
 {
-    public class MoverBlockedWall : Mover
+    public class TransfBlockedWall : Transformator
     {
-        public MoverBlockedWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg) : base(heapArg, difficultyArg, mapArg, paramsArg) { }
+        public TransfBlockedWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg) : base(heapArg, difficultyArg, mapArg, paramsArg) { }
 
 
         public override bool MoveToSide(bool toRightArg, ColliderFigure collider)
@@ -39,6 +39,25 @@ namespace Tetris
             _moveToSide = DOTween.To(() => collider.Center, (pos) => collider.ToMoveTo(pos), figure.center, timeMoveToSide).SetEase(Ease.OutSine);
 
             return true;
+        }
+        public override void Rotate(ColliderFigure collider)
+        {
+            if (_rotate.IsActive() || _moveToSide.IsActive())
+                return;
+
+            Quaternion targetRotate = (Matrix4x4.Rotate(collider.Rotate) * _matrixRotate).rotation;
+
+            Bounds afterRotate;
+            Bounds beforeRotate = collider.Bounds;
+
+            collider.GetDataAfterRotate(targetRotate, _blocks, out afterRotate);
+
+            if (afterRotate.GetMaxCell().x > _map.MaxCell.x ||
+                afterRotate.GetMinCell().x < _map.MinCell.x)
+                return;
+
+            if (CheckOnCollisionWithHeap(beforeRotate, afterRotate, _blocks))
+                _rotate = DOTween.To(() => collider.Rotate, collider.ToRotate, targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
         }
     }
 }

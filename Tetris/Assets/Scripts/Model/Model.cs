@@ -12,14 +12,12 @@ namespace Tetris
     /// </summary>
     public class Model
     {
-        public Model(   Rotator rotatorArg, 
-                        IReadOnlyList<Mover> moversArg, 
+        public Model(   IReadOnlyList<Transformator> moversArg, 
                         HeapFigures heapFiguresArg, 
                         MapData mapArg,
                         FigureGenerator generatorArg)
         {
             _movers = moversArg;
-            _rotator = rotatorArg;
             _map = mapArg;
             _heapFigures = heapFiguresArg;
             _generator = generatorArg;
@@ -33,9 +31,8 @@ namespace Tetris
 
 
         private int _scores = 0;
-        private IReadOnlyList<Mover> _movers;
-        private Rotator _rotator;
-        private Mover _mover;
+        private IReadOnlyList<Transformator> _movers;
+        private Transformator _mover;
         private FigureModel _figure;
         private HeapFigures _heapFigures;
         private FigureGenerator _generator;
@@ -75,7 +72,7 @@ namespace Tetris
         }
         public void Rotate()
         {
-            _figure.ToRotate();
+            _figure.ToRotate(_mover);
         }
 
 

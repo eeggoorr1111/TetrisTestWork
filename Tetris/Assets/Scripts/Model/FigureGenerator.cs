@@ -8,13 +8,11 @@ namespace Tetris
     public class FigureGenerator
     {
         public FigureGenerator( IReadOnlyList<FigureTemplate> templatesArg,
-                                MapData mapArg,
-                                Rotator rotatorArg)
+                                MapData mapArg)
         {
             _templates = templatesArg;
             _map = mapArg;
             _sumWeights = 0;
-            _rotator = rotatorArg;
 
             foreach (var template in _templates)
                 _sumWeights += template.WeightGenerate;
@@ -24,7 +22,6 @@ namespace Tetris
         protected IReadOnlyList<FigureTemplate> _templates;
         protected float _sumWeights = 0;
         protected MapData _map;
-        protected Rotator _rotator;
 
 
         public FigureModel NewFigure()
@@ -80,7 +77,7 @@ namespace Tetris
             int idxPivot = GetIdxPivotBlock(template.Blocks);
             ColliderFigure collider = new ColliderFigure(boundsFigure, blocks, template.GetNewArrayBlocks(), idxPivot);
 
-            return new FigureModel(_rotator, idxTemplateArg, collider);
+            return new FigureModel(idxTemplateArg, collider);
         }
         protected int GetIdxPivotBlock(IReadOnlyList<Vector2Int> blocksArg)
         {

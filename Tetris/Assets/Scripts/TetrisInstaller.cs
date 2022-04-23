@@ -45,12 +45,11 @@ namespace Tetris
         protected void InstallModel()
         {
             Container.Bind<Model>().FromNew().AsSingle();
-            Container.Bind<Rotator>().FromNew().AsSingle();
             Container.Bind<HeapFigures>().FromNew().AsSingle();
             Container.Bind<FigureGenerator>().FromNew().AsSingle();
 
-            IReadOnlyList<Mover> movers = CreateMovers();
-            Container.Bind<IReadOnlyList<Mover>>().FromInstance(movers).AsSingle();
+            IReadOnlyList<Transformator> movers = CreateMovers();
+            Container.Bind<IReadOnlyList<Transformator>>().FromInstance(movers).AsSingle();
             Container.Bind<int>().WithId("maxIdxGameMod").FromInstance(movers.Count - 1).AsSingle();
         }
         protected void InstallView()
@@ -59,7 +58,7 @@ namespace Tetris
 
             Container.Bind<View>().FromInstance(_view).AsSingle();
             Container.Bind<Camera>().FromInstance(_camera).AsSingle();
-            Container.Bind<FigureView>().FromNewComponentOnNewPrefab(_figureView).AsSingle();
+            Container.Bind<FigureView>().FromComponentInNewPrefab(_figureView).AsSingle();
             Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(countBlocks).FromComponentInNewPrefab(_block);
 
             Container.Bind<Vector3>().WithId("sizeBlock").FromInstance(_sizeBlock).AsTransient();
@@ -75,11 +74,11 @@ namespace Tetris
             
             Container.Bind<UI>().FromNew().AsSingle();
         }
-        protected IReadOnlyList<Mover> CreateMovers()
+        protected IReadOnlyList<Transformator> CreateMovers()
         {
-            List<Mover> movers = new List<Mover>();
+            List<Transformator> movers = new List<Transformator>();
 
-            movers.Add(Container.Instantiate<MoverBlockedWall>());
+            movers.Add(Container.Instantiate<TransfBlockedWall>());
             movers.Add(Container.Instantiate<MoverThroughtWall>());
 
             return movers;
