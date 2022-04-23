@@ -14,9 +14,9 @@ namespace Tetris
         {
             if (_moveToSide.IsActive())
                 return false;
-            else if (toRightArg && collider.RightCell + 1 > _map.MaxCell.x)
+            else if (toRightArg && collider.RightX + 1 > _map.MaxCell.x)
                     return false;
-            else if (!toRightArg && collider.LeftCell - 1 < _map.MinCell.x)
+            else if (!toRightArg && collider.LeftX - 1 < _map.MinCell.x)
                     return false;
             
 
@@ -31,7 +31,7 @@ namespace Tetris
                 foreach (var figureBlock in collider.Blocks)
                 {
                     Bounds movedBlock = figureBlock.WithDeltaPos(deltaMoveWithFall);
-                    if (_heapFigures.Intersect(movedBlock))
+                    if (_heapFigures.Intersect(movedBlock.center))
                         return false;
                 }
             }

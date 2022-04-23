@@ -9,7 +9,6 @@ namespace Tetris
         public ColliderFigure(  Bounds boundsArg, 
                                 Bounds[] blocksArg, 
                                 Vector2Int[] blocksLocalPosArg, 
-                                int[] bottomBlocksIdxArg, 
                                 int idxPivotBlockArg)
         {
             Bounds = boundsArg;
@@ -17,8 +16,9 @@ namespace Tetris
 
             _blocks = blocksArg;
             _blockLocalPos = blocksLocalPosArg;
-            _bottomBlocksIdx = bottomBlocksIdxArg;
             _idxPivotBlock = idxPivotBlockArg;
+
+            _blocksTemp = new List<Bounds>();
         }
 
 
@@ -27,15 +27,16 @@ namespace Tetris
         public Vector3 Pivot => _blocks[_idxPivotBlock].center;
         public Quaternion Rotate { get; private set; }
         public IReadOnlyList<Bounds> Blocks => _blocks;
-        public int RightCell => Mathf.RoundToInt(Bounds.center.x + (Bounds.size.x - 1) / 2);
-        public int LeftCell => Mathf.RoundToInt(Bounds.center.x - (Bounds.size.x - 1) / 2);
+        public IReadOnlyList<Vector2Int> BlocksLocalPos => _blockLocalPos;
+        public int RightX => Bounds.GetMaxCell().x;
+        public int LeftX => Bounds.GetMinCell().x;
 
 
 
         private readonly Bounds[] _blocks;
         private readonly Vector2Int[] _blockLocalPos;
-        private readonly int[] _bottomBlocksIdx;
         private readonly int _idxPivotBlock;
+        private List<Bounds> _blocksTemp;
 
 
         public void ToMove(Vector3 deltaArg)
@@ -51,33 +52,29 @@ namespace Tetris
         }
         public void ToRotate(Quaternion rotateArg)
         {
-            ToRotate(rotateArg, _idxPivotBlock);
-        }
-        public bool GetBottomBlocks(List<Bounds> blocks)
-        {
-            blocks.Clear();
-
-            foreach (var idx in _bottomBlocksIdx)
-                blocks.Add(_blocks[idx]);
-
-            return blocks.Count > 0;
-        }
-
-
-        private void ToRotate(Quaternion rotateArg, int idxBlockPivotArg)
-        {
-            Bounds pivot = _blocks[idxBlockPivotArg];
+            Bounds bounds;
+            GetDataAfterRotate(rotateArg, _blocksTemp, out bounds);
 
             Rotate = rotateArg;
+            Bounds = bounds;
+
+            for (int i = 0; i < _blocks.Length; i++)
+                _blocks[i] = _blocksTemp[i];
+        }
+        public void GetDataAfterRotate(Quaternion rotateArg, List<Bounds> blocks, out Bounds bounds)
+        {
+            Bounds pivot = _blocks[_idxPivotBlock];
+
+            blocks.Clear();
             for (int i = 0; i < _blocks.Length; i++)
             {
                 Vector3 localPos = new Vector3(_blockLocalPos[i].x, _blockLocalPos[i].y, 0);
                 Vector3 newLocalPos = Matrix4x4.Rotate(rotateArg).MultiplyPoint(localPos);
 
-                _blocks[i].center = newLocalPos + pivot.center;
+                blocks.Add(new Bounds(newLocalPos + pivot.center, _blocks[i].size));
             }
 
-            Bounds = Helpers.GetBounds(_blocks);
+            bounds = Helpers.GetBounds(blocks);
         }
     }
 }

@@ -106,6 +106,36 @@ namespace Tetris
 
             return bounds;
         }
+        public static Vector2Int GetMaxCell(this Bounds bounds)
+        {
+            int x = Mathf.RoundToInt(bounds.center.x + (bounds.size.x - 1) / 2);
+            int y = Mathf.CeilToInt(bounds.center.y + (bounds.size.y - 1) / 2);
+
+            return new Vector2Int(x, y);
+        }
+        public static Vector2Int GetMinCell(this Bounds bounds)
+        {
+            int x = Mathf.RoundToInt(bounds.center.x - (bounds.size.x - 1) / 2);
+            int y = Mathf.FloorToInt(bounds.center.y - (bounds.size.y - 1) / 2);
+
+            return new Vector2Int(x, y);
+        }
+        public static void GetCells(this Bounds bounds, HashSet<Vector2Int> points, bool clearPointsArg = true)
+        {
+            if (clearPointsArg)
+                points.Clear();
+
+            Vector2Int minCell = bounds.GetMinCell();
+            Vector2Int maxCell = bounds.GetMaxCell();
+
+            for (int x = minCell.x; x <= maxCell.x; x++)
+                for (int y = minCell.y; y <= maxCell.y; y++)
+                    points.Add(new Vector2Int(x, y));
+        }
+        public static Vector2Int GetCellCenter(this Bounds bounds)
+        {
+            return new Vector2Int(Mathf.RoundToInt(bounds.center.x), Mathf.RoundToInt(bounds.center.y));
+        }
     }
 }
 

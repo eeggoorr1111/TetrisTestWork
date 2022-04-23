@@ -83,17 +83,21 @@ namespace Tetris
 
             return false;
         }
-        public bool Intersect(Bounds blockArg)
+        public bool Intersect(Vector3 blockPosArg)
         {
-            int x = Mathf.RoundToInt(blockArg.center.x);
-            int topY = Mathf.CeilToInt(blockArg.center.y);
-            int bottomY = Mathf.FloorToInt(blockArg.center.y);
+            int x = Mathf.RoundToInt(blockPosArg.x);
+            int topY = Mathf.CeilToInt(blockPosArg.y);
+            int bottomY = Mathf.FloorToInt(blockPosArg.y);
 
             if (_blocks.ContainsKey(new Vector2Int(x, topY)) ||
                 _blocks.ContainsKey(new Vector2Int(x, bottomY)))
                 return true;
 
             return false;
+        }
+        public bool Contains(Vector2Int cellArg)
+        {
+            return _blocks.ContainsKey(cellArg);
         }
 
 

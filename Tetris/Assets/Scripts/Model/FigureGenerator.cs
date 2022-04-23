@@ -77,9 +77,8 @@ namespace Tetris
             Bounds boundsFigure = Helpers.GetBounds(template.Blocks, _map.SizeBlock).WithDeltaPos(pointSpawn);
             Vector3 deltaPivot = pointSpawn - boundsFigure.center;
             Bounds[] blocks = GetBlocks(template.Blocks, _map.SizeBlock, boundsFigure.center + deltaPivot);
-            int[] idxsBottom = GetBottomIdxs(blocks, boundsFigure);
             int idxPivot = GetIdxPivotBlock(template.Blocks);
-            ColliderFigure collider = new ColliderFigure(boundsFigure, blocks, template.GetNewArrayBlocks(), idxsBottom, idxPivot);
+            ColliderFigure collider = new ColliderFigure(boundsFigure, blocks, template.GetNewArrayBlocks(), idxPivot);
 
             return new FigureModel(_rotator, idxTemplateArg, collider);
         }

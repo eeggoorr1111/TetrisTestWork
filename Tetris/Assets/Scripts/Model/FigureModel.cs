@@ -22,8 +22,6 @@ namespace Tetris
         public IReadOnlyList<Bounds> Blocks => _collider.Blocks;
         public Bounds Bounds => _collider.Bounds;
         public Quaternion Rotate => _collider.Rotate;
-        public int RightCell => _collider.RightCell;
-        public int LeftCell => _collider.LeftCell;
 
 
         private readonly Rotator _rotator;
