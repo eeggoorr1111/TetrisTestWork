@@ -25,11 +25,19 @@ namespace Tetris
         }
 
 
+        private void Awake()
+        {
+            if (_instance == null)
+                _instance = this;
+            else
+                Debug.LogError($"На сцене присутствует более одного { GetType().Name }", this);
+        }
         private void OnEnable()
         {
-            if (_instance != null)
+            if (_instance == null)
+                _instance = this;
+            else if (_instance != this)
                 Debug.LogError($"На сцене присутствует более одного { GetType().Name }", this);
-            _instance = this;
         }
         private void OnDisable()
         {
