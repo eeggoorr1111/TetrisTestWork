@@ -65,6 +65,10 @@ namespace Tetris
         public abstract void Rotate(ColliderFigure collider);
 
 
+        protected Vector3 GetFall(float timeArg)
+        {
+            return _difficulty.SpeedFalling * timeArg * FallDirection;
+        }
         protected float GetDistanceToNearestObstruction(ColliderFigure colliderArg)
         {
             float distance = colliderArg.Bounds.min.y - _map.BottomByY;

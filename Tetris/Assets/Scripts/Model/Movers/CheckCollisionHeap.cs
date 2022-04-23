@@ -18,21 +18,22 @@ namespace Tetris
         private HeapFigures _heapFigures;
 
 
-        public bool CheckRotate(Bounds beforeRotateArg, Bounds afterRotateArg, IReadOnlyList<Bounds> blocksAfterRotateArg)
+        public bool CheckRotate(Bounds beforeRotateArg, Bounds afterRotateArg, IReadOnlyList<Bounds> blocksAfterRotateArg, Vector3 deltaPosArg)
         {
             Bounds areaRotate = GetAreaRotate(beforeRotateArg, afterRotateArg);
             if (!_heapFigures.Bounds.Intersects(areaRotate))
                 return true;
 
-            foreach (var block in blocksAfterRotateArg)
-                if (_heapFigures.Intersect(block.center))
-                    return false;
-
             areaRotate.GetCells(_cellsAreaRotate);
 
-            afterRotateArg.GetCells(_cellsTemp);
-            foreach (var cell in _cellsTemp)
-                _cellsAreaRotate.Remove(cell);
+            foreach (var block in blocksAfterRotateArg)
+            {
+                Bounds falledBlock = block.WithDeltaPos(deltaPosArg);
+
+                _cellsAreaRotate.Remove(falledBlock.GetCellCenter());
+                if (_heapFigures.Intersect(falledBlock.center))
+                    return false;
+            }
 
             beforeRotateArg.GetCells(_cellsTemp);
             foreach (var cell in _cellsTemp)

@@ -20,16 +20,13 @@ namespace Tetris
             else if (!toRightArg && collider.LeftX - 1 < _map.MinCell.x)
                 return false;
             
-
-            float timeMoveToSide = _difficulty.TimeMoveToSide;
             Vector3 deltaMove = toRightArg ? Vector3.right : Vector3.left;
-            Vector3 vectorFall = _difficulty.SpeedFalling * timeMoveToSide * FallDirection;
-            Vector3 deltaMoveWithFall = vectorFall + deltaMove;
+            Vector3 deltaMoveWithFall = GetFall(_difficulty.TimeMoveToSide) + deltaMove;
             Bounds figure = collider.Bounds.WithDeltaPos(deltaMoveWithFall);
 
             if (_collisionHeap.CheckMoveToSide(figure, collider.Blocks, deltaMoveWithFall))
             {
-                _moveToSide = DOTween.To(() => collider.Center, (pos) => collider.ToMoveTo(pos), figure.center, timeMoveToSide).SetEase(Ease.OutSine);
+                _moveToSide = DOTween.To(() => collider.Center, (pos) => collider.ToMoveTo(pos), figure.center, _difficulty.TimeMoveToSide).SetEase(Ease.OutSine);
                 return true;
             }
 
@@ -44,14 +41,16 @@ namespace Tetris
 
             Bounds afterRotate;
             Bounds beforeRotate = collider.Bounds;
+            Vector3 deltaFall = GetFall(_difficulty.TimeRotate);
 
             collider.GetDataAfterRotate(targetRotate, _blocksAfterRotate, out afterRotate);
+            afterRotate.WithDeltaPos(deltaFall);
 
             if (afterRotate.GetMaxCell().x > _map.MaxCell.x ||
                 afterRotate.GetMinCell().x < _map.MinCell.x)
                 return;
-
-            if (_collisionHeap.CheckRotate(beforeRotate, afterRotate, _blocksAfterRotate))
+            
+            if (_collisionHeap.CheckRotate(beforeRotate, afterRotate, _blocksAfterRotate, deltaFall))
                 _rotate = DOTween.To(() => collider.Rotate, collider.ToRotate, targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
         }
     }
