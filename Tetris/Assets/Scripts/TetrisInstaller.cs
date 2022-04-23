@@ -44,9 +44,10 @@ namespace Tetris
 
         protected void InstallModel()
         {
-            Container.Bind<Model>().FromNew().AsSingle();
-            Container.Bind<HeapFigures>().FromNew().AsSingle();
-            Container.Bind<FigureGenerator>().FromNew().AsSingle();
+            Container.Bind<Model>().AsSingle();
+            Container.Bind<HeapFigures>().AsSingle();
+            Container.Bind<FigureGenerator>().AsSingle();
+            Container.Bind<CheckCollisionHeap>().AsSingle();
 
             IReadOnlyList<Transformator> movers = CreateMovers();
             Container.Bind<IReadOnlyList<Transformator>>().FromInstance(movers).AsSingle();

@@ -8,23 +8,21 @@ namespace Tetris
 {
     public abstract class Transformator
     {
-        protected static readonly Vector3 _fallDirection = Vector3Int.down;
-        protected static readonly Matrix4x4 _matrixRotate = new Matrix4x4(  new Vector4(0f, -1f, 0f, 0f),
+        public static readonly Vector3 FallDirection = Vector3Int.down;
+        public static readonly Matrix4x4 MatrixRotate = new Matrix4x4(  new Vector4(0f, -1f, 0f, 0f),
                                                                             new Vector4(1f, 0f, 0f, 0f),
                                                                             new Vector4(0f, 0f, 1f, 0f),
                                                                             new Vector4(0f, 0f, 0f, 1f));
 
 
-        public Transformator(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg)
+        public Transformator(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionArg)
         {
             _heapFigures = heapArg;
             _difficulty = difficultyArg;
             _map = mapArg;
             _params = paramsArg;
-
-            _blocks = new List<Bounds>();
-            _cellsAreaRotate = new HashSet<Vector2Int>();
-            _cellsTemp = new HashSet<Vector2Int>();
+            _collisionHeap = collisionArg;
+            _blocksAfterRotate = new List<Bounds>();
         }
 
 
@@ -34,11 +32,10 @@ namespace Tetris
         protected Tween _moveToSide;
         protected Tween _rotate;
         protected CalculateParams _params;
-        protected List<Bounds> _blocks;
-        private HashSet<Vector2Int> _cellsAreaRotate;
-        private HashSet<Vector2Int> _cellsTemp;
-
-
+        protected CheckCollisionHeap _collisionHeap;
+        protected List<Bounds> _blocksAfterRotate;
+        
+        
         public bool ToFall(bool boostedFallArg, ColliderFigure colliderArg)
         {
             bool isMove = true;
@@ -56,7 +53,7 @@ namespace Tetris
             if (boostedFallArg)
                 speed = _difficulty.SpeedFallingBoosted;
 
-            Vector3 delta = _fallDirection * speed * Time.deltaTime;
+            Vector3 delta = FallDirection * speed * Time.deltaTime;
             if (Mathf.Abs(delta.y) > distance)
                 delta.y = -distance;
 
@@ -94,47 +91,6 @@ namespace Tetris
             }
 
             return distance;
-        }
-        protected bool CheckOnCollisionWithHeap(Bounds beforeRotateArg, Bounds afterRotateArg, IReadOnlyList<Bounds> blocksAfterRotateArg)
-        {
-            Bounds areaRotate = GetAreaRotate(beforeRotateArg, afterRotateArg);
-            if (!_heapFigures.Bounds.Intersects(areaRotate))
-                return true;
-
-            foreach (var block in blocksAfterRotateArg)
-                if (_heapFigures.Intersect(block.center))
-                    return false;
-
-            areaRotate.GetCells(_cellsAreaRotate);
-
-            afterRotateArg.GetCells(_cellsTemp);
-            foreach (var cell in _cellsTemp)
-                _cellsAreaRotate.Remove(cell);
-
-            beforeRotateArg.GetCells(_cellsTemp);
-            foreach (var cell in _cellsTemp)
-                if (_cellsAreaRotate.Contains(cell))
-                    _cellsAreaRotate.Remove(cell);
-
-            foreach (var cell in _cellsAreaRotate)
-                if (_heapFigures.Contains(cell))
-                    return false;
-
-            return true;
-        }
-        protected Bounds GetAreaRotate(Bounds beforeRotateArg, Bounds afterRotateArg)
-        {
-            Bounds areaRotate = new Bounds();
-
-            float minX = Mathf.Min(beforeRotateArg.min.x, afterRotateArg.min.x);
-            float minY = Mathf.Min(beforeRotateArg.min.y, afterRotateArg.min.y);
-
-            float maxX = Mathf.Max(beforeRotateArg.max.x, afterRotateArg.max.x);
-            float maxY = Mathf.Max(beforeRotateArg.max.y, afterRotateArg.max.y);
-
-            areaRotate.SetMinMax(new Vector3(minX, minY, 0), new Vector3(maxX, maxY, 0));
-
-            return areaRotate;
         }
     }
 }
