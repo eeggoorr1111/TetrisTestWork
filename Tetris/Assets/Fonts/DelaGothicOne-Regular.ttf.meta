@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6c457dae482cf094e8b61e11db78f6d6
+guid: 6b92270d06cc1fd40a32e0b3e69ab65a
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,9 +8,9 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Alfa Slab One
+  fontName: Dela Gothic One
   fontNames:
-  - Alfa Slab One
+  - Dela Gothic One
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

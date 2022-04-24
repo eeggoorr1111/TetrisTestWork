@@ -156,7 +156,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -151, y: 0}
+  m_AnchoredPosition: {x: -77.4, y: 0}
   m_SizeDelta: {x: 421, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &50477359
@@ -180,8 +180,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fb212ec419e8b0a4cab06860ca6fa57b, type: 2}
-  m_sharedMaterial: {fileID: -513601163767332520, guid: fb212ec419e8b0a4cab06860ca6fa57b,
+  m_fontAsset: {fileID: 11400000, guid: 44e4be29b0461fc49b39a7cda452174d, type: 2}
+  m_sharedMaterial: {fileID: -6078711190302868767, guid: 44e4be29b0461fc49b39a7cda452174d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -248,13 +248,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 50477359}
-    characterCount: 0
+    characterCount: 1
     spriteCount: 0
     spaceCount: 0
-    wordCount: 0
+    wordCount: 1
     linkCount: 0
-    lineCount: 0
-    pageCount: 0
+    lineCount: 1
+    pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -337,8 +337,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: menu
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fb212ec419e8b0a4cab06860ca6fa57b, type: 2}
-  m_sharedMaterial: {fileID: -513601163767332520, guid: fb212ec419e8b0a4cab06860ca6fa57b,
+  m_fontAsset: {fileID: 11400000, guid: 44e4be29b0461fc49b39a7cda452174d, type: 2}
+  m_sharedMaterial: {fileID: -6078711190302868767, guid: 44e4be29b0461fc49b39a7cda452174d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -405,13 +405,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 367082596}
-    characterCount: 0
+    characterCount: 4
     spriteCount: 0
     spaceCount: 0
-    wordCount: 0
+    wordCount: 1
     linkCount: 0
-    lineCount: 0
-    pageCount: 0
+    lineCount: 1
+    pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -770,7 +770,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: -480, y: 0}
-  m_SizeDelta: {x: 306.1, y: 0}
+  m_SizeDelta: {x: 371, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &487461448
 MonoBehaviour:
@@ -793,8 +793,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: SCORES
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fb212ec419e8b0a4cab06860ca6fa57b, type: 2}
-  m_sharedMaterial: {fileID: -513601163767332520, guid: fb212ec419e8b0a4cab06860ca6fa57b,
+  m_fontAsset: {fileID: 11400000, guid: 44e4be29b0461fc49b39a7cda452174d, type: 2}
+  m_sharedMaterial: {fileID: -6078711190302868767, guid: 44e4be29b0461fc49b39a7cda452174d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -828,7 +828,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_textAlignment: 513
-  m_characterSpacing: 5
+  m_characterSpacing: 4
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -861,13 +861,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 487461448}
-    characterCount: 0
+    characterCount: 6
     spriteCount: 0
     spaceCount: 0
-    wordCount: 0
+    wordCount: 1
     linkCount: 0
-    lineCount: 0
-    pageCount: 0
+    lineCount: 1
+    pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -950,8 +950,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: TETRIS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fb212ec419e8b0a4cab06860ca6fa57b, type: 2}
-  m_sharedMaterial: {fileID: -513601163767332520, guid: fb212ec419e8b0a4cab06860ca6fa57b,
+  m_fontAsset: {fileID: 11400000, guid: 44e4be29b0461fc49b39a7cda452174d, type: 2}
+  m_sharedMaterial: {fileID: -6078711190302868767, guid: 44e4be29b0461fc49b39a7cda452174d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1185,8 +1185,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: mode 1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fb212ec419e8b0a4cab06860ca6fa57b, type: 2}
-  m_sharedMaterial: {fileID: -513601163767332520, guid: fb212ec419e8b0a4cab06860ca6fa57b,
+  m_fontAsset: {fileID: 11400000, guid: 44e4be29b0461fc49b39a7cda452174d, type: 2}
+  m_sharedMaterial: {fileID: -6078711190302868767, guid: 44e4be29b0461fc49b39a7cda452174d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1220,7 +1220,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_textAlignment: 514
-  m_characterSpacing: 6.2
+  m_characterSpacing: 4
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1787,8 +1787,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: exit
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fb212ec419e8b0a4cab06860ca6fa57b, type: 2}
-  m_sharedMaterial: {fileID: -513601163767332520, guid: fb212ec419e8b0a4cab06860ca6fa57b,
+  m_fontAsset: {fileID: 11400000, guid: 44e4be29b0461fc49b39a7cda452174d, type: 2}
+  m_sharedMaterial: {fileID: -6078711190302868767, guid: 44e4be29b0461fc49b39a7cda452174d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1822,7 +1822,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_textAlignment: 514
-  m_characterSpacing: 6.2
+  m_characterSpacing: 5
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1944,8 +1944,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: mode 2
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fb212ec419e8b0a4cab06860ca6fa57b, type: 2}
-  m_sharedMaterial: {fileID: -513601163767332520, guid: fb212ec419e8b0a4cab06860ca6fa57b,
+  m_fontAsset: {fileID: 11400000, guid: 44e4be29b0461fc49b39a7cda452174d, type: 2}
+  m_sharedMaterial: {fileID: -6078711190302868767, guid: 44e4be29b0461fc49b39a7cda452174d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1979,7 +1979,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_textAlignment: 514
-  m_characterSpacing: 6.2
+  m_characterSpacing: 4
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2469,7 +2469,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1561081824}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
