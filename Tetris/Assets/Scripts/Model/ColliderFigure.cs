@@ -36,6 +36,10 @@ namespace Tetris
         private readonly int _idxPivotBlock;
 
 
+        public void Tranasform(Bounds newBoundsArg)
+        {
+            Bounds = newBoundsArg;
+        }
         public void Tranasform(Bounds newBoundsArg, IReadOnlyList<Bounds> blocksArg)
         {
             Bounds = newBoundsArg;
