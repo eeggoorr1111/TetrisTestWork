@@ -10,30 +10,34 @@ namespace Tetris
     {
         public static readonly Vector3 FallDirection = Vector3Int.down;
         public static readonly Matrix4x4 MatrixRotate = new Matrix4x4(  new Vector4(0f, -1f, 0f, 0f),
-                                                                            new Vector4(1f, 0f, 0f, 0f),
-                                                                            new Vector4(0f, 0f, 1f, 0f),
-                                                                            new Vector4(0f, 0f, 0f, 1f));
+                                                                        new Vector4(1f, 0f, 0f, 0f),
+                                                                        new Vector4(0f, 0f, 1f, 0f),
+                                                                        new Vector4(0f, 0f, 0f, 1f));
 
 
-        public Transformator(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionArg)
+        public Transformator(   HeapFigures heapArg, 
+                                Difficulty difficultyArg, 
+                                MapData mapArg, 
+                                CalculateParams paramsArg, 
+                                CheckCollisionHeap collisionArg)
         {
             _heapFigures = heapArg;
             _difficulty = difficultyArg;
             _map = mapArg;
             _params = paramsArg;
             _collisionHeap = collisionArg;
-            _blocksAfterRotate = new List<Bounds>();
+            _blocks = new List<Bounds>();
         }
 
 
-        protected HeapFigures _heapFigures;
-        protected Difficulty _difficulty;
-        protected MapData _map;
+        protected readonly HeapFigures _heapFigures;
+        protected readonly Difficulty _difficulty;
+        protected readonly MapData _map;
+        protected readonly CalculateParams _params;
+        protected readonly CheckCollisionHeap _collisionHeap;
         protected Tween _moveToSide;
         protected Tween _rotate;
-        protected CalculateParams _params;
-        protected CheckCollisionHeap _collisionHeap;
-        protected List<Bounds> _blocksAfterRotate;
+        protected List<Bounds> _blocks;
         
         
         public bool ToFall(bool boostedFallArg, ColliderFigure colliderArg)
@@ -57,7 +61,7 @@ namespace Tetris
             if (Mathf.Abs(delta.y) > distance)
                 delta.y = -distance;
 
-            colliderArg.ToMove(delta);
+            ToMove(colliderArg, delta);
 
             return isMove;
         }
@@ -95,6 +99,16 @@ namespace Tetris
             }
 
             return distance;
+        }
+        protected void ToMove(ColliderFigure colliderArg, Vector3 deltaArg)
+        {
+            Bounds bounds = colliderArg.Bounds.WithDeltaPos(deltaArg);
+
+            _blocks.Clear();
+            for (int i = 0; i < colliderArg.Blocks.Count; i++)
+                _blocks.Add(colliderArg.Blocks[i].WithDeltaPos(deltaArg));
+
+            colliderArg.Tranasform(bounds, _blocks);
         }
     }
 }

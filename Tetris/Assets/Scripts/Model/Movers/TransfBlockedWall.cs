@@ -26,7 +26,7 @@ namespace Tetris
 
             if (_collisionHeap.CheckMoveToSide(figure, collider.Blocks, deltaMoveWithFall))
             {
-                _moveToSide = DOTween.To(() => collider.Center, (pos) => collider.ToMoveTo(pos), figure.center, _difficulty.TimeMoveToSide).SetEase(Ease.OutSine);
+                _moveToSide = DOTween.To(() => collider.Center, (pos) => ToMoveTo(collider, pos), figure.center, _difficulty.TimeMoveToSide).SetEase(Ease.OutSine);
                 return true;
             }
 
@@ -43,15 +43,45 @@ namespace Tetris
             Bounds beforeRotate = collider.Bounds;
             Vector3 deltaFall = GetFall(_difficulty.TimeRotate);
 
-            collider.GetDataAfterRotate(targetRotate, _blocksAfterRotate, out afterRotate);
+            GetDataAfterRotate(collider, targetRotate, _blocks, out afterRotate);
             afterRotate.WithDeltaPos(deltaFall);
 
             if (afterRotate.GetMaxCell().x > _map.MaxCell.x ||
                 afterRotate.GetMinCell().x < _map.MinCell.x)
                 return;
             
-            if (_collisionHeap.CheckRotate(beforeRotate, afterRotate, _blocksAfterRotate, deltaFall))
-                _rotate = DOTween.To(() => collider.Rotate, collider.ToRotate, targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
+            if (_collisionHeap.CheckRotate(beforeRotate, afterRotate, _blocks, deltaFall))
+                _rotate = DOTween.To(() => collider.Rotate, rotate => ToRotate(collider, rotate), targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
+        }
+
+
+        protected void GetDataAfterRotate(ColliderFigure colliderArg, Quaternion rotateArg, List<Bounds> blocks, out Bounds bounds)
+        {
+            Vector3 pivotPos = colliderArg.Pivot;
+
+            blocks.Clear();
+            for (int i = 0; i < colliderArg.Blocks.Count; i++)
+            {
+                Vector2Int blockLocalPos = colliderArg.BlocksLocalPos[i];
+                Vector3 localPos = new Vector3(blockLocalPos.x, blockLocalPos.y, 0);
+                Vector3 newLocalPos = Matrix4x4.Rotate(rotateArg).MultiplyPoint(localPos);
+
+                blocks.Add(new Bounds(newLocalPos + pivotPos, colliderArg.Blocks[i].size));
+            }
+
+            bounds = Helpers.GetBounds(blocks);
+        }
+        protected void ToRotate(ColliderFigure colliderArg, Quaternion rotateArg)
+        {
+            Bounds bounds;
+            GetDataAfterRotate(colliderArg, rotateArg, _blocks, out bounds);
+
+            colliderArg.Tranasform(bounds, _blocks, rotateArg);
+        }
+        protected void ToMoveTo(ColliderFigure colliderArg, Vector3 pointArg)
+        {
+            Vector3 delta = pointArg - colliderArg.Bounds.center;
+            ToMove(colliderArg, delta);
         }
     }
 }

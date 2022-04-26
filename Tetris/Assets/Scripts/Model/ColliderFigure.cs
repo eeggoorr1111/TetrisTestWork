@@ -17,8 +17,6 @@ namespace Tetris
             _blocks = blocksArg;
             _blockLocalPos = blocksLocalPosArg;
             _idxPivotBlock = idxPivotBlockArg;
-
-            _blocksTemp = new List<Bounds>();
         }
 
 
@@ -36,45 +34,18 @@ namespace Tetris
         private readonly Bounds[] _blocks;
         private readonly Vector2Int[] _blockLocalPos;
         private readonly int _idxPivotBlock;
-        private List<Bounds> _blocksTemp;
 
 
-        public void ToMove(Vector3 deltaArg)
+        public void Tranasform(Bounds newBoundsArg, IReadOnlyList<Bounds> blocksArg)
         {
-            Bounds = Bounds.WithDeltaPos(deltaArg);
+            Bounds = newBoundsArg;
             for (int i = 0; i < _blocks.Length; i++)
-                _blocks[i] = _blocks[i].WithDeltaPos(deltaArg);
+                _blocks[i] = blocksArg[i];
         }
-        public void ToMoveTo(Vector3 pointArg)
+        public void Tranasform(Bounds newBoundsArg, IReadOnlyList<Bounds> blocksArg, Quaternion newRotateArg)
         {
-            Vector3 delta = pointArg - Bounds.center;
-            ToMove(delta);
-        }
-        public void ToRotate(Quaternion rotateArg)
-        {
-            Bounds bounds;
-            GetDataAfterRotate(rotateArg, _blocksTemp, out bounds);
-
-            Rotate = rotateArg;
-            Bounds = bounds;
-
-            for (int i = 0; i < _blocks.Length; i++)
-                _blocks[i] = _blocksTemp[i];
-        }
-        public void GetDataAfterRotate(Quaternion rotateArg, List<Bounds> blocks, out Bounds bounds)
-        {
-            Bounds pivot = _blocks[_idxPivotBlock];
-
-            blocks.Clear();
-            for (int i = 0; i < _blocks.Length; i++)
-            {
-                Vector3 localPos = new Vector3(_blockLocalPos[i].x, _blockLocalPos[i].y, 0);
-                Vector3 newLocalPos = Matrix4x4.Rotate(rotateArg).MultiplyPoint(localPos);
-
-                blocks.Add(new Bounds(newLocalPos + pivot.center, _blocks[i].size));
-            }
-
-            bounds = Helpers.GetBounds(blocks);
+            Rotate = newRotateArg;
+            Tranasform(newBoundsArg, blocksArg);
         }
     }
 }
