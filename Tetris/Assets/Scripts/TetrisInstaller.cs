@@ -17,7 +17,7 @@ namespace Tetris
         [SerializeField] protected FigureView _figureView;
         [SerializeField] protected Block _block;
         [SerializeField] protected Camera _camera;
-        [SerializeField] protected Vector3 _sizeBlock = new Vector3(1f, 1f, 1f);
+        [SerializeField] protected BlockParams _blockParams;
 
         [Header("UI")]
         [SerializeField] protected TextMeshProUGUI _lblScores;
@@ -61,8 +61,7 @@ namespace Tetris
             Container.Bind<Camera>().FromInstance(_camera).AsSingle();
             Container.Bind<FigureView>().FromComponentInNewPrefab(_figureView).AsSingle();
             Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(countBlocks).FromComponentInNewPrefab(_block);
-
-            Container.Bind<Vector3>().WithId("sizeBlock").FromInstance(_sizeBlock).AsTransient();
+            Container.Bind<BlockParams>().FromInstance(_blockParams).AsTransient();
 
             InstallUI();
         }
@@ -170,14 +169,6 @@ namespace Tetris
             if (_calculateParams == null || _calculateParams.AllowedError < float.Epsilon)
             {
                 Debug.LogError("Not setted AllowedError in Calculated params", this);
-                valid = false;
-            }
-
-            if (_sizeBlock.x < _calculateParams.AllowedError || 
-                _sizeBlock.y < _calculateParams.AllowedError || 
-                _sizeBlock.z < _calculateParams.AllowedError)
-            {
-                Debug.LogError($"Each of the block size axes must be >  {_calculateParams.AllowedError}", this);
                 valid = false;
             }
 
