@@ -49,12 +49,16 @@ namespace Tetris
         public bool CheckMoveToSide(Bounds figureArg, IReadOnlyList<Bounds> blocksArg)
         {
             if (_heapFigures.Bounds.Intersects(figureArg))
-            {
-                foreach (var figureBlock in blocksArg)
-                    if (_heapFigures.Intersect(figureBlock.center))
-                        return false;
-            }
-                
+                return CheckMoveToSide(blocksArg);
+
+            return true;
+        }
+        public bool CheckMoveToSide(IReadOnlyList<Bounds> blocksArg)
+        {
+            foreach (var figureBlock in blocksArg)
+                if (_heapFigures.Intersect(figureBlock.center))
+                    return false;
+
             return true;
         }
 
