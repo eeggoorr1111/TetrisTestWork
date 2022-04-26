@@ -46,17 +46,15 @@ namespace Tetris
 
             return true;
         }
-        public bool CheckMoveToSide(Bounds figureArg, IReadOnlyList<Bounds> blocksArg, Vector3 deltaPosArg)
+        public bool CheckMoveToSide(Bounds figureArg, IReadOnlyList<Bounds> blocksArg)
         {
             if (_heapFigures.Bounds.Intersects(figureArg))
+            {
                 foreach (var figureBlock in blocksArg)
-                {
-                    Bounds movedBlock = figureBlock.WithDeltaPos(deltaPosArg);
-                    if (_heapFigures.Intersect(movedBlock.center))
+                    if (_heapFigures.Intersect(figureBlock.center))
                         return false;
-                }
-            
-
+            }
+                
             return true;
         }
 
