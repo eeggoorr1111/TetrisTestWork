@@ -10,9 +10,9 @@ namespace Tetris
     /// <summary>
     /// Model в рамках паттерна MVC
     /// </summary>
-    public class Model
+    public class TetrisModel
     {
-        public Model(   IReadOnlyList<Transformator> moversArg, 
+        public TetrisModel(   IReadOnlyList<Transformator> moversArg, 
                         HeapFigures heapFiguresArg, 
                         MapData mapArg,
                         FigureGenerator generatorArg)

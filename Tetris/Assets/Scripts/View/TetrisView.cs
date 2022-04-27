@@ -5,61 +5,62 @@ using Zenject;
 using System;
 
 
-namespace Tetris
+namespace Tetris.View
 {
     /// <summary>
     /// View в паттерне MVC
     /// </summary>
-    public class View : MonoBehaviour
+    public sealed class TetrisView : MonoBehaviour
     {
         [Inject]
-        protected void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg,
-                                    FigureView figureArg,
+        private void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg,
+                                    IReadOnlyList<IFigure> figuresArg,
                                     Block.Pool poolBlockArg,
                                     MapData mapArg,
                                     UI uiArg,
-                                    GameUi gameUiArg,
-                                    [Inject(Id = "maxIdxGameMod")] int maxIdxGameModArg)
+                                    BlockParams blockParamsArg)
         {
             _figureTemplates = templatesFigureArg;
-            _maxIdxGameMods = maxIdxGameModArg;
+            _figures = figuresArg;
             _ui = uiArg;
-            _gameUi = gameUiArg;
             _heap = new Dictionary<Vector2Int, Block>();
-            _figure = figureArg;
             _poolBlocks = poolBlockArg;
             _map = mapArg;
+            _blockParams = blockParamsArg;
             _lastRange = 0;
         }
 
         public bool IsExistsMonoB => this != null;
 
 
-        protected event Action _onRotate;
-        protected event Action<bool> _onMove;
-        protected event Action<bool> _onBoostFall;
-        protected event Action _onGoToMenu;
-        protected event Action<int> _onStartGame;
-        protected IReadOnlyList<FigureTemplate> _figureTemplates;
-        protected Dictionary<Vector2Int, Block> _heap;
-        protected FigureView _figure;
-        protected int _maxIdxGameMods;
-        protected UI _ui;
-        protected GameUi _gameUi;
-        protected Block.Pool _poolBlocks;
-        protected int _lastRange;
-        protected MapData _map;
-        protected Transform _transf;
+        private event Action _onRotate;
+        private event Action<bool> _onMove;
+        private event Action<bool> _onBoostFall;
+        private event Action _onGoToMenu;
+        private event Action<int> _onStartGame;
+        private IReadOnlyList<FigureTemplate> _figureTemplates;
+        private IReadOnlyList<IFigure> _figures;
+        private Dictionary<Vector2Int, Block> _heap;
+        private IFigure _figure;
+        private UI _ui;
+        private Block.Pool _poolBlocks;
+        private int _lastRange;
+        private MapData _map;
+        private Transform _transf;
+        private BlockParams _blockParams;
 
 
 
         public void StartCustom()
         {
-            _figure.StartCustom();
-            _gameUi.StartCustom();
-            _ui.SetCameraAndBorders();
+            foreach (var figure in _figures)
+                figure.StartCustom();
 
+            _ui.SetCameraAndBorders();
             _transf = GetComponent<Transform>();
+
+            Color boundsMap = new Color(_map.MinPoint.x, _map.MinPoint.y, _map.MaxPoint.x, _map.MaxPoint.y);
+            _blockParams.Material.SetColor("_BoundsMap", boundsMap);
         }
         public void NewFigure(int idxTemplateArg, Vector3 posArg)
         {
@@ -75,12 +76,15 @@ namespace Tetris
         public void StartGame(int idxModeArg)
         {
             int idxMode = idxModeArg;
-            if (idxMode < 0 || idxMode > _maxIdxGameMods)
+            int maxIdxGameMods = Math.Min(_figureTemplates.Count, _figures.Count);
+
+            if (idxMode < 0 || idxMode > maxIdxGameMods)
             {
-                Debug.LogError($"Try play to game mode with index {idxMode}. Min index 0, max index {_maxIdxGameMods}. Play mode with index 0", this);
+                Debug.LogError($"Try play to game mode with index {idxMode}. Min index 0, max index {maxIdxGameMods}. Play mode with index 0", this);
                 idxMode = 0;
             }
 
+            _figure = _figures[idxMode];
             _ui.StartGame();
             if (_onStartGame != null)
                 _onStartGame.Invoke(idxMode);
@@ -120,8 +124,7 @@ namespace Tetris
         public void NextFrame(int scoresArg, Vector3 newPosFigureArg, Quaternion rotateArg)
         {
             _ui.SetScores(scoresArg);
-            _figure.Transf.position = newPosFigureArg;
-            _figure.Transf.rotation = rotateArg;
+            _figure.Transform(newPosFigureArg, rotateArg);
 
             InputCheck();
         }
@@ -134,7 +137,7 @@ namespace Tetris
                 if (remove)
                     putDown++;
 
-                for (int x = 0; x < _map.SizeMap.x; x++)
+                for (int x = 0; x < _map.CountCells.x; x++)
                 {
                     Vector2Int cell = new Vector2Int(x, y);
 
@@ -155,7 +158,7 @@ namespace Tetris
         }
 
 
-        protected void PutDownBlock(Vector2Int cellArg, int putDownArg)
+        private void PutDownBlock(Vector2Int cellArg, int putDownArg)
         {
             Vector2Int newCell = new Vector2Int(cellArg.x, cellArg.y - putDownArg);
             Block block = _heap[cellArg];
@@ -165,7 +168,7 @@ namespace Tetris
             _heap.Remove(cellArg);
             _heap[newCell] = block;
         }
-        protected void AddToHeap(IReadOnlyList<Block> blocksArg)
+        private void AddToHeap(IReadOnlyList<Block> blocksArg)
         {
             foreach (var block in blocksArg)
             {
@@ -180,7 +183,7 @@ namespace Tetris
                 block.Transf.SetParent(_transf);
             }
         }
-        protected void InputCheck()
+        private void InputCheck()
         {
             if (_onRotate == null || _onMove == null || _onBoostFall == null)
                 return;
@@ -201,7 +204,7 @@ namespace Tetris
             if (Input.GetKeyUp(KeyCode.S))
                 _onBoostFall.Invoke(false);
         }
-        protected void OnDestroy()
+        private void OnDestroy()
         {
             _onRotate = null;
             _onMove = null;

@@ -50,7 +50,7 @@ LightmapSettings:
     m_BounceScale: 1
     m_IndirectOutputScale: 1
     m_AlbedoBoost: 1
-    m_EnvironmentLightingMode: 0
+    m_EnvironmentLightingMode: 1
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
@@ -2213,13 +2213,14 @@ MonoBehaviour:
     _speedFallingBoost: 15
     _timeMoveToSide: 0.1
     _timeRotate: 0.1
-    _sizeMap: {x: 10, y: 15}
+    _countCells: {x: 10, y: 15}
   _view: {fileID: 1461537259}
-  _figureView: {fileID: 1571276055973249039, guid: bba421f234571194dbb66b7f4ce88c8f,
+  _blockFigure: {fileID: 2244484361088336582, guid: bba421f234571194dbb66b7f4ce88c8f,
     type: 3}
   _block: {fileID: 2693925678498958770, guid: 0c05b10ba9e81ec46809f40bb34b5406, type: 3}
   _camera: {fileID: 1342129008}
-  _sizeBlock: {x: 1, y: 1, z: 1}
+  _blockParams:
+    _material: {fileID: 2100000, guid: e2b73a467f4450b48a245891a3901a70, type: 2}
   _lblScores: {fileID: 50477359}
   _gameUi: {fileID: 1561081829}
   _menu: {fileID: 756696093}

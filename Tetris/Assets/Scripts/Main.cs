@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using Tetris.View;
 
 namespace Tetris
 {
@@ -11,7 +12,7 @@ namespace Tetris
     public class Main : MonoBehaviour
     {
         [Inject]
-        protected void Constructor(View viewArg, Model modelArg)
+        protected void Constructor(TetrisView viewArg, TetrisModel modelArg)
         {
             _model = modelArg;
             _view = viewArg;
@@ -19,8 +20,8 @@ namespace Tetris
         }
 
 
-        protected Model _model;
-        protected View _view;
+        protected TetrisModel _model;
+        protected TetrisView _view;
         protected Vector3 _posFigure;
         protected GameStatusKey _gameStatus;
         protected bool _isBoostingFall;

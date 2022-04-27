@@ -8,7 +8,7 @@ using DG.Tweening;
 namespace Tetris
 {
 
-    public class FigureView : MonoBehaviour
+    public class BlocksOfFigure : MonoBehaviour
     {
         [Inject]
         protected void Constructor(Block.Pool poolBlocksArg)

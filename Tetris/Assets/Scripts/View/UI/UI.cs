@@ -24,11 +24,16 @@ namespace Tetris
         }
 
 
+        public float WidthBorder => _borderSampleTransf.localScale.x;
+        public float HalfWidthBorder => WidthBorder / 2;
+
+
         protected TextMeshProUGUI _lblScores;
         protected GameUi _gameUi;
         protected Canvas _menu;
         protected MapData _map;
         protected Camera _camera;
+        protected Transform _borderSampleTransf;
         protected MeshRenderer _borderSample;
         protected MeshRenderer _leftBorder;
         protected MeshRenderer _rightBorder;
@@ -38,7 +43,11 @@ namespace Tetris
 
         public void SetCameraAndBorders()
         {
-            Vector3 sizeBorder = _borderSample.transform.localScale;
+            _gameUi.StartCustom();
+
+            _borderSampleTransf = _borderSample.transform;
+
+            Vector3 sizeBorder = _borderSampleTransf.localScale;
             Vector3 marginBorderH = new Vector3(sizeBorder.x / 2, 0, 0);
             Vector3 marginBorderV = new Vector3(0, sizeBorder.x / 2, 0);
             float widthWith2Border = _map.SizeX + sizeBorder.x * 2;

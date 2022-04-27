@@ -2,6 +2,7 @@ using UnityEngine;
 using Zenject;
 using System.Collections.Generic;
 using TMPro;
+using Tetris.View;
 
 namespace Tetris
 {
@@ -13,8 +14,8 @@ namespace Tetris
         [SerializeField] protected Difficulty _difficulty;
 
         [Header("VIEW")]
-        [SerializeField] protected View _view;
-        [SerializeField] protected FigureView _figureView;
+        [SerializeField] protected TetrisView _view;
+        [SerializeField] protected BlocksOfFigure _blockFigure;
         [SerializeField] protected Block _block;
         [SerializeField] protected Camera _camera;
         [SerializeField] protected BlockParams _blockParams;
@@ -44,26 +45,35 @@ namespace Tetris
 
         protected void InstallModel()
         {
-            Container.Bind<Model>().AsSingle();
+            Container.Bind<TetrisModel>().AsSingle();
             Container.Bind<HeapFigures>().AsSingle();
             Container.Bind<FigureGenerator>().AsSingle();
             Container.Bind<CheckCollisionHeap>().AsSingle();
-
-            IReadOnlyList<Transformator> movers = CreateMovers();
-            Container.Bind<IReadOnlyList<Transformator>>().FromInstance(movers).AsSingle();
-            Container.Bind<int>().WithId("maxIdxGameMod").FromInstance(movers.Count - 1).AsSingle();
+            Container.Bind<IReadOnlyList<Transformator>>().FromMethod(CreateMovers).AsSingle();
         }
         protected void InstallView()
         {
-            int countBlocks = Mathf.RoundToInt(_difficulty.SizeMap.x * _difficulty.SizeMap.y * 0.5f);
+            int countBlocks = Mathf.RoundToInt(_difficulty.CountCells.x * _difficulty.CountCells.y * 0.5f);
 
-            Container.Bind<View>().FromInstance(_view).AsSingle();
+            Container.Bind<TetrisView>().FromInstance(_view).AsSingle();
             Container.Bind<Camera>().FromInstance(_camera).AsSingle();
-            Container.Bind<FigureView>().FromComponentInNewPrefab(_figureView).AsSingle();
+            Container.Bind<BlocksOfFigure>().WithId("BlocksFigure1").FromComponentInNewPrefab(_blockFigure).AsCached();
+            Container.Bind<BlocksOfFigure>().WithId("BlocksFigure2").FromComponentInNewPrefab(_blockFigure).AsCached();
             Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(countBlocks).FromComponentInNewPrefab(_block);
             Container.Bind<BlockParams>().FromInstance(_blockParams).AsTransient();
 
+            Container.Bind<IReadOnlyList<IFigure>>().FromMethod(CreateFigures).AsSingle();
+
             InstallUI();
+        }
+        protected IReadOnlyList<IFigure> CreateFigures()
+        {
+            List<IFigure> figures = new List<IFigure>();
+
+            figures.Add(Container.Instantiate<Figure>());
+            figures.Add(Container.Instantiate<FigureThroughtWall>());
+
+            return figures;
         }
         protected void InstallUI()
         {
@@ -118,7 +128,7 @@ namespace Tetris
                 valid = false;
             }
 
-            if (_figureView == null)
+            if (_blockFigure == null)
             {
                 Debug.LogError("figure view is null", this);
                 valid = false;
@@ -130,7 +140,7 @@ namespace Tetris
                 valid = false;
             }
 
-            if (_difficulty.SizeMap.x < 5 || _difficulty.SizeMap.y < 10)
+            if (_difficulty.CountCells.x < 5 || _difficulty.CountCells.y < 10)
             {
                 Debug.LogError("Map size must be >= 4 in x and >= 10 in y", this);
                 valid = false;

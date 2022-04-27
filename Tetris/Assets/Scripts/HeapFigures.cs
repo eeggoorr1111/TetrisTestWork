@@ -55,7 +55,7 @@ namespace Tetris
                 if (blockY > _lastRange)
                     _lastRange = blockY;
 
-                if (_blocksInRange[pos.y] == _map.SizeMap.x)
+                if (_blocksInRange[pos.y] == _map.CountCells.x)
                     _deleteRanges.Add(blockY);
             }
 
@@ -111,7 +111,7 @@ namespace Tetris
                     putDown++;
 
                 _blocksInRange[y] = 0;
-                for (int x = 0; x < _map.SizeMap.x; x++)
+                for (int x = 0; x < _map.CountCells.x; x++)
                 {
                     Vector2Int cell = new Vector2Int(x, y);
 

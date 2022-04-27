@@ -14,9 +14,9 @@ namespace Tetris
         /// </summary>
         public MapData( Difficulty difficultyArg, CalculateParams paramsArg)
         {
-            _sizeMap = difficultyArg.SizeMap;
+            _countCells = difficultyArg.CountCells;
             _bounds = new BoundsInt();
-            _bounds.SetMinMax(Vector3Int.zero, new Vector3Int(_sizeMap.x - 1, _sizeMap.y - 1, 0));
+            _bounds.SetMinMax(Vector3Int.zero, new Vector3Int(_countCells.x - 1, _countCells.y - 1, 0));
             _sizeBlock = paramsArg.SizeBoundsBlock;
         }
 
@@ -25,7 +25,7 @@ namespace Tetris
         public Vector3 MinPoint =>  (_bounds.min - _sizeBlock / 2).WithZ(_bounds.min.z);
         public Vector3 MaxPoint =>  (_bounds.max + _sizeBlock / 2).WithZ(_bounds.max.z);
         public Vector3Int MaxCell => _bounds.max;
-        public Vector2Int SizeMap => _sizeMap;
+        public Vector2Int CountCells => _countCells;
         public float TopByY => TopCell + _sizeBlock.y / 2;
         public float BottomByY => BottomCell - _sizeBlock.y / 2;
         public int TopCell => _bounds.max.y;
@@ -38,11 +38,12 @@ namespace Tetris
         public Vector3 CenterRight => _bounds.center.WithX(_bounds.max.x + _sizeBlock.x / 2);
         public Vector3 SizeBlock => _sizeBlock;
         public Vector3 HalfSizeBlockXY => (_sizeBlock / 2).WithZ(0);
+        public Vector3 Center => _bounds.center;
 
 
         protected BoundsInt _bounds;
         protected Vector3 _sizeBlock;
-        protected Vector2Int _sizeMap;
+        protected Vector2Int _countCells;
     }
 }
 
