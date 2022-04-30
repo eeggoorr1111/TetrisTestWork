@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Tetris.Model
 {
-    public sealed class MoverThroughtWall : Transformator
+    public sealed class TransformatorThroughtWall : Transformator
     {
-        public MoverThroughtWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
+        public TransformatorThroughtWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
             base(heapArg, difficultyArg, mapArg, paramsArg, collisionHeapArg) 
         {
             _replace = new HashSet<Vector2Int>();

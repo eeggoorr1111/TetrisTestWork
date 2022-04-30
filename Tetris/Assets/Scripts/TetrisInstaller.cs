@@ -91,7 +91,7 @@ namespace Tetris
             List<Transformator> movers = new List<Transformator>();
 
             movers.Add(Container.Instantiate<TransfBlockedWall>());
-            movers.Add(Container.Instantiate<MoverThroughtWall>());
+            movers.Add(Container.Instantiate<TransformatorThroughtWall>());
 
             return movers;
         }
