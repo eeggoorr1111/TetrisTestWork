@@ -1,4 +1,4 @@
-﻿Shader "Stylized/Sky"
+﻿Shader "Tetris/Sky"
 {
     Properties
     {
