@@ -23,7 +23,7 @@ namespace Tetris
         protected TetrisModel _model;
         protected TetrisView _view;
         protected Vector3 _posFigure;
-        protected GameStatusKey _gameStatus;
+        private GameStatusKey _gameStatus;
         protected bool _isBoostingFall;
 
 
@@ -109,6 +109,14 @@ namespace Tetris
             _gameStatus = GameStatusKey.Game;
             _model.StartGame(indexGameModeArg, ref figure);
             _view.NewFigure(figure.IdxTemplate, figure.Pivot);
+        }
+
+
+        private enum GameStatusKey
+        {
+            Game,
+            Pause,
+            Menu
         }
     }
 }
