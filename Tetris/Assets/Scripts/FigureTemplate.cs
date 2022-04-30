@@ -11,6 +11,7 @@ namespace Tetris
         public float WeightGenerate => _weightGenerate;
 
 
+        [Tooltip("For optimization, first of all, set extrema blocks.That is, blocks that have the largest or smallest x or the largest or smallest y")]
         [SerializeField] protected List<Vector2Int> _blocks;
         [SerializeField] protected float _weightGenerate;
 

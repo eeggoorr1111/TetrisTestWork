@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace Tetris
 {
@@ -51,13 +52,13 @@ namespace Tetris
         {
             return new Vector3(vector.x, vector.y, zArg);
         }
-        public static Bounds GetBounds(IReadOnlyList<Vector2Int> blocksArg, Vector3 sizeBlockArg)
+        public static Bounds GetBounds(IReadOnlyList<Vector2Int> cellsArg, Vector3 sizeBlockArg)
         {
             Vector2Int minInt = new Vector2Int(int.MaxValue, int.MaxValue);
             Vector2Int maxInt = new Vector2Int(int.MinValue, int.MinValue);
             Vector3 halfSizeBlock = sizeBlockArg / 2;
 
-            foreach (var block in blocksArg)
+            foreach (var block in cellsArg)
             {
                 if (block.x < minInt.x)
                     minInt.x = block.x;
@@ -99,6 +100,31 @@ namespace Tetris
 
                 if (block.max.y > max.y)
                     max.y = block.max.y;
+            }
+
+            Bounds bounds = new Bounds();
+            bounds.SetMinMax(min, max);
+
+            return bounds;
+        }
+        public static Bounds GetBounds(IReadOnlyList<Vector2> pointsArg)
+        {
+            Vector3 min = new Vector3(float.MaxValue, float.MaxValue, 0);
+            Vector3 max = new Vector3(float.MinValue, float.MinValue, 0);
+
+            foreach (var point in pointsArg)
+            {
+                if (point.x < min.x)
+                    min.x = point.x;
+
+                if (point.y < min.y)
+                    min.y = point.y;
+
+                if (point.x > max.x)
+                    max.x = point.x;
+
+                if (point.y > max.y)
+                    max.y = point.y;
             }
 
             Bounds bounds = new Bounds();

@@ -35,7 +35,7 @@ namespace Tetris
         }
         public void ToRotate(Transformator transfArg)
         {
-            transfArg.Rotate(_collider);
+            transfArg.ToRotate(_collider);
         }
     }
 }

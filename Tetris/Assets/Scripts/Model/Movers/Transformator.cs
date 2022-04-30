@@ -26,8 +26,11 @@ namespace Tetris
             _map = mapArg;
             _params = paramsArg;
             _collisionHeap = collisionArg;
-            _blocks = new List<Bounds>();
+            _blocks = new List<Bounds>(8);
         }
+
+
+        public Vector3 FallWhileRotate => GetFall(_difficulty.TimeRotate);
 
 
         protected readonly HeapFigures _heapFigures;
@@ -35,15 +38,15 @@ namespace Tetris
         protected readonly MapData _map;
         protected readonly CalculateParams _params;
         protected readonly CheckCollisionHeap _collisionHeap;
+        private readonly List<Bounds> _blocks;
         protected Tween _moveToSide;
         protected Tween _rotate;
-        protected List<Bounds> _blocks;
         
-        
+
         public bool ToFall(bool boostedFallArg, ColliderFigure colliderArg)
         {
             bool isMove = true;
-            if (_moveToSide.IsActive())
+            if (_moveToSide.IsActive() || _rotate.IsActive())
                 return isMove;
 
             float distance = GetDistanceToNearestObstruction(colliderArg);
@@ -66,9 +69,24 @@ namespace Tetris
             return isMove;
         }
         public abstract bool MoveToSide(bool toRightArg, ColliderFigure collider);
-        public abstract void Rotate(ColliderFigure collider);
+        public abstract void ToRotate(ColliderFigure collider);
 
 
+        protected void GetBlocksAfterRotate(ColliderFigure colliderArg, Quaternion rotateArg, Vector3 deltaFallArg, List<Bounds> blocks)
+        {
+            Vector3 pivotPos = colliderArg.Pivot;
+
+            blocks.Clear();
+            for (int i = 0; i < colliderArg.Blocks.Count; i++)
+            {
+                Vector2Int blockLocalPos = colliderArg.BlocksLocalPos[i];
+                Vector3 localPos = new Vector3(blockLocalPos.x, blockLocalPos.y, 0);
+                Vector3 newLocalPos = Matrix4x4.Rotate(rotateArg).MultiplyPoint(localPos);
+                Bounds block = new Bounds(newLocalPos + pivotPos, colliderArg.Blocks[i].size);
+
+                blocks.Add(block.WithDeltaPos(deltaFallArg));
+            }
+        }
         protected Vector3 GetFall(float timeArg)
         {
             return _difficulty.SpeedFalling * timeArg * FallDirection;
@@ -108,7 +126,7 @@ namespace Tetris
             for (int i = 0; i < colliderArg.Blocks.Count; i++)
                 _blocks.Add(colliderArg.Blocks[i].WithDeltaPos(deltaArg));
 
-            colliderArg.Tranasform(bounds, _blocks);
+            colliderArg.Transform(bounds, _blocks);
         }
     }
 }

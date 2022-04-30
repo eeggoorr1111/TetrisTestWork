@@ -9,47 +9,50 @@ namespace Tetris
         public ColliderFigure(  Bounds boundsArg, 
                                 Bounds[] blocksArg, 
                                 Vector2Int[] blocksLocalPosArg, 
-                                int idxPivotBlockArg)
+                                int idxPivotBlockArg,
+                                int[] idxsExtremeBlocksArg)
         {
             Bounds = boundsArg;
             Rotate = Quaternion.Euler(0f, 0f, 0f);
 
             _blocks = blocksArg;
             _blockLocalPos = blocksLocalPosArg;
-            _idxPivotBlock = idxPivotBlockArg;
+            _idxPivot = idxPivotBlockArg;
+            _idxsExtremeBlocks = idxsExtremeBlocksArg;
         }
 
 
         public Bounds Bounds { get; private set; }
         public Vector3 Center => Bounds.center;
-        public Vector3 Pivot => _blocks[_idxPivotBlock].center;
+        public Vector3 Pivot => _blocks[_idxPivot].center;
         public Quaternion Rotate { get; private set; }
         public IReadOnlyList<Bounds> Blocks => _blocks;
         public IReadOnlyList<Vector2Int> BlocksLocalPos => _blockLocalPos;
-        public int RightX => Bounds.GetMaxCell().x;
-        public int LeftX => Bounds.GetMinCell().x;
-
+        public IReadOnlyList<int> IdxsExtremeBlocks => _idxsExtremeBlocks;
+        public int RightColumn => Bounds.GetMaxCell().x;
+        public int LeftColumn => Bounds.GetMinCell().x;
 
 
         private readonly Bounds[] _blocks;
         private readonly Vector2Int[] _blockLocalPos;
-        private readonly int _idxPivotBlock;
+        private readonly int _idxPivot;
+        private readonly int[] _idxsExtremeBlocks;
 
 
-        public void Tranasform(Bounds newBoundsArg)
+        public void Transform(Bounds boundsArg)
         {
-            Bounds = newBoundsArg;
+            Bounds = boundsArg;
         }
-        public void Tranasform(Bounds newBoundsArg, IReadOnlyList<Bounds> blocksArg)
+        public void Transform(Bounds boundsArg, IReadOnlyList<Bounds> blocksArg)
         {
-            Bounds = newBoundsArg;
+            Bounds = boundsArg;
             for (int i = 0; i < _blocks.Length; i++)
                 _blocks[i] = blocksArg[i];
         }
-        public void Tranasform(Bounds newBoundsArg, IReadOnlyList<Bounds> blocksArg, Quaternion newRotateArg)
+        public void Transform(Bounds boundsArg, IReadOnlyList<Bounds> blocksArg, Quaternion newRotateArg)
         {
             Rotate = newRotateArg;
-            Tranasform(newBoundsArg, blocksArg);
+            Transform(boundsArg, blocksArg);
         }
     }
 }

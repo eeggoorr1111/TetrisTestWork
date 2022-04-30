@@ -38,6 +38,7 @@ namespace Tetris
         public Vector3 CenterRight => _bounds.center.WithX(_bounds.max.x + _sizeBlock.x / 2);
         public Vector3 SizeBlock => _sizeBlock;
         public Vector3 HalfSizeBlockXY => (_sizeBlock / 2).WithZ(0);
+        public Vector2 HalfSizeBlock2D => new Vector2(_sizeBlock.x / 2, _sizeBlock.y / 2);
         public Vector3 Center => _bounds.center;
 
 

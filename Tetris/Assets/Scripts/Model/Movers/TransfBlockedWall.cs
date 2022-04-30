@@ -8,16 +8,21 @@ namespace Tetris
     public class TransfBlockedWall : Transformator
     {
         public TransfBlockedWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
-            base(heapArg, difficultyArg, mapArg, paramsArg, collisionHeapArg) { }
+            base(heapArg, difficultyArg, mapArg, paramsArg, collisionHeapArg) 
+        {
+            _blocks = new List<Bounds>();
+        }
+
+        private List<Bounds> _blocks;
 
 
         public override bool MoveToSide(bool toRightArg, ColliderFigure colliderArg)
         {
             if (_moveToSide.IsActive())
                 return false;
-            else if (toRightArg && colliderArg.RightX + 1 > _map.MaxCell.x)
+            else if (toRightArg && colliderArg.RightColumn + 1 > _map.MaxCell.x)
                 return false;
-            else if (!toRightArg && colliderArg.LeftX - 1 < _map.MinCell.x)
+            else if (!toRightArg && colliderArg.LeftColumn - 1 < _map.MinCell.x)
                 return false;
             
             Vector3 deltaMove = toRightArg ? Vector3.right : Vector3.left;
@@ -36,56 +41,37 @@ namespace Tetris
 
             return false;
         }
-        public override void Rotate(ColliderFigure colliderArg)
+        public override void ToRotate(ColliderFigure colliderArg)
         {
             if (_rotate.IsActive() || _moveToSide.IsActive())
                 return;
 
             Quaternion targetRotate = (Matrix4x4.Rotate(colliderArg.Rotate) * MatrixRotate).rotation;
 
-            Bounds afterRotate;
-            Bounds beforeRotate = colliderArg.Bounds;
-            Vector3 deltaFall = GetFall(_difficulty.TimeRotate);
-
-            GetDataAfterRotate(colliderArg, targetRotate, _blocks, out afterRotate);
-            afterRotate.WithDeltaPos(deltaFall);
+            GetBlocksAfterRotate(colliderArg, targetRotate, FallWhileRotate, _blocks);
+            Bounds afterRotate = Helpers.GetBounds(_blocks);
 
             if (afterRotate.GetMaxCell().x > _map.MaxCell.x ||
                 afterRotate.GetMinCell().x < _map.MinCell.x)
                 return;
-            
-            if (_collisionHeap.CheckRotate(beforeRotate, afterRotate, _blocks, deltaFall))
+
+            if (_collisionHeap.CheckRotate(colliderArg, _blocks))
                 _rotate = DOTween.To(() => colliderArg.Rotate, rotate => ToRotate(colliderArg, rotate), targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
         }
 
 
-        protected void GetDataAfterRotate(ColliderFigure colliderArg, Quaternion rotateArg, List<Bounds> blocks, out Bounds bounds)
-        {
-            Vector3 pivotPos = colliderArg.Pivot;
 
-            blocks.Clear();
-            for (int i = 0; i < colliderArg.Blocks.Count; i++)
-            {
-                Vector2Int blockLocalPos = colliderArg.BlocksLocalPos[i];
-                Vector3 localPos = new Vector3(blockLocalPos.x, blockLocalPos.y, 0);
-                Vector3 newLocalPos = Matrix4x4.Rotate(rotateArg).MultiplyPoint(localPos);
-
-                blocks.Add(new Bounds(newLocalPos + pivotPos, colliderArg.Blocks[i].size));
-            }
-
-            bounds = Helpers.GetBounds(blocks);
-        }
-        protected void ToRotate(ColliderFigure colliderArg, Quaternion rotateArg)
-        {
-            Bounds bounds;
-            GetDataAfterRotate(colliderArg, rotateArg, _blocks, out bounds);
-
-            colliderArg.Tranasform(bounds, _blocks, rotateArg);
-        }
-        protected void ToMoveTo(ColliderFigure colliderArg, Vector3 pointArg)
+        private void ToMoveTo(ColliderFigure colliderArg, Vector3 pointArg)
         {
             Vector3 delta = pointArg - colliderArg.Bounds.center;
             ToMove(colliderArg, delta);
+        }
+        private void ToRotate(ColliderFigure colliderArg, Quaternion rotateArg)
+        {
+            GetBlocksAfterRotate(colliderArg, rotateArg, GetFall(Time.deltaTime), _blocks);
+            Bounds bounds = Helpers.GetBounds(_blocks);
+
+            colliderArg.Transform(bounds, _blocks, rotateArg);
         }
     }
 }

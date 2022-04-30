@@ -5,10 +5,22 @@ using DG.Tweening;
 
 namespace Tetris
 {
-    public class MoverThroughtWall : Transformator
+    public sealed class MoverThroughtWall : Transformator
     {
         public MoverThroughtWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
-            base(heapArg, difficultyArg, mapArg, paramsArg, collisionHeapArg) { }
+            base(heapArg, difficultyArg, mapArg, paramsArg, collisionHeapArg) 
+        {
+            _replace = new HashSet<Vector2Int>();
+            _areaRotate = new HashSet<Vector2Int>();
+            _blocks = new List<Bounds>(8);
+            _blocks2 = new List<Bounds>(8);
+        }
+
+
+        private HashSet<Vector2Int> _replace;
+        private HashSet<Vector2Int> _areaRotate;
+        private List<Bounds> _blocks;
+        private List<Bounds> _blocks2;
 
 
         public override bool MoveToSide(bool toRightArg, ColliderFigure colliderArg)
@@ -23,7 +35,7 @@ namespace Tetris
 
             _blocks.Clear();
             foreach (var block in colliderArg.Blocks)
-                _blocks.Add(WithDeltaThroughtWall(block, deltaMoveWithFall));
+                _blocks.Add(ApplyDeltaToBlock(block, deltaMoveWithFall));
 
             if (_collisionHeap.CheckMoveToSide(_blocks))
             {
@@ -33,25 +45,60 @@ namespace Tetris
 
             return false;
         }
-        public override void Rotate(ColliderFigure colliderArg)
+        public override void ToRotate(ColliderFigure colliderArg)
         {
-            
+            if (_rotate.IsActive() || _moveToSide.IsActive())
+                return;
+
+            Quaternion targetRotate = (Matrix4x4.Rotate(colliderArg.Rotate) * MatrixRotate).rotation;
+
+            GetBlocksAfterRotate(colliderArg, colliderArg.Rotate, Vector3.zero, _blocks);
+            GetBlocksAfterRotate(colliderArg, targetRotate, FallWhileRotate, _blocks2);
+
+            _collisionHeap.GetAreaRotate(colliderArg, _blocks, _blocks2, _areaRotate);
+            AreaRotateThroughtWall(_areaRotate);
+
+            if (_collisionHeap.CheckArea(_areaRotate))
+                _rotate = DOTween.To(() => colliderArg.Rotate, rotate => ToRotate(colliderArg, rotate), targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
         }
 
 
-        protected void EndedMove(ColliderFigure colliderArg)
+        
+        private void AreaRotateThroughtWall(HashSet<Vector2Int> areaRotate)
+        {
+            _replace.Clear();
+            foreach (var cell in areaRotate)
+                if (cell.x > _map.MaxCell.x || cell.x < _map.MinCell.x)
+                    _replace.Add(cell);
+
+            foreach (var cell in _replace)
+            {
+                areaRotate.Remove(cell);
+                areaRotate.Add(CellThroughtWall(cell));
+            }
+        }
+        private void ToRotate(ColliderFigure colliderArg, Quaternion rotateArg)
+        {
+            GetBlocksAfterRotate(colliderArg, rotateArg, GetFall(Time.deltaTime), _blocks);
+
+            for (int i = 0; i < _blocks.Count; i++)
+                _blocks[i] = BoundsThroughtWall(_blocks[i]);
+
+            colliderArg.Transform(Helpers.GetBounds(_blocks), _blocks, rotateArg);
+        }
+        private void EndedMove(ColliderFigure colliderArg)
         {
             Vector3 newPos = PointThroughtWall(colliderArg.Center);
-            colliderArg.Tranasform(new Bounds(newPos, colliderArg.Bounds.size));
+            colliderArg.Transform(new Bounds(newPos, colliderArg.Bounds.size));
         }
-        protected Bounds WithDeltaThroughtWall(Bounds boundsArg, Vector3 deltaArg)
+        private Bounds ApplyDeltaToBlock(Bounds boundsArg, Vector3 deltaArg)
         {
             Vector3 newPos = boundsArg.center + deltaArg;
             Vector3 newPosThroughtWall = PointThroughtWall(newPos);
 
             return new Bounds(newPosThroughtWall, boundsArg.size);
         }
-        protected Vector3 PointThroughtWall(Vector3 pointArg)
+        private Vector3 PointThroughtWall(Vector3 pointArg)
         {
             if (pointArg.x > _map.MaxPoint.x)
                 pointArg.x = _map.MinPoint.x + pointArg.x - _map.MaxPoint.x;
@@ -60,16 +107,30 @@ namespace Tetris
 
             return pointArg;
         }
-        protected void ToMoveTo(ColliderFigure colliderArg, Vector3 pointArg)
+        private Bounds BoundsThroughtWall(Bounds boundsArg)
+        {
+            Vector3 center = PointThroughtWall(boundsArg.center);
+            return new Bounds(center, boundsArg.size);
+        }
+        private Vector2Int CellThroughtWall(Vector2Int cellArg)
+        {
+            if (cellArg.x > _map.MaxCell.x)
+                cellArg.x = _map.MinCell.x + cellArg.x - _map.MaxCell.x - 1;
+            else if (cellArg.x < _map.MinCell.x)
+                cellArg.x = _map.MaxCell.x - Mathf.Abs(_map.MinCell.x - cellArg.x) + 1;
+
+            return cellArg;
+        }
+        private void ToMoveTo(ColliderFigure colliderArg, Vector3 pointArg)
         {
             Vector3 delta = pointArg - colliderArg.Bounds.center;
             Bounds figure = new Bounds(pointArg, colliderArg.Bounds.size);
 
             _blocks.Clear();
             for (int i = 0; i < colliderArg.Blocks.Count; i++)
-                _blocks.Add(WithDeltaThroughtWall(colliderArg.Blocks[i], delta));
+                _blocks.Add(ApplyDeltaToBlock(colliderArg.Blocks[i], delta));
 
-            colliderArg.Tranasform(figure, _blocks);
+            colliderArg.Transform(figure, _blocks);
         }
     }
 }

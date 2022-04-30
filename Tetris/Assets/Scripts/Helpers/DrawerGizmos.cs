@@ -7,21 +7,15 @@ namespace Tetris
 {
     public sealed class DrawerGizmos : MonoBehaviour
     {
-        public static DrawerGizmos Instance => _instance;
-
-
-        private event Action _onDrawGizmos;
+        private static event Action _onDraw;
+        private static event Action _onPrevDraw;
         private static DrawerGizmos _instance;
 
 
-        public void SubscribeOnDrawGizmos(Action callbackArg)
+        public static void Draw(Action callbackArg, bool drawArg = true)
         {
-            _onDrawGizmos -= callbackArg;
-            _onDrawGizmos += callbackArg;
-        }
-        public void UnsubscribeOnDrawGizmos(Action callbackArg)
-        {
-            _onDrawGizmos -= callbackArg;
+            if (drawArg)
+                _onDraw += callbackArg;
         }
 
 
@@ -32,22 +26,29 @@ namespace Tetris
             else
                 Debug.LogError($"На сцене присутствует более одного { GetType().Name }", this);
         }
-        private void OnEnable()
-        {
-            if (_instance == null)
-                _instance = this;
-            else if (_instance != this)
-                Debug.LogError($"На сцене присутствует более одного { GetType().Name }", this);
-        }
-        private void OnDisable()
+        private void OnDestroy()
         {
             _instance = null;
-            _onDrawGizmos = null;
+            _onDraw = null;
+            _onPrevDraw = null;
         }
         private void OnDrawGizmos()
         {
-            if (_onDrawGizmos != null)
-                _onDrawGizmos.Invoke();
+            if (_onDraw == null)
+            {
+                if (_onPrevDraw != null)
+                    _onPrevDraw.Invoke();
+            }
+            else
+            {
+                _onDraw.Invoke();
+
+                _onPrevDraw = null;
+                foreach (var draw in _onDraw.GetInvocationList())
+                    _onPrevDraw += draw as Action;
+
+                _onDraw = null;
+            }
         }
     }
 }
