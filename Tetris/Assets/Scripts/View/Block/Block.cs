@@ -3,15 +3,15 @@ using Zenject;
 
 namespace Tetris.View
 {
-    public class Block : MonoBehaviour
+    public sealed class Block : MonoBehaviour
     {
         public Transform Transf => _transf;
 
 
-        protected Transform _transf;
+        private Transform _transf;
 
 
-        protected void StartCustom()
+        private void StartCustom()
         {
             _transf = GetComponent<Transform>();
         }

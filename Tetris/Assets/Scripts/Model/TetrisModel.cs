@@ -24,36 +24,32 @@ namespace Tetris.Model
         }
 
 
-        public FigureModel Figure => _figure;
-        public HeapFigures HeapFigures => _heapFigures;
-        public int Scores => _scores;
-        public MapData Map => _map;
+        public FigureModel Figure { get; private set; }
+        public int Scores { get; private set; }
 
 
-        private int _scores = 0;
-        private IReadOnlyList<Transformator> _movers;
+        private readonly IReadOnlyList<Transformator> _movers;
+        private readonly HeapFigures _heapFigures;
+        private readonly FigureGenerator _generator;
+        private readonly MapData _map;
         private Transformator _mover;
-        private FigureModel _figure;
-        private HeapFigures _heapFigures;
-        private FigureGenerator _generator;
-        private MapData _map;
 
-        
+
         public void StartGame(int indexMoverArg, ref FigureModel newFigure)
         {
             _mover = _movers[indexMoverArg];
-            _figure = _generator.NewFigure();
+            Figure = _generator.NewFigure();
 
-            newFigure = _figure;
+            newFigure = Figure;
         }
         public void ContinueFallFigure(bool boostedFallArg, ref FigureModel newFigure, ref IReadOnlyList<int> deleteRanges, out bool isGameOver)
         {
             isGameOver = false;
-            if (!_figure.ToFall(_mover, boostedFallArg))
+            if (!Figure.ToFall(_mover, boostedFallArg))
             {
-                deleteRanges = _heapFigures.Add(_figure);
+                deleteRanges = _heapFigures.Add(Figure);
 
-                _scores += deleteRanges.Count;
+                Scores += deleteRanges.Count;
                 if (_heapFigures.TopByY > _map.TopByY)
                 {
                     isGameOver = true;
@@ -61,18 +57,18 @@ namespace Tetris.Model
                 }
                 else
                 {
-                    _figure = _generator.NewFigure();
-                    newFigure = _figure;
+                    Figure = _generator.NewFigure();
+                    newFigure = Figure;
                 }
             }
         }
         public void MoveFigure(bool toRightArg)
         {
-            _figure.ToMoveToSide(_mover, toRightArg);
+            Figure.ToMoveToSide(_mover, toRightArg);
         }
         public void Rotate()
         {
-            _figure.ToRotate(_mover);
+            Figure.ToRotate(_mover);
         }
 
 

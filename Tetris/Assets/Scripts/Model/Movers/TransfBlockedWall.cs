@@ -13,7 +13,8 @@ namespace Tetris.Model
             _blocks = new List<Bounds>();
         }
 
-        private List<Bounds> _blocks;
+
+        private readonly List<Bounds> _blocks;
 
 
         public override bool MoveToSide(bool toRightArg, ColliderFigure colliderArg)

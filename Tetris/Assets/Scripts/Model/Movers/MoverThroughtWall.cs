@@ -16,10 +16,10 @@ namespace Tetris.Model
         }
 
 
-        private HashSet<Vector2Int> _replace;
-        private HashSet<Vector2Int> _areaRotate;
-        private List<Bounds> _blocks;
-        private List<Bounds> _blocks2;
+        private readonly HashSet<Vector2Int> _replace;
+        private readonly HashSet<Vector2Int> _areaRotate;
+        private readonly List<Bounds> _blocks;
+        private readonly List<Bounds> _blocks2;
 
 
         public override bool MoveToSide(bool toRightArg, ColliderFigure colliderArg)

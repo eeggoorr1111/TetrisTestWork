@@ -5,14 +5,11 @@ using Zenject;
 
 namespace Tetris.Model
 {
-    public class HeapFigures
+    public sealed class HeapFigures
     {
         public HeapFigures(MapData mapArg)
         {
             _map = mapArg;
-
-            _minCell = new Vector3Int(int.MaxValue, int.MaxValue, 0);
-            _maxCell = new Vector3Int(int.MinValue, int.MinValue, 0);
 
             _blocks = new Dictionary<Vector2Int, Bounds>();
             _blocksInRange = new Dictionary<int, int>();
@@ -21,20 +18,16 @@ namespace Tetris.Model
         }
 
 
-        public float BottomByY => _map.BottomByY;
         public float TopByY => _bounds.max.y;
         public Bounds Bounds => _bounds;
-        public int Ranges => 0;
 
 
-        protected Dictionary<Vector2Int, Bounds> _blocks;
-        protected Bounds _bounds;
-        protected MapData _map;
-        protected Vector3Int _minCell;
-        protected Vector3Int _maxCell;
-        protected Dictionary<int, int> _blocksInRange;
-        protected List<int> _deleteRanges;
-        protected int _lastRange;
+        private readonly Dictionary<Vector2Int, Bounds> _blocks;
+        private readonly MapData _map;
+        private readonly Dictionary<int, int> _blocksInRange;
+        private readonly List<int> _deleteRanges;
+        private Bounds _bounds;
+        private int _lastRange;
 
 
         public IReadOnlyList<int> Add(FigureModel figureArg)
@@ -101,7 +94,7 @@ namespace Tetris.Model
         }
 
 
-        protected void DeleteRanges(List<int> rangesArg)
+        private void DeleteRanges(IReadOnlyList<int> rangesArg)
         {
             int putDown = 0;
             for (int y = rangesArg[0]; y <= _lastRange; y++)
@@ -127,10 +120,10 @@ namespace Tetris.Model
 
             _lastRange -= rangesArg.Count;
         }
-        protected void UpdateBounds()
+        private void UpdateBounds()
         {
-            _minCell = new Vector3Int(int.MaxValue, int.MaxValue, 0);
-            _maxCell = new Vector3Int(int.MinValue, int.MinValue, 0);
+            Vector3Int minCell = new Vector3Int(int.MaxValue, int.MaxValue, 0);
+            Vector3Int maxCell = new Vector3Int(int.MinValue, int.MinValue, 0);
 
             if (_blocks.IsEmpty())
             {
@@ -143,20 +136,20 @@ namespace Tetris.Model
                 int blockX = pair.Key.x;
                 int blockY = pair.Key.y;
 
-                if (blockX < _minCell.x)
-                    _minCell.x = blockX;
-                else if (blockX > _maxCell.x)
-                    _maxCell.x = blockX;
+                if (blockX < minCell.x)
+                    minCell.x = blockX;
+                else if (blockX > maxCell.x)
+                    maxCell.x = blockX;
 
-                if (blockY < _minCell.y)
-                    _minCell.y = blockY;
-                else if (blockY > _maxCell.y)
-                    _maxCell.y = blockY;
+                if (blockY < minCell.y)
+                    minCell.y = blockY;
+                else if (blockY > maxCell.y)
+                    maxCell.y = blockY;
             }
 
-            _bounds.SetMinMax(_minCell - _map.HalfSizeBlockXY, _maxCell + _map.HalfSizeBlockXY);
+            _bounds.SetMinMax(minCell - _map.HalfSizeBlockXY, maxCell + _map.HalfSizeBlockXY);
         }
-        protected void PutDownBlock(Vector2Int cellArg, int puDownArg)
+        private void PutDownBlock(Vector2Int cellArg, int puDownArg)
         {
             Bounds block = _blocks[cellArg];
             Vector2Int newCell = new Vector2Int(cellArg.x, cellArg.y - puDownArg);

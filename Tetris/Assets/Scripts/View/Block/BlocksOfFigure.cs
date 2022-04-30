@@ -5,39 +5,38 @@ using Zenject;
 namespace Tetris.View
 {
 
-    public class BlocksOfFigure : MonoBehaviour
+    public sealed class BlocksOfFigure : MonoBehaviour
     {
         [Inject]
-        protected void Constructor(Block.Pool poolBlocksArg)
+        private void Constructor(Block.Pool poolBlocksArg)
         {
             _poolBlocks = poolBlocksArg;
         }
 
 
-        public Transform Transf => _transf;
+        public Transform Transf { get; private set; }
         public IReadOnlyList<Block> Blocks => _blocks;
 
 
-        protected Transform _transf;
-        protected Block.Pool _poolBlocks;
-        protected List<Block> _blocks;
+        private Block.Pool _poolBlocks;
+        private List<Block> _blocks;
 
 
         public void StartCustom()
         {
-            _transf = GetComponent<Transform>();
             _blocks = new List<Block>();
+            Transf = GetComponent<Transform>();
         }
         public void NewFigrue(Vector3 posArg, FigureTemplate templateArg)
         {
-            _transf.position = posArg;
-            _blocks.Clear();
+            Transf.position = posArg;
 
+            _blocks.Clear();
             foreach (Vector2Int blockPos in templateArg.Blocks)
             {
                 Block block = _poolBlocks.Spawn(blockPos);
 
-                block.Transf.SetParent(_transf);
+                block.Transf.SetParent(Transf);
                 block.Transf.localPosition = new Vector3Int(blockPos.x, blockPos.y, 0);
                 block.Transf.rotation = Quaternion.Euler(0f, 0f, 0f);
 

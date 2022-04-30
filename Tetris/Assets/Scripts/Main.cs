@@ -10,10 +10,10 @@ namespace Tetris
     /// <summary>
     /// Он же Controller в рамках паттерна MVC
     /// </summary>
-    public class Main : MonoBehaviour
+    public sealed class Main : MonoBehaviour
     {
         [Inject]
-        protected void Constructor(TetrisView viewArg, TetrisModel modelArg)
+        private void Constructor(TetrisView viewArg, TetrisModel modelArg)
         {
             _model = modelArg;
             _view = viewArg;
@@ -21,14 +21,13 @@ namespace Tetris
         }
 
 
-        protected TetrisModel _model;
-        protected TetrisView _view;
-        protected Vector3 _posFigure;
+        private TetrisModel _model;
+        private TetrisView _view;
         private GameStatusKey _gameStatus;
-        protected bool _isBoostingFall;
+        private bool _isBoostingFall;
 
 
-        protected void OnApplicationFocus(bool focusArg)
+        private void OnApplicationFocus(bool focusArg)
         {
             if (!focusArg && _gameStatus == GameStatusKey.Game)
             {
@@ -38,19 +37,19 @@ namespace Tetris
             else if (focusArg && _gameStatus == GameStatusKey.Pause)
                 _gameStatus = GameStatusKey.Game;
         }
-        protected void Start()
+        private void Start()
         {
             _view.StartCustom();
         }
-        protected void Update()
+        private void Update()
         {
             if (_gameStatus == GameStatusKey.Game)
             {
                 FigureModel newFigure = null;
-                IReadOnlyList<int> ranges = null;
+                IReadOnlyList<int> deleteRanges = null;
                 bool isGameOver;
 
-                _model.ContinueFallFigure(_isBoostingFall, ref newFigure, ref ranges, out isGameOver);
+                _model.ContinueFallFigure(_isBoostingFall, ref newFigure, ref deleteRanges, out isGameOver);
                 
                 if (isGameOver)
                     GameOver();
@@ -61,48 +60,28 @@ namespace Tetris
                     _view.NextFrame(_model.Scores, _model.Figure.Pivot, _model.Figure.Rotate);
                 }
 
-                if (ranges.WithItems())
-                    _view.Delete(ranges);
+                if (deleteRanges.WithItems())
+                    _view.Delete(deleteRanges);
             }
         }
-        protected void OnDrawGizmos()
-        {
-            Gizmos.color = Color.red;
-            if (_model != null)
-            {
-                if (_model.Figure != null && !_model.Figure.Blocks.IsEmpty())
-                {
-                    Gizmos.DrawCube(_model.Figure.Bounds.center, _model.Figure.Bounds.size);
-                    foreach (var block in _model.Figure.Blocks)
-                        Gizmos.DrawCube(block.center, block.size);
-                }
-                    
-
-                Gizmos.DrawSphere(_model.Map.MinPoint, 0.1f);
-                Gizmos.DrawSphere(_model.Map.MaxPoint, 0.1f);
-
-                if (_model.HeapFigures != null)
-                    Gizmos.DrawCube(_model.HeapFigures.Bounds.center, _model.HeapFigures.Bounds.size);
-            }
-        }
-        protected void OnEnable()
+        private void OnEnable()
         {
             _view.Subscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
         }
-        protected void OnDisable()
+        private void OnDisable()
         {
             if (_view != null && _view.IsExistsMonoB)
                 _view.Unsubscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
         }
-        protected void OnBoostFall(bool statusArg)
+        private void OnBoostFall(bool statusArg)
         {
             _isBoostingFall = statusArg;
         }
-        protected void GameOver()
+        private void GameOver()
         {
             _gameStatus = GameStatusKey.Menu;
         }
-        protected void StartGame(int indexGameModeArg)
+        private void StartGame(int indexGameModeArg)
         {
             FigureModel figure = null;
 
