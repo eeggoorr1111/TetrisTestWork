@@ -10,9 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fce36aa42aea6954eaeb8634dee748c2, type: 3}
-  m_Name: TwoBlocks
+  m_Name: L
   m_EditorClassIdentifier: 
   _blocks:
-  - {x: 0, y: 0}
+  - {x: 0, y: 2}
+  - {x: -1, y: 0}
   - {x: 0, y: 1}
+  - {x: 0, y: 0}
   _weightGenerate: 1
