@@ -1,48 +1,40 @@
 ﻿using TMPro;
 using UnityEngine;
 using Zenject;
+using UnityEngine.UI;
 
 namespace Tetris.View
 {
-    public sealed class UI
+    public sealed class UI : MonoBehaviour
     {
-        public UI ( [Inject(Id = "lblScores")] TextMeshProUGUI lblScoresArg,
-                    [Inject(Id = "menu")] Canvas menuArg,
-                    [Inject(Id = "border")] MeshRenderer borderArg,
-                    GameUi gameUiArg,
-                    MapData mapArg,
-                    Camera cameraArg)
-        {
-            _lblScores = lblScoresArg;
-            _gameUi = gameUiArg;
-            _menu = menuArg;
-            _map = mapArg;
-            _borderSample = borderArg;
-            _camera = cameraArg;
-        }
+        public Button BtnLvl1 => _btnLvl1;
+        public Button BtnLvl2 => _btnLvl2;
+        public Button BtnGoToMenu => _btnToMenu;
 
 
-        public float WidthBorder => _borderSampleTransf.localScale.x;
-        public float HalfWidthBorder => WidthBorder / 2;
+        [SerializeField] private TextMeshProUGUI _lblScores;
+        [SerializeField] private Canvas _gameUi;
+        [SerializeField] private Canvas _menu;
+        [SerializeField] private Camera _camera;
+        [SerializeField] private MeshRenderer _borderSample;
+        [SerializeField] private Button _btnLvl1;
+        [SerializeField] private Button _btnLvl2;
+        [SerializeField] private Button _btnToMenu;
 
 
-        private TextMeshProUGUI _lblScores;
-        private GameUi _gameUi;
-        private Canvas _menu;
-        private MapData _map;
-        private Camera _camera;
         private Transform _cameraTransf;
         private Transform _borderSampleTransf;
-        private MeshRenderer _borderSample;
+        private MapData _map;
         private Transform _leftBorder;
         private Transform _rightBorder;
         private Transform _topBorder;
         private Transform _bottomBorder;
 
 
-        public void StartCustom()
+        public void StartCustom(MapData mapDataArg)
         {
-            _gameUi.StartCustom();
+            _map = mapDataArg;
+
             _borderSampleTransf = _borderSample.transform;
             _cameraTransf = _camera.transform;
 
@@ -56,11 +48,10 @@ namespace Tetris.View
             _topBorder.gameObject.SetActive(false);
             _bottomBorder.gameObject.SetActive(false);
         }
-        
         public void StartGame()
         {
             _menu.enabled = false;
-            _gameUi.SetEnable(true);
+            _gameUi.enabled = true;
 
             _leftBorder.gameObject.SetActive(true);
             _rightBorder.gameObject.SetActive(true);
@@ -72,7 +63,7 @@ namespace Tetris.View
         public void EndGame()
         {
             _menu.enabled = true;
-            _gameUi.SetEnable(false);
+            _gameUi.enabled = false;
 
             _leftBorder.gameObject.SetActive(false);
             _rightBorder.gameObject.SetActive(false);
@@ -116,6 +107,34 @@ namespace Tetris.View
             float distance = frustumHeight * 0.5f / Mathf.Tan(_camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
 
             return new Vector3(_map.MaxCell.x / 2f, _map.MaxCell.y / 2f, -distance);
+        }
+
+
+        private void OnValidate()
+        {
+            if (_lblScores == null)
+                Debug.LogError("Label scores is null", this);
+
+            if (_camera == null)
+                Debug.LogError("Camera is null", this);
+
+            if (_gameUi == null)
+                Debug.LogError("Game UI is null", this);
+
+            if (_menu == null)
+                Debug.LogError("Menu is null", this);
+
+            if (_borderSample == null)
+                Debug.LogError("Border is null", this);
+
+            if (_btnLvl1 == null)
+                Debug.LogError("Button level 1 is null", this);
+
+            if (_btnLvl2 == null)
+                Debug.LogError("Button level 2 is null", this);
+
+            if (_btnToMenu == null)
+                Debug.LogError("Button to menu is null", this);
         }
     }
 }

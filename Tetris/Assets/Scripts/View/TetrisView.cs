@@ -10,6 +10,7 @@ namespace Tetris.View
     /// <summary>
     /// View в паттерне MVC
     /// </summary>
+    [RequireComponent(typeof(UI))]
     public sealed class TetrisView : MonoBehaviour
     {
         [Inject]
@@ -17,24 +18,21 @@ namespace Tetris.View
                                     FigureThroughtWall figureThroughtWallArg,
                                     ILevelsParams lvlsParamsArg,
                                     Block.Pool poolBlockArg,
-                                    MapData mapArg,
-                                    UI uiArg,
-                                    BlockParams blockParamsArg)
+                                    MapData mapArg)
         {
             _figureBlockedWall = figureArg;
             _figureThroughtWall = figureThroughtWallArg;
             _lvlsParams = lvlsParamsArg;
-            _ui = uiArg;
             _heap = new Dictionary<Vector2Int, Block>();
             _poolBlocks = poolBlockArg;
             _map = mapArg;
-            _blockParams = blockParamsArg;
             _lastRange = 0;
         }
 
         public bool IsExistsMonoB => this != null;
 
 
+        [SerializeField] private Material _blockMaterial;
         private event Action _onRotate;
         private event Action<bool> _onMove;
         private event Action<bool> _onBoostFall;
@@ -50,15 +48,19 @@ namespace Tetris.View
         private int _lastRange;
         private MapData _map;
         private Transform _transf;
-        private BlockParams _blockParams;
-
 
 
         public void StartCustom()
         {
+            _ui = GetComponent<UI>();
+            _ui.StartCustom(_map);
+
+            _ui.BtnLvl1.onClick.AddListener(() => StartGame(0));
+            _ui.BtnLvl2.onClick.AddListener(() => StartGame(1));
+            _ui.BtnGoToMenu.onClick.AddListener(GoToMenu);
+
             _figureBlockedWall.StartCustom();
             _figureThroughtWall.StartCustom();
-            _ui.StartCustom();
 
             _transf = GetComponent<Transform>();
         }
@@ -92,7 +94,7 @@ namespace Tetris.View
                 _onStartGame.Invoke(level);
 
             Color boundsMap = new Color(_map.MinPoint.x, _map.MinPoint.y, _map.MaxPoint.x, _map.MaxPoint.y);
-            _blockParams.Material.SetColor("_BoundsMap", boundsMap);
+            _blockMaterial.SetColor("_BoundsMap", boundsMap);
 
             _ui.StartGame();
         }
@@ -165,6 +167,11 @@ namespace Tetris.View
         }
 
 
+        private void OnValidate()
+        {
+            if (_blockMaterial == null)
+                Debug.LogError("For block not setted material", this);
+        }
         private void PutDownBlock(Vector2Int cellArg, int putDownArg)
         {
             Vector2Int newCell = new Vector2Int(cellArg.x, cellArg.y - putDownArg);

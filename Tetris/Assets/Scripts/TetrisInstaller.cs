@@ -15,6 +15,8 @@ namespace Tetris
 
         [Header("COMMON")]
         [SerializeField] protected CalculateParams _calculateParams;
+
+        [Header("LEVELS")]
         [SerializeField] protected LevelParams _level1;
         [SerializeField] protected LevelParams _level2;
 
@@ -22,14 +24,6 @@ namespace Tetris
         [SerializeField] protected TetrisView _view;
         [SerializeField] protected BlocksOfFigure _blockFigure;
         [SerializeField] protected Block _block;
-        [SerializeField] protected Camera _camera;
-        [SerializeField] protected BlockParams _blockParams;
-
-        [Header("UI")]
-        [SerializeField] protected TextMeshProUGUI _lblScores;
-        [SerializeField] protected GameUi _gameUi;
-        [SerializeField] protected Canvas _menu;
-        [SerializeField] protected MeshRenderer _border;
         
 
 
@@ -67,25 +61,12 @@ namespace Tetris
             int countBlocksMode2 = Mathf.RoundToInt(_level2.CountCellsAll * 0.5f);
 
             Container.Bind<TetrisView>().FromInstance(_view).AsSingle();
-            Container.Bind<Camera>().FromInstance(_camera).AsSingle();
             Container.Bind<BlocksOfFigure>().WithId("BlocksFigure1").FromComponentInNewPrefab(_blockFigure).AsCached();
             Container.Bind<BlocksOfFigure>().WithId("BlocksFigure2").FromComponentInNewPrefab(_blockFigure).AsCached();
             Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(Mathf.Max(countBlocksMode1, countBlocksMode2)).FromComponentInNewPrefab(_block);
-            Container.Bind<BlockParams>().FromInstance(_blockParams).AsTransient();
 
             Container.Bind<FigureBlockedWall>().AsSingle();
             Container.Bind<FigureThroughtWall>().AsSingle();
-
-            InstallUI();
-        }
-        protected void InstallUI()
-        {
-            Container.Bind<TextMeshProUGUI>().WithId("lblScores").FromInstance(_lblScores).AsSingle();
-            Container.Bind<GameUi>().FromInstance(_gameUi).AsTransient();
-            Container.Bind<Canvas>().WithId("menu").FromInstance(_menu).AsTransient();
-            Container.Bind<MeshRenderer>().WithId("border").FromInstance(_border).AsTransient();
-            
-            Container.Bind<UI>().FromNew().AsSingle();
         }
         private LevelsParams CreateLevelsParams()
         {
@@ -129,36 +110,6 @@ namespace Tetris
                 _level2.CountCells.x < MinSizeMap.x || _level2.CountCells.y < MinSizeMap.y)
             {
                 Debug.LogError($"Map size must be >= {MinSizeMap.x} in x and >= {MinSizeMap.y} in y", this);
-                valid = false;
-            }
-
-            if (_lblScores == null)
-            {
-                Debug.LogError("Label scores is null", this);
-                valid = false;
-            }
-
-            if (_camera == null)
-            {
-                Debug.LogError("Camera is null", this);
-                valid = false;
-            }
-                
-            if (_gameUi == null)
-            {
-                Debug.LogError("Game UI is null", this);
-                valid = false;
-            }
-
-            if (_menu == null)
-            {
-                Debug.LogError("Menu is null", this);
-                valid = false;
-            }
-
-            if (_border == null)
-            {
-                Debug.LogError("Border is null", this);
                 valid = false;
             }
 
