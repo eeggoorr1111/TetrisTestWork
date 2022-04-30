@@ -6,45 +6,37 @@ namespace Tetris
 {
     public class MapData
     {
-        /// <summary>
-        /// Если тут задать в качесвте sizeBlock уменьшенные блоки, то границы UI будут криво отображаться. 
-        /// Нужно определиться нужны ли нам разные sizeBlock размеры для представленяи и модели. Если не нужны,
-        /// то не париться и сделать единую переменную для размера блока. Если не получиться,
-        /// тогда надо думать разделять сущность Map на сущност для View и для Model
-        /// </summary>
-        public MapData( Difficulty difficultyArg, CalculateParams paramsArg)
+        public MapData(ILevelsParams lvlsParamsArg, CalculateParams paramsArg)
         {
-            _countCells = difficultyArg.CountCells;
-            _bounds = new BoundsInt();
-            _bounds.SetMinMax(Vector3Int.zero, new Vector3Int(_countCells.x - 1, _countCells.y - 1, 0));
+            _lvlsParams = lvlsParamsArg;
             _sizeBlock = paramsArg.SizeBoundsBlock;
         }
 
 
-        public Vector3Int MinCell => _bounds.min;
-        public Vector3 MinPoint =>  (_bounds.min - _sizeBlock / 2).WithZ(_bounds.min.z);
-        public Vector3 MaxPoint =>  (_bounds.max + _sizeBlock / 2).WithZ(_bounds.max.z);
-        public Vector3Int MaxCell => _bounds.max;
-        public Vector2Int CountCells => _countCells;
-        public float TopByY => TopCell + _sizeBlock.y / 2;
-        public float BottomByY => BottomCell - _sizeBlock.y / 2;
-        public int TopCell => _bounds.max.y;
-        public int BottomCell => _bounds.min.y;
-        public float SizeX => _bounds.max.x + _sizeBlock.x;
-        public float SizeY => _bounds.max.y + _sizeBlock.y;
-        public Vector3 CenterTop => _bounds.center.WithY(TopCell + _sizeBlock.y / 2);
-        public Vector3 CenterBottom => _bounds.center.WithY(BottomCell - _sizeBlock.y / 2);
-        public Vector3 CenterLeft => _bounds.center.WithX(_bounds.min.x - _sizeBlock.x / 2);
-        public Vector3 CenterRight => _bounds.center.WithX(_bounds.max.x + _sizeBlock.x / 2);
+        public Vector2Int CountCells => _lvlsParams.Current.CountCells;
+        public Vector3Int CountCells3 => new Vector3Int(CountCells.x, CountCells.y, 0);
+        public Vector3Int MinCell => Vector3Int.zero;
+        public Vector3Int MaxCell => CountCells3 + new Vector3Int(-1, -1, 0);
+        public Vector3 MinPoint =>  (MinCell - _sizeBlock / 2).WithZ(0);
+        public Vector3 MaxPoint =>  (MaxCell + _sizeBlock / 2).WithZ(0);
+        public float TopByY => TopRow + _sizeBlock.y / 2;
+        public float BottomByY => BottomRow - _sizeBlock.y / 2;
+        public int TopRow => MaxCell.y;
+        public int BottomRow => MinCell.y;
+        public float SizeX => MaxCell.x + _sizeBlock.x;
+        public float SizeY => MaxCell.y + _sizeBlock.y;
+        public Vector3 CenterTop => Center.WithY(TopRow + _sizeBlock.y / 2);
+        public Vector3 CenterBottom => Center.WithY(BottomRow - _sizeBlock.y / 2);
+        public Vector3 CenterLeft => Center.WithX(MinCell.x - _sizeBlock.x / 2);
+        public Vector3 CenterRight => Center.WithX(MaxCell.x + _sizeBlock.x / 2);
         public Vector3 SizeBlock => _sizeBlock;
         public Vector3 HalfSizeBlockXY => (_sizeBlock / 2).WithZ(0);
         public Vector2 HalfSizeBlock2D => new Vector2(_sizeBlock.x / 2, _sizeBlock.y / 2);
-        public Vector3 Center => _bounds.center;
+        public Vector3 Center => (MinPoint + MaxPoint) / 2;
 
 
-        protected BoundsInt _bounds;
         protected Vector3 _sizeBlock;
-        protected Vector2Int _countCells;
+        private readonly ILevelsParams _lvlsParams;
     }
 }
 

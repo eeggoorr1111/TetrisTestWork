@@ -162,6 +162,16 @@ namespace Tetris
         {
             return new Vector2Int(Mathf.RoundToInt(bounds.center.x), Mathf.RoundToInt(bounds.center.y));
         }
+        public static float GetSumWeights(this IReadOnlyCollection<FigureTemplate> templatesArg)
+        {
+            float sum = 0f;
+
+            if (templatesArg.WithItems())
+                foreach (var template in templatesArg)
+                    sum += template.WeightGenerate;
+
+            return sum;
+        }
     }
 }
 

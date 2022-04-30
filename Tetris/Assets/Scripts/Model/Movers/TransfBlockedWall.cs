@@ -7,8 +7,8 @@ namespace Tetris.Model
 {
     public class TransfBlockedWall : Transformator
     {
-        public TransfBlockedWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
-            base(heapArg, difficultyArg, mapArg, paramsArg, collisionHeapArg) 
+        public TransfBlockedWall(HeapFigures heapArg, ILevelsParams lvlsParamsArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
+            base(heapArg, lvlsParamsArg, mapArg, paramsArg, collisionHeapArg) 
         {
             _blocks = new List<Bounds>();
         }
@@ -27,7 +27,7 @@ namespace Tetris.Model
                 return false;
             
             Vector3 deltaMove = toRightArg ? Vector3.right : Vector3.left;
-            Vector3 deltaMoveWithFall = GetFall(_difficulty.TimeMoveToSide) + deltaMove;
+            Vector3 deltaMoveWithFall = GetFall(TimeMoveToSide) + deltaMove;
             Bounds figure = colliderArg.Bounds.WithDeltaPos(deltaMoveWithFall);
 
             _blocks.Clear();
@@ -36,7 +36,7 @@ namespace Tetris.Model
 
             if (_collisionHeap.CheckMoveToSide(figure, _blocks))
             {
-                _moveToSide = DOTween.To(() => colliderArg.Center, (pos) => ToMoveTo(colliderArg, pos), figure.center, _difficulty.TimeMoveToSide).SetEase(Ease.OutSine);
+                _moveToSide = DOTween.To(() => colliderArg.Center, (pos) => ToMoveTo(colliderArg, pos), figure.center, TimeMoveToSide).SetEase(Ease.OutSine);
                 return true;
             }
 
@@ -48,6 +48,7 @@ namespace Tetris.Model
                 return;
 
             Quaternion targetRotate = (Matrix4x4.Rotate(colliderArg.Rotate) * MatrixRotate).rotation;
+            Vector3 targetRotateE = targetRotate.eulerAngles;
 
             GetBlocksAfterRotate(colliderArg, targetRotate, FallWhileRotate, _blocks);
             Bounds afterRotate = Helpers.GetBounds(_blocks);
@@ -57,7 +58,7 @@ namespace Tetris.Model
                 return;
 
             if (_collisionHeap.CheckRotate(colliderArg, _blocks))
-                _rotate = DOTween.To(() => colliderArg.Rotate, rotate => ToRotate(colliderArg, rotate), targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
+                _rotate = DOTween.To(() => colliderArg.Rotate, rotate => ToRotate(colliderArg, rotate), targetRotateE, TimeRotate).SetEase(Ease.OutSine);
         }
 
 

@@ -5,39 +5,36 @@ namespace Tetris.Model
 {
     public sealed class FigureGenerator
     {
-        public FigureGenerator( IReadOnlyList<FigureTemplate> templatesArg,
+        public FigureGenerator( ILevelsParams lvlsParamsArg,
                                 MapData mapArg)
         {
-            _templates = templatesArg;
+            _lvlsParams = lvlsParamsArg;
             _map = mapArg;
-            _sumWeights = 0;
-
-            foreach (var template in _templates)
-                _sumWeights += template.WeightGenerate;
-
-            _extremeBlocks = new List<int>();
+            _extremeBlocks = new List<int>(8);
         }
 
 
-        private IReadOnlyList<FigureTemplate> _templates;
-        private float _sumWeights = 0;
-        private MapData _map;
-        private List<int> _extremeBlocks;
+        private readonly MapData _map;
+        private readonly List<int> _extremeBlocks;
+        private readonly ILevelsParams _lvlsParams;
 
 
         public FigureModel NewFigure()
         {
-            if (_templates.Count == 1)
-                return CreateFigure(0);
+            IReadOnlyList<FigureTemplate> templates = _lvlsParams.Current.FiguresTemplates;
+            float sumWeights = templates.GetSumWeights();
 
-            float rand = Random.Range(0, _sumWeights);
+            if (templates.Count == 1)
+                return CreateFigure(templates, 0);
+
+            float rand = Random.Range(0, sumWeights);
             float prevWeights = 0f;
 
-            for (int i = 0; i < _templates.Count; i++)
+            for (int i = 0; i < templates.Count; i++)
             {
-                prevWeights += _templates[i].WeightGenerate;
+                prevWeights += templates[i].WeightGenerate;
                 if (rand < prevWeights)
-                    return CreateFigure(i);
+                    return CreateFigure(templates, i);
             }
 
             return null;
@@ -65,11 +62,11 @@ namespace Tetris.Model
             int cellX = Random.Range(  _map.MinCell.x + Mathf.Abs(fromZeroBlockToLeft),
                                        _map.MaxCell.x - fromZeroBlockToRight + 1);
 
-            return new Vector2Int(cellX, _map.TopCell + Mathf.Abs(fromZeroBlockToBottom) + 1);
+            return new Vector2Int(cellX, _map.TopRow + Mathf.Abs(fromZeroBlockToBottom) + 1);
         }
-        private FigureModel CreateFigure(int idxTemplateArg)
+        private FigureModel CreateFigure(IReadOnlyList<FigureTemplate> templatesArg, int idxTemplateArg)
         {
-            FigureTemplate template = _templates[idxTemplateArg];
+            FigureTemplate template = templatesArg[idxTemplateArg];
             Vector2Int cellSpawn = GetSpawnPoint(template);
             Vector3 pointSpawn = new Vector3(cellSpawn.x, cellSpawn.y, 0);
             Bounds boundsFigure = Helpers.GetBounds(template.Blocks, _map.SizeBlock).WithDeltaPos(pointSpawn);

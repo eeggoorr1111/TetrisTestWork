@@ -13,14 +13,14 @@ namespace Tetris.Model
                                                                         new Vector4(0f, 0f, 0f, 1f));
 
 
-        public Transformator(   HeapFigures heapArg, 
-                                Difficulty difficultyArg, 
+        public Transformator(   HeapFigures heapArg,
+                                ILevelsParams lvlsParamsArg, 
                                 MapData mapArg, 
                                 CalculateParams paramsArg, 
                                 CheckCollisionHeap collisionArg)
         {
             _heapFigures = heapArg;
-            _difficulty = difficultyArg;
+            _lvlsParams = lvlsParamsArg;
             _map = mapArg;
             _params = paramsArg;
             _collisionHeap = collisionArg;
@@ -28,11 +28,13 @@ namespace Tetris.Model
         }
 
 
-        public Vector3 FallWhileRotate => GetFall(_difficulty.TimeRotate);
+        public Vector3 FallWhileRotate => GetFall(TimeRotate);
+        public float TimeRotate => _lvlsParams.Current.TimeRotate;
+        public float TimeMoveToSide => _lvlsParams.Current.TimeMoveToSide;
 
 
         protected readonly HeapFigures _heapFigures;
-        protected readonly Difficulty _difficulty;
+        protected readonly ILevelsParams _lvlsParams;
         protected readonly MapData _map;
         protected readonly CalculateParams _params;
         protected readonly CheckCollisionHeap _collisionHeap;
@@ -54,9 +56,9 @@ namespace Tetris.Model
                 return isMove;
             }
 
-            float speed = _difficulty.SpeedFalling;
+            float speed = _lvlsParams.Current.SpeedFalling;
             if (boostedFallArg)
-                speed = _difficulty.SpeedFallingBoosted;
+                speed = _lvlsParams.Current.SpeedFallingBoosted;
 
             Vector3 delta = FallDirection * speed * Time.deltaTime;
             if (Mathf.Abs(delta.y) > distance)
@@ -87,7 +89,7 @@ namespace Tetris.Model
         }
         protected Vector3 GetFall(float timeArg)
         {
-            return _difficulty.SpeedFalling * timeArg * FallDirection;
+            return _lvlsParams.Current.SpeedFalling * timeArg * FallDirection;
         }
         protected float GetDistanceToNearestObstruction(ColliderFigure colliderArg)
         {

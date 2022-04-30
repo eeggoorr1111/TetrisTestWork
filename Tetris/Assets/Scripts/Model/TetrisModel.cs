@@ -12,15 +12,19 @@ namespace Tetris.Model
     /// </summary>
     public class TetrisModel
     {
-        public TetrisModel(   IReadOnlyList<Transformator> moversArg, 
-                        HeapFigures heapFiguresArg, 
-                        MapData mapArg,
-                        FigureGenerator generatorArg)
+        public TetrisModel( TransformatorThroughtWall transfThroughtWallArg,
+                            TransfBlockedWall transfBlockedWallArg,
+                            HeapFigures heapFiguresArg, 
+                            MapData mapArg,
+                            FigureGenerator generatorArg,
+                            ILevelsParams lvlsParamsArg)
         {
-            _movers = moversArg;
+            _transfThroughtWall = transfThroughtWallArg;
+            _transfBlockedWall = transfBlockedWallArg;
             _map = mapArg;
             _heapFigures = heapFiguresArg;
             _generator = generatorArg;
+            _lvlsParams = lvlsParamsArg;
         }
 
 
@@ -28,16 +32,22 @@ namespace Tetris.Model
         public int Scores { get; private set; }
 
 
-        private readonly IReadOnlyList<Transformator> _movers;
+        private readonly TransformatorThroughtWall _transfThroughtWall;
+        private readonly TransfBlockedWall _transfBlockedWall;
         private readonly HeapFigures _heapFigures;
         private readonly FigureGenerator _generator;
         private readonly MapData _map;
-        private Transformator _mover;
+        private readonly ILevelsParams _lvlsParams;
+        private Transformator _transformator;
 
 
-        public void StartGame(int indexMoverArg, ref FigureModel newFigure)
+        public void StartGame(ref FigureModel newFigure)
         {
-            _mover = _movers[indexMoverArg];
+            if (_lvlsParams.Current.CanMoveThroughtWall)
+                _transformator = _transfThroughtWall;
+            else
+                _transformator = _transfBlockedWall;
+
             Figure = _generator.NewFigure();
 
             newFigure = Figure;
@@ -45,7 +55,7 @@ namespace Tetris.Model
         public void ContinueFallFigure(bool boostedFallArg, ref FigureModel newFigure, ref IReadOnlyList<int> deleteRanges, out bool isGameOver)
         {
             isGameOver = false;
-            if (!Figure.ToFall(_mover, boostedFallArg))
+            if (!Figure.ToFall(_transformator, boostedFallArg))
             {
                 deleteRanges = _heapFigures.Add(Figure);
 
@@ -64,11 +74,11 @@ namespace Tetris.Model
         }
         public void MoveFigure(bool toRightArg)
         {
-            Figure.ToMoveToSide(_mover, toRightArg);
+            Figure.ToMoveToSide(_transformator, toRightArg);
         }
         public void Rotate()
         {
-            Figure.ToRotate(_mover);
+            Figure.ToRotate(_transformator);
         }
 
 

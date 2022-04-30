@@ -13,15 +13,17 @@ namespace Tetris.View
     public sealed class TetrisView : MonoBehaviour
     {
         [Inject]
-        private void Constructor( IReadOnlyList<FigureTemplate> templatesFigureArg,
-                                    IReadOnlyList<IFigure> figuresArg,
+        private void Constructor(   FigureBlockedWall figureArg,
+                                    FigureThroughtWall figureThroughtWallArg,
+                                    ILevelsParams lvlsParamsArg,
                                     Block.Pool poolBlockArg,
                                     MapData mapArg,
                                     UI uiArg,
                                     BlockParams blockParamsArg)
         {
-            _figureTemplates = templatesFigureArg;
-            _figures = figuresArg;
+            _figureBlockedWall = figureArg;
+            _figureThroughtWall = figureThroughtWallArg;
+            _lvlsParams = lvlsParamsArg;
             _ui = uiArg;
             _heap = new Dictionary<Vector2Int, Block>();
             _poolBlocks = poolBlockArg;
@@ -38,10 +40,11 @@ namespace Tetris.View
         private event Action<bool> _onBoostFall;
         private event Action _onGoToMenu;
         private event Action<int> _onStartGame;
-        private IReadOnlyList<FigureTemplate> _figureTemplates;
-        private IReadOnlyList<IFigure> _figures;
+        private FigureThroughtWall _figureThroughtWall;
+        private FigureBlockedWall _figureBlockedWall;
         private Dictionary<Vector2Int, Block> _heap;
         private IFigure _figure;
+        private ILevelsParams _lvlsParams;
         private UI _ui;
         private Block.Pool _poolBlocks;
         private int _lastRange;
@@ -53,41 +56,45 @@ namespace Tetris.View
 
         public void StartCustom()
         {
-            foreach (var figure in _figures)
-                figure.StartCustom();
+            _figureBlockedWall.StartCustom();
+            _figureThroughtWall.StartCustom();
+            _ui.StartCustom();
 
-            _ui.SetCameraAndBorders();
             _transf = GetComponent<Transform>();
-
-            Color boundsMap = new Color(_map.MinPoint.x, _map.MinPoint.y, _map.MaxPoint.x, _map.MaxPoint.y);
-            _blockParams.Material.SetColor("_BoundsMap", boundsMap);
         }
         public void NewFigure(int idxTemplateArg, Vector3 posArg)
         {
+            if (_lvlsParams.Current.CanMoveThroughtWall)
+                _figure = _figureThroughtWall;
+            else
+                _figure = _figureBlockedWall;
+
             if (_figure.Blocks.WithItems())
                 AddToHeap(_figure.Blocks);
 
-            _figure.NewFigrue(posArg, _figureTemplates[idxTemplateArg]);
+            _figure.NewFigrue(posArg, _lvlsParams.Current.FiguresTemplates[idxTemplateArg]);
         }
         public void Exit()
         {
             Application.Quit();
         }
-        public void StartGame(int idxModeArg)
+        public void StartGame(int levelArg)
         {
-            int idxMode = idxModeArg;
-            int maxIdxGameMods = Math.Min(_figureTemplates.Count, _figures.Count);
+            int level = levelArg;
 
-            if (idxMode < 0 || idxMode > maxIdxGameMods)
+            if (level < 0 || level > _lvlsParams.MaxLevel)
             {
-                Debug.LogError($"Try play to game mode with index {idxMode}. Min index 0, max index {maxIdxGameMods}. Play mode with index 0", this);
-                idxMode = 0;
+                Debug.LogError($"Try play level {level}. Min level 0, max level {_lvlsParams.MaxLevel}. Play level 0", this);
+                level = 0;
             }
 
-            _figure = _figures[idxMode];
-            _ui.StartGame();
             if (_onStartGame != null)
-                _onStartGame.Invoke(idxMode);
+                _onStartGame.Invoke(level);
+
+            Color boundsMap = new Color(_map.MinPoint.x, _map.MinPoint.y, _map.MaxPoint.x, _map.MaxPoint.y);
+            _blockParams.Material.SetColor("_BoundsMap", boundsMap);
+
+            _ui.StartGame();
         }
         public void Subscribe(Action onRotateArg, Action<bool> onMoveArg, Action<bool> onBoostFallArg, Action onGoToMenuArg, Action<int> onStartGameArg)
         {

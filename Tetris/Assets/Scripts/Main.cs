@@ -13,10 +13,11 @@ namespace Tetris
     public sealed class Main : MonoBehaviour
     {
         [Inject]
-        private void Constructor(TetrisView viewArg, TetrisModel modelArg)
+        private void Constructor(TetrisView viewArg, TetrisModel modelArg, LevelsParams lvlsParamsArg)
         {
             _model = modelArg;
             _view = viewArg;
+            _lvlsParams = lvlsParamsArg;
             _gameStatus = GameStatusKey.Menu;
         }
 
@@ -24,6 +25,7 @@ namespace Tetris
         private TetrisModel _model;
         private TetrisView _view;
         private GameStatusKey _gameStatus;
+        private LevelsParams _lvlsParams;
         private bool _isBoostingFall;
 
 
@@ -81,13 +83,14 @@ namespace Tetris
         {
             _gameStatus = GameStatusKey.Menu;
         }
-        private void StartGame(int indexGameModeArg)
+        private void StartGame(int levelArg)
         {
             FigureModel figure = null;
 
+            _lvlsParams.CurrentLevel = levelArg;
             _isBoostingFall = false;
             _gameStatus = GameStatusKey.Game;
-            _model.StartGame(indexGameModeArg, ref figure);
+            _model.StartGame(ref figure);
             _view.NewFigure(figure.IdxTemplate, figure.Pivot);
         }
 

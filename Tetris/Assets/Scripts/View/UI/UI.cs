@@ -4,7 +4,7 @@ using Zenject;
 
 namespace Tetris.View
 {
-    public class UI
+    public sealed class UI
     {
         public UI ( [Inject(Id = "lblScores")] TextMeshProUGUI lblScoresArg,
                     [Inject(Id = "menu")] Canvas menuArg,
@@ -26,52 +26,58 @@ namespace Tetris.View
         public float HalfWidthBorder => WidthBorder / 2;
 
 
-        protected TextMeshProUGUI _lblScores;
-        protected GameUi _gameUi;
-        protected Canvas _menu;
-        protected MapData _map;
-        protected Camera _camera;
-        protected Transform _borderSampleTransf;
-        protected MeshRenderer _borderSample;
-        protected MeshRenderer _leftBorder;
-        protected MeshRenderer _rightBorder;
-        protected MeshRenderer _topBorder;
-        protected MeshRenderer _bottomBorder;
+        private TextMeshProUGUI _lblScores;
+        private GameUi _gameUi;
+        private Canvas _menu;
+        private MapData _map;
+        private Camera _camera;
+        private Transform _cameraTransf;
+        private Transform _borderSampleTransf;
+        private MeshRenderer _borderSample;
+        private Transform _leftBorder;
+        private Transform _rightBorder;
+        private Transform _topBorder;
+        private Transform _bottomBorder;
 
 
-        public void SetCameraAndBorders()
+        public void StartCustom()
         {
             _gameUi.StartCustom();
-
             _borderSampleTransf = _borderSample.transform;
+            _cameraTransf = _camera.transform;
 
-            Vector3 sizeBorder = _borderSampleTransf.localScale;
-            Vector3 marginBorderH = new Vector3(sizeBorder.x / 2, 0, 0);
-            Vector3 marginBorderV = new Vector3(0, sizeBorder.x / 2, 0);
-            float widthWith2Border = _map.SizeX + sizeBorder.x * 2;
-            float heightWithBorder = _map.SizeY + sizeBorder.x * 2;
+            _leftBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.identity).transform;
+            _rightBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.identity).transform;
+            _topBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.AngleAxis(90, Vector3.forward)).transform;
+            _bottomBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.AngleAxis(90, Vector3.forward)).transform;
 
-            _leftBorder = GameObject.Instantiate(_borderSample, _map.CenterLeft - marginBorderH, Quaternion.identity);
-            _rightBorder = GameObject.Instantiate(_borderSample, _map.CenterRight + marginBorderH, Quaternion.identity);
-            _topBorder = GameObject.Instantiate(_borderSample, _map.CenterTop + marginBorderV, Quaternion.AngleAxis(90, Vector3.forward));
-            _bottomBorder = GameObject.Instantiate(_borderSample, _map.CenterBottom - marginBorderV, Quaternion.AngleAxis(90, Vector3.forward));
-
-            _leftBorder.transform.localScale = sizeBorder.WithY(_map.SizeY);
-            _rightBorder.transform.localScale = sizeBorder.WithY(_map.SizeY);
-            _topBorder.transform.localScale = sizeBorder.WithY(widthWith2Border);
-            _bottomBorder.transform.localScale = sizeBorder.WithY(widthWith2Border);
-
-            _camera.transform.position = GetCameraPos(widthWith2Border, heightWithBorder);
+            _leftBorder.gameObject.SetActive(false);
+            _rightBorder.gameObject.SetActive(false);
+            _topBorder.gameObject.SetActive(false);
+            _bottomBorder.gameObject.SetActive(false);
         }
+        
         public void StartGame()
         {
             _menu.enabled = false;
             _gameUi.SetEnable(true);
+
+            _leftBorder.gameObject.SetActive(true);
+            _rightBorder.gameObject.SetActive(true);
+            _topBorder.gameObject.SetActive(true);
+            _bottomBorder.gameObject.SetActive(true);
+
+            SetCameraAndBorders();
         }
         public void EndGame()
         {
             _menu.enabled = true;
             _gameUi.SetEnable(false);
+
+            _leftBorder.gameObject.SetActive(false);
+            _rightBorder.gameObject.SetActive(false);
+            _topBorder.gameObject.SetActive(false);
+            _bottomBorder.gameObject.SetActive(false);
         }
         public void SetScores(int scoresArg)
         {
@@ -79,7 +85,27 @@ namespace Tetris.View
         }
 
 
-        protected Vector3 GetCameraPos(float widthWithBorderArg, float heightWithBorderArg)
+        private void SetCameraAndBorders()
+        {
+            Vector3 sizeBorder = _borderSampleTransf.localScale;
+            Vector3 marginBorderH = new Vector3(sizeBorder.x / 2, 0, 0);
+            Vector3 marginBorderV = new Vector3(0, sizeBorder.x / 2, 0);
+            float widthWith2Border = _map.SizeX + sizeBorder.x * 2;
+            float heightWithBorder = _map.SizeY + sizeBorder.x * 2;
+
+            _leftBorder.position = _map.CenterLeft - marginBorderH;
+            _rightBorder.position = _map.CenterRight + marginBorderH;
+            _topBorder.position = _map.CenterTop + marginBorderV;
+            _bottomBorder.position = _map.CenterBottom - marginBorderV;
+
+            _leftBorder.localScale = sizeBorder.WithY(_map.SizeY);
+            _rightBorder.localScale = sizeBorder.WithY(_map.SizeY);
+            _topBorder.localScale = sizeBorder.WithY(widthWith2Border);
+            _bottomBorder.localScale = sizeBorder.WithY(widthWith2Border);
+
+            _cameraTransf.position = GetCameraPos(widthWith2Border, heightWithBorder);
+        }
+        private Vector3 GetCameraPos(float widthWithBorderArg, float heightWithBorderArg)
         {
             float scalerFromWidth = widthWithBorderArg / heightWithBorderArg / _camera.aspect;
             float frustumHeight = heightWithBorderArg;

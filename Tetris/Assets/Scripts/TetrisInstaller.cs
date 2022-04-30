@@ -10,10 +10,13 @@ namespace Tetris
 {
     public class TetrisInstaller : MonoInstaller
     {
+        private static readonly Vector2Int MinSizeMap;
+
+
         [Header("COMMON")]
-        [SerializeField] protected List<FigureTemplate> _templatesFigures;
         [SerializeField] protected CalculateParams _calculateParams;
-        [SerializeField] protected Difficulty _difficulty;
+        [SerializeField] protected LevelParams _level1;
+        [SerializeField] protected LevelParams _level2;
 
         [Header("VIEW")]
         [SerializeField] protected TetrisView _view;
@@ -35,8 +38,11 @@ namespace Tetris
             if (!IsValidInputData())
                 return;
 
-            Container.Bind<IReadOnlyList<FigureTemplate>>().FromInstance(_templatesFigures).AsSingle();
-            Container.Bind<Difficulty>().FromInstance(_difficulty).AsSingle();
+            LevelsParams lvlsParams = CreateLevelsParams();
+
+            Container.Bind<LevelsParams>().FromInstance(lvlsParams).AsSingle();
+            Container.Bind<ILevelsParams>().FromInstance(lvlsParams).AsSingle();
+
             Container.Bind<CalculateParams>().FromInstance(_calculateParams).AsSingle();
             Container.Bind<MapData>().FromNew().AsSingle();
 
@@ -51,31 +57,26 @@ namespace Tetris
             Container.Bind<HeapFigures>().AsSingle();
             Container.Bind<FigureGenerator>().AsSingle();
             Container.Bind<CheckCollisionHeap>().AsSingle();
-            Container.Bind<IReadOnlyList<Transformator>>().FromMethod(CreateMovers).AsSingle();
+
+            Container.Bind<TransfBlockedWall>().AsSingle();
+            Container.Bind<TransformatorThroughtWall>().AsSingle();
         }
         protected void InstallView()
         {
-            int countBlocks = Mathf.RoundToInt(_difficulty.CountCells.x * _difficulty.CountCells.y * 0.5f);
+            int countBlocksMode1 = Mathf.RoundToInt(_level1.CountCellsAll * 0.5f);
+            int countBlocksMode2 = Mathf.RoundToInt(_level2.CountCellsAll * 0.5f);
 
             Container.Bind<TetrisView>().FromInstance(_view).AsSingle();
             Container.Bind<Camera>().FromInstance(_camera).AsSingle();
             Container.Bind<BlocksOfFigure>().WithId("BlocksFigure1").FromComponentInNewPrefab(_blockFigure).AsCached();
             Container.Bind<BlocksOfFigure>().WithId("BlocksFigure2").FromComponentInNewPrefab(_blockFigure).AsCached();
-            Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(countBlocks).FromComponentInNewPrefab(_block);
+            Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(Mathf.Max(countBlocksMode1, countBlocksMode2)).FromComponentInNewPrefab(_block);
             Container.Bind<BlockParams>().FromInstance(_blockParams).AsTransient();
 
-            Container.Bind<IReadOnlyList<IFigure>>().FromMethod(CreateFigures).AsSingle();
+            Container.Bind<FigureBlockedWall>().AsSingle();
+            Container.Bind<FigureThroughtWall>().AsSingle();
 
             InstallUI();
-        }
-        protected IReadOnlyList<IFigure> CreateFigures()
-        {
-            List<IFigure> figures = new List<IFigure>();
-
-            figures.Add(Container.Instantiate<Figure>());
-            figures.Add(Container.Instantiate<FigureThroughtWall>());
-
-            return figures;
         }
         protected void InstallUI()
         {
@@ -86,43 +87,25 @@ namespace Tetris
             
             Container.Bind<UI>().FromNew().AsSingle();
         }
-        protected IReadOnlyList<Transformator> CreateMovers()
+        private LevelsParams CreateLevelsParams()
         {
-            List<Transformator> movers = new List<Transformator>();
+            LevelParams[] lvlsParams = new LevelParams[]
+            {
+                _level1,
+                _level2
+            };
 
-            movers.Add(Container.Instantiate<TransfBlockedWall>());
-            movers.Add(Container.Instantiate<TransformatorThroughtWall>());
-
-            return movers;
+            return new LevelsParams(lvlsParams, 0);
         }
         protected bool IsValidInputData()
         {
             bool valid = true;
 
-            if (_templatesFigures.IsEmpty())
-            {
-                Debug.LogError("Count templates figures is 0", this);
+            if (!CheckFigureTemplates(_level1))
                 valid = false;
-            }
-            else
-            {
-                float sumWeights = 0f;
-                for (int i = 0; i < _templatesFigures.Count; i++)
-                {
-                    sumWeights += _templatesFigures[i].WeightGenerate;
-                    if (_templatesFigures[i].WeightGenerate < 0)
-                    {
-                        Debug.LogError($"Weight figure with index {i} < 0", this);
-                        valid = false;
-                    }
-                }
 
-                if (sumWeights < float.Epsilon)
-                {
-                    Debug.LogError("Sum weights of templates figures must be > 0", this);
-                    valid = false;
-                }
-            }
+            if (!CheckFigureTemplates(_level2))
+                valid = false;
 
             if (_view == null)
             {
@@ -142,9 +125,10 @@ namespace Tetris
                 valid = false;
             }
 
-            if (_difficulty.CountCells.x < 5 || _difficulty.CountCells.y < 10)
+            if (_level1.CountCells.x < MinSizeMap.x || _level1.CountCells.y < MinSizeMap.y ||
+                _level2.CountCells.x < MinSizeMap.x || _level2.CountCells.y < MinSizeMap.y)
             {
-                Debug.LogError("Map size must be >= 4 in x and >= 10 in y", this);
+                Debug.LogError($"Map size must be >= {MinSizeMap.x} in x and >= {MinSizeMap.y} in y", this);
                 valid = false;
             }
 
@@ -192,22 +176,55 @@ namespace Tetris
                 valid = false;
             }
 
-            if (_difficulty.SpeedFalling < _calculateParams.AllowedError)
+            if (_level1.SpeedFalling < _calculateParams.AllowedError ||
+                _level2.SpeedFalling < _calculateParams.AllowedError)
             {
                 Debug.LogError($"Speed falling must be >{_calculateParams.AllowedError}", this);
                 valid = false;
             }
 
-            if (_difficulty.SpeedFallingBoosted < _calculateParams.AllowedError)
+            if (_level1.SpeedFallingBoosted < _calculateParams.AllowedError ||
+                _level2.SpeedFallingBoosted < _calculateParams.AllowedError)
             {
                 Debug.LogError($"Speed falling boost must be > {_calculateParams.AllowedError}", this);
                 valid = false;
             }
 
-            if (_difficulty.TimeMoveToSide < _calculateParams.AllowedError)
+            if (_level1.TimeMoveToSide < _calculateParams.AllowedError ||
+                _level2.TimeMoveToSide < _calculateParams.AllowedError)
             {
                 Debug.LogError($"Speed move figure to side must be > {_calculateParams.AllowedError}", this);
                 valid = false;
+            }
+
+            return valid;
+        }
+
+        private bool CheckFigureTemplates(LevelParams paramsArg)
+        {
+            bool valid = true;
+            IReadOnlyList<FigureTemplate> templates = paramsArg.FiguresTemplates;
+
+            if (templates.IsEmpty())
+            {
+                Debug.LogError("Count templates figures is 0", this);
+                return false;
+            }
+            else
+            {
+                for (int i = 0; i < templates.Count; i++)
+                    if (templates[i].WeightGenerate < float.Epsilon)
+                    {
+                        Debug.LogError($"Weight figure with index {i} < 0", this);
+                        valid = false;
+                    }
+
+
+                if (templates.GetSumWeights() < float.Epsilon)
+                {
+                    Debug.LogError("Sum weights of templates figures must be > 0", this);
+                    valid = false;
+                }
             }
 
             return valid;

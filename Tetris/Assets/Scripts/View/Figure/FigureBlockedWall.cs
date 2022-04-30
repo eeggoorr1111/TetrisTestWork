@@ -4,9 +4,9 @@ using Zenject;
 
 namespace Tetris.View
 {
-    public sealed class Figure : IFigure
+    public sealed class FigureBlockedWall : IFigure
     {
-        public Figure([Inject(Id = "BlocksFigure1")] BlocksOfFigure blocksArg)
+        public FigureBlockedWall([Inject(Id = "BlocksFigure1")] BlocksOfFigure blocksArg)
         {
             _blocks = blocksArg;
         }

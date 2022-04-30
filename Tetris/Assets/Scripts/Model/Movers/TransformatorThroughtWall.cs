@@ -6,8 +6,12 @@ namespace Tetris.Model
 {
     public sealed class TransformatorThroughtWall : Transformator
     {
-        public TransformatorThroughtWall(HeapFigures heapArg, Difficulty difficultyArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
-            base(heapArg, difficultyArg, mapArg, paramsArg, collisionHeapArg) 
+        public TransformatorThroughtWall(   HeapFigures heapArg, 
+                                            ILevelsParams lvlsParamsArg, 
+                                            MapData mapArg, 
+                                            CalculateParams paramsArg, 
+                                            CheckCollisionHeap collisionHeapArg) : 
+            base(heapArg, lvlsParamsArg, mapArg, paramsArg, collisionHeapArg) 
         {
             _replace = new HashSet<Vector2Int>();
             _areaRotate = new HashSet<Vector2Int>();
@@ -27,9 +31,8 @@ namespace Tetris.Model
             if (_moveToSide.IsActive())
                 return false;
 
-            float timeMoveToSide = _difficulty.TimeMoveToSide;
             Vector3 deltaMove = toRightArg ? Vector3.right : Vector3.left;
-            Vector3 deltaMoveWithFall = GetFall(timeMoveToSide) + deltaMove;
+            Vector3 deltaMoveWithFall = GetFall(TimeMoveToSide) + deltaMove;
             Bounds figure = colliderArg.Bounds.WithDeltaPos(deltaMoveWithFall);
 
             _blocks.Clear();
@@ -38,7 +41,9 @@ namespace Tetris.Model
 
             if (_collisionHeap.CheckMoveToSide(_blocks))
             {
-                _moveToSide = DOTween.To(() => colliderArg.Center, (pos) => ToMoveTo(colliderArg, pos), figure.center, timeMoveToSide).SetEase(Ease.OutSine).OnComplete(() => EndedMove(colliderArg));
+                _moveToSide = DOTween.To(() => colliderArg.Center, (pos) => ToMoveTo(colliderArg, pos), figure.center, TimeMoveToSide).
+                    OnComplete(() => EndedMove(colliderArg)).
+                    SetEase(Ease.OutSine);
                 return true;
             }
 
@@ -50,6 +55,7 @@ namespace Tetris.Model
                 return;
 
             Quaternion targetRotate = (Matrix4x4.Rotate(colliderArg.Rotate) * MatrixRotate).rotation;
+            Vector3 targetRotateE = targetRotate.eulerAngles;
 
             GetBlocksAfterRotate(colliderArg, colliderArg.Rotate, Vector3.zero, _blocks);
             GetBlocksAfterRotate(colliderArg, targetRotate, FallWhileRotate, _blocks2);
@@ -58,7 +64,7 @@ namespace Tetris.Model
             AreaRotateThroughtWall(_areaRotate);
 
             if (_collisionHeap.CheckArea(_areaRotate))
-                _rotate = DOTween.To(() => colliderArg.Rotate, rotate => ToRotate(colliderArg, rotate), targetRotate.eulerAngles, _difficulty.TimeRotate).SetEase(Ease.OutSine);
+                _rotate = DOTween.To(() => colliderArg.Rotate, rotate => ToRotate(colliderArg, rotate), targetRotateE, TimeRotate).SetEase(Ease.OutSine);
         }
 
 

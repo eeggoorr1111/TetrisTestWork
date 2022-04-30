@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [CreateAssetMenu(fileName = "Figure", menuName = "Tetris/CreateFigure")]
-    public class FigureTemplate : ScriptableObject
+    [System.Serializable]
+    public class FigureTemplate
     {
         public IReadOnlyList<Vector2Int> Blocks => _blocks;
         public float WeightGenerate => _weightGenerate;
