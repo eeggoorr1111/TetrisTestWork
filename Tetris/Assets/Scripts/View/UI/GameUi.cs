@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Tetris
+namespace Tetris.View
 {
     [RequireComponent(typeof(Canvas))]
     public class GameUi : MonoBehaviour

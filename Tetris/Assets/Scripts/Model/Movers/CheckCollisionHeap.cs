@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Tetris
+namespace Tetris.Model
 {
     public sealed class CheckCollisionHeap
     {

@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
-using TMPro;
 using Zenject;
 
-namespace Tetris
+namespace Tetris.View
 {
     public class UI
     {

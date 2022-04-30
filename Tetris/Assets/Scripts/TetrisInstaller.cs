@@ -3,6 +3,8 @@ using Zenject;
 using System.Collections.Generic;
 using TMPro;
 using Tetris.View;
+using Tetris.Model;
+
 
 namespace Tetris
 {

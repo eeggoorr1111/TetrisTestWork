@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-using System;
-using DG.Tweening;
 
-namespace Tetris
+namespace Tetris.View
 {
 
     public class BlocksOfFigure : MonoBehaviour

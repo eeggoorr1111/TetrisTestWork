@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Tetris.View;
+using Tetris.Model;
 
 namespace Tetris
 {

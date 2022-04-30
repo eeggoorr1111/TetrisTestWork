@@ -1,9 +1,8 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
-namespace Tetris
+namespace Tetris.Model
 {
     public sealed class MoverThroughtWall : Transformator
     {

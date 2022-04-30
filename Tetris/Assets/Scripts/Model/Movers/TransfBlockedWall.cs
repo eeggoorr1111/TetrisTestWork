@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-namespace Tetris
+namespace Tetris.Model
 {
     public class TransfBlockedWall : Transformator
     {

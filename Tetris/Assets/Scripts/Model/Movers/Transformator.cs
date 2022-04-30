@@ -1,10 +1,8 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
-using System;
 
-namespace Tetris
+namespace Tetris.Model
 {
     public abstract class Transformator
     {

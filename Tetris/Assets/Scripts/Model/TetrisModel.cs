@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Tetris
+namespace Tetris.Model
 {
     /// <summary>
     /// Model в рамках паттерна MVC
