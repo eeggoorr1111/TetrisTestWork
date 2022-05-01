@@ -1811,6 +1811,42 @@ MonoBehaviour:
       - {x: 0, y: 0}
       - {x: 0, y: 1}
       _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 1}
+      - {x: -1, y: -1}
+      - {x: 0, y: 0}
+      - {x: -1, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 2}
+      - {x: 1, y: 0}
+      - {x: 0, y: 0}
+      - {x: 0, y: 1}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 3}
+      - {x: 0, y: 2}
+      - {x: 0, y: 1}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 1}
+      - {x: -1, y: 0}
+      - {x: 1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 1}
+      - {x: 1, y: 1}
+      - {x: 1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: -1, y: 1}
+      - {x: 0, y: -1}
+      - {x: -1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
   _level2:
     _speedFalling: 1
     _speedFallingBoost: 15
@@ -1820,9 +1856,67 @@ MonoBehaviour:
     _countCells: {x: 15, y: 25}
     _templates:
     - _blocks:
+      - {x: 0, y: 2}
+      - {x: -1, y: 0}
+      - {x: 0, y: 0}
+      - {x: 0, y: 1}
+      _weightGenerate: 1
+    - _blocks:
       - {x: 0, y: 1}
       - {x: -1, y: -1}
+      - {x: 0, y: 0}
       - {x: -1, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 2}
+      - {x: 1, y: 0}
+      - {x: 0, y: 0}
+      - {x: 0, y: 1}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 3}
+      - {x: 0, y: 2}
+      - {x: 0, y: 1}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 1}
+      - {x: -1, y: 0}
+      - {x: 1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 1}
+      - {x: 1, y: 1}
+      - {x: 1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: -1, y: 1}
+      - {x: 0, y: -1}
+      - {x: -1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 1}
+      - {x: 1, y: 0}
+      - {x: 0, y: -1}
+      - {x: -1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: -1, y: -1}
+      - {x: 1, y: -1}
+      - {x: 1, y: 0}
+      - {x: -1, y: 0}
+      - {x: 0, y: 0}
+      _weightGenerate: 1
+    - _blocks:
+      - {x: 0, y: 2}
+      - {x: 2, y: 0}
+      - {x: 1, y: 1}
+      - {x: 1, y: 0}
+      - {x: 0, y: 1}
       - {x: 0, y: 0}
       _weightGenerate: 1
 --- !u!114 &1288264636

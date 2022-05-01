@@ -51,6 +51,7 @@ namespace Tetris.View
         }
         public void Delete(IReadOnlyList<int> rangesArg)
         {
+            // TODO: slow fall figures and remove duplicate code
             int putDown = 0;
             for (int y = rangesArg[0]; y <= _lastRange; y++)
             {

@@ -20,6 +20,19 @@ namespace Tetris
         {
             return _blocks.ToArray();
         }
+        public FigureTemplate Clone()
+        {
+            FigureTemplate template = new FigureTemplate();
+            List<Vector2Int> blocks = new List<Vector2Int>();
+
+            foreach (var block in _blocks)
+                blocks.Add(block);
+
+            template._blocks = blocks;
+            template._weightGenerate = _weightGenerate;
+
+            return template;
+        }
     }
 }
 

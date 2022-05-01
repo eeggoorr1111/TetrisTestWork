@@ -31,6 +31,29 @@ namespace Tetris
 
         [Header("FIGURES")]
         [SerializeField] private List<FigureTemplate> _templates;
+
+
+        public LevelParams Clone()
+        {
+            LevelParams lvlParams = new LevelParams();
+
+            lvlParams._speedFalling = _speedFalling;
+            lvlParams._speedFallingBoost = _speedFallingBoost;
+
+            lvlParams._timeMoveToSide = _timeMoveToSide;
+            lvlParams._timeRotate = _timeRotate;
+            lvlParams._canMoveThroughtWall = _canMoveThroughtWall;
+
+            lvlParams._countCells = _countCells;
+
+            List<FigureTemplate> templates = new List<FigureTemplate>();
+            foreach (var template in _templates)
+                templates.Add(template.Clone());
+
+            lvlParams._templates = templates;
+
+            return lvlParams;
+        }
     }
 }
 

@@ -45,6 +45,8 @@ namespace Tetris.Model
 
         public bool ToFall(bool boostedFallArg, ColliderFigure colliderArg)
         {
+            // TODO: Sometimes figures collide with a heap in the process of turning. 
+            // Align blocks in this case to the centers of the cells
             bool isMove = true;
             if (_moveToSide.IsActive() || _rotate.IsActive())
                 return isMove;
