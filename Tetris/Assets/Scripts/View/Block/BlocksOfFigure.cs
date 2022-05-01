@@ -43,5 +43,11 @@ namespace Tetris.View
                 _blocks.Add(block);
             }
         }
+        public void ClearBlocks()
+        {
+            foreach (var block in _blocks)
+                _poolBlocks.Despawn(block);
+            _blocks.Clear();
+        }
     }
 }

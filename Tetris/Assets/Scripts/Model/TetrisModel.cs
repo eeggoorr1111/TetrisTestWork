@@ -63,7 +63,7 @@ namespace Tetris.Model
                 if (_heapFigures.TopByY > _map.TopByY)
                 {
                     isGameOver = true;
-                    GameOver();
+                    EndGame();
                 }
                 else
                 {
@@ -80,12 +80,11 @@ namespace Tetris.Model
         {
             Figure.ToRotate(_transformator);
         }
-
-
-        protected void GameOver()
+        public void EndGame()
         {
-            //_figure.Dispose();
-            //_stackFigures.Dispose();
+            _heapFigures.Clear();
+            Figure = null;
+            Scores = 0;
         }
     }
 }

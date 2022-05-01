@@ -54,6 +54,11 @@ namespace Tetris.View
             _blocksList.AddRange(_blocks1.Blocks);
             _blocksList.AddRange(_blocks2.Blocks);
         }
+        public void EndGame()
+        {
+            _blocks1.ClearBlocks();
+            _blocks2.ClearBlocks();
+        }
 
 
         protected void GetPosBlocks(Vector3 posFigureArg, out Vector3 pos1, out Vector3 pos2)

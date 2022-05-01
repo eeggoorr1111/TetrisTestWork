@@ -92,6 +92,13 @@ namespace Tetris.Model
         {
             return _blocks.ContainsKey(cellArg);
         }
+        public void Clear()
+        {
+            _blocks.Clear();
+            _blocksInRange.Clear();
+            _lastRange = -1;
+            _bounds = new Bounds();
+        }
 
 
         private void DeleteRanges(IReadOnlyList<int> rangesArg)

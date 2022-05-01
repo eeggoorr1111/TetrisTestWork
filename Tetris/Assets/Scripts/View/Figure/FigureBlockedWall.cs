@@ -31,6 +31,10 @@ namespace Tetris.View
         {
             _blocks.NewFigrue(posArg, templateArg);
         }
+        public void EndGame()
+        {
+            _blocks.ClearBlocks();
+        }
     }
 }
 

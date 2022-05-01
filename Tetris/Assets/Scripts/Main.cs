@@ -54,7 +54,7 @@ namespace Tetris
                 _model.ContinueFallFigure(_isBoostingFall, ref newFigure, ref deleteRanges, out isGameOver);
                 
                 if (isGameOver)
-                    GameOver();
+                    EndGame();
                 else
                 {
                     if (newFigure != null)
@@ -68,20 +68,26 @@ namespace Tetris
         }
         private void OnEnable()
         {
-            _view.Subscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
+            _view.Subscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GoToMenu, StartGame);
         }
         private void OnDisable()
         {
             if (_view != null && _view.IsExistsMonoB)
-                _view.Unsubscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GameOver, StartGame);
+                _view.Unsubscribe(_model.Rotate, _model.MoveFigure, OnBoostFall, GoToMenu, StartGame);
         }
         private void OnBoostFall(bool statusArg)
         {
             _isBoostingFall = statusArg;
         }
-        private void GameOver()
+        private void GoToMenu()
         {
             _gameStatus = GameStatusKey.Menu;
+            _model.EndGame();
+        }
+        private void EndGame()
+        {
+            _gameStatus = GameStatusKey.Menu;
+            _view.EndGame();
         }
         private void StartGame(int levelArg)
         {

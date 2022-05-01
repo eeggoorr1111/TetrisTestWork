@@ -26,7 +26,7 @@ namespace Tetris.View
             _heap = new Dictionary<Vector2Int, Block>();
             _poolBlocks = poolBlockArg;
             _map = mapArg;
-            _lastRange = 0;
+            _lastRange = -1;
         }
 
         public bool IsExistsMonoB => this != null;
@@ -125,10 +125,24 @@ namespace Tetris.View
         }
         public void GoToMenu()
         {
-            _ui.EndGame();
+            EndGame();
 
             if (_onGoToMenu != null)
                 _onGoToMenu.Invoke();
+        }
+        public void EndGame()
+        {
+            _ui.EndGame();
+
+            _lastRange = -1;
+            _ui.SetScores(0);
+
+            foreach (var pair in _heap)
+                _poolBlocks.Despawn(pair.Value);
+            _heap.Clear();
+
+            _figureBlockedWall.EndGame();
+            _figureThroughtWall.EndGame();
         }
         public void NextFrame(int scoresArg, Vector3 newPosFigureArg, Quaternion rotateArg)
         {

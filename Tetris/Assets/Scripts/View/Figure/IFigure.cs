@@ -11,6 +11,7 @@ namespace Tetris.View
         void StartCustom();
         void Transform(Vector3 posArg, Quaternion rotateArg);
         void NewFigrue(Vector3 posArg, FigureTemplate templateArg);
+        void EndGame();
     }
 }
 
