@@ -23,16 +23,15 @@ namespace Tetris.View
             _figureBlockedWall = figureArg;
             _figureThroughtWall = figureThroughtWallArg;
             _lvlsParams = lvlsParamsArg;
-            _heap = new Dictionary<Vector2Int, Block>();
             _poolBlocks = poolBlockArg;
             _map = mapArg;
-            _lastRange = -1;
         }
 
         public bool IsExistsMonoB => this != null;
 
 
         [SerializeField] private Material _blockMaterial;
+        [SerializeField] private HeapFigures _heap;
         private event Action _onRotate;
         private event Action<bool> _onMove;
         private event Action<bool> _onBoostFall;
@@ -40,12 +39,10 @@ namespace Tetris.View
         private event Action<int> _onStartGame;
         private FigureThroughtWall _figureThroughtWall;
         private FigureBlockedWall _figureBlockedWall;
-        private Dictionary<Vector2Int, Block> _heap;
         private IFigure _figure;
         private ILevelsParams _lvlsParams;
         private UI _ui;
         private Block.Pool _poolBlocks;
-        private int _lastRange;
         private MapData _map;
         private Transform _transf;
 
@@ -62,6 +59,8 @@ namespace Tetris.View
             _figureBlockedWall.StartCustom();
             _figureThroughtWall.StartCustom();
 
+            _heap.StartCustom(_map, _poolBlocks);
+
             _transf = GetComponent<Transform>();
         }
         public void NewFigure(int idxTemplateArg, Vector3 posArg)
@@ -72,7 +71,7 @@ namespace Tetris.View
                 _figure = _figureBlockedWall;
 
             if (_figure.Blocks.WithItems())
-                AddToHeap(_figure.Blocks);
+                _heap.Add(_figure.Blocks);
 
             _figure.NewFigrue(posArg, _lvlsParams.Current.FiguresTemplates[idxTemplateArg]);
         }
@@ -133,14 +132,7 @@ namespace Tetris.View
         public void EndGame()
         {
             _ui.EndGame();
-
-            _lastRange = -1;
-            _ui.SetScores(0);
-
-            foreach (var pair in _heap)
-                _poolBlocks.Despawn(pair.Value);
-            _heap.Clear();
-
+            _heap.EndGame();
             _figureBlockedWall.EndGame();
             _figureThroughtWall.EndGame();
         }
@@ -153,63 +145,18 @@ namespace Tetris.View
         }
         public void Delete(IReadOnlyList<int> rangesArg)
         {
-            int putDown = 0;
-            for (int y = rangesArg[0]; y <= _lastRange; y++)
-            {
-                bool remove = rangesArg.Contains(y);
-                if (remove)
-                    putDown++;
-
-                for (int x = 0; x < _map.CountCells.x; x++)
-                {
-                    Vector2Int cell = new Vector2Int(x, y);
-
-                    if (_heap.ContainsKey(cell))
-                    {
-                        if (remove)
-                        {
-                            _poolBlocks.Despawn(_heap[cell]);
-                            _heap.Remove(cell);
-                        }
-                        else
-                            PutDownBlock(cell, putDown);
-                    }
-                }
-            }
-
-            _lastRange -= rangesArg.Count;
+            _heap.Delete(rangesArg);
         }
+        
 
 
         private void OnValidate()
         {
             if (_blockMaterial == null)
                 Debug.LogError("For block not setted material", this);
-        }
-        private void PutDownBlock(Vector2Int cellArg, int putDownArg)
-        {
-            Vector2Int newCell = new Vector2Int(cellArg.x, cellArg.y - putDownArg);
-            Block block = _heap[cellArg];
 
-            block.Transf.position = new Vector3(newCell.x, newCell.y, block.Transf.position.z);
-            
-            _heap.Remove(cellArg);
-            _heap[newCell] = block;
-        }
-        private void AddToHeap(IReadOnlyList<Block> blocksArg)
-        {
-            foreach (var block in blocksArg)
-            {
-                int blockX = Mathf.RoundToInt(block.Transf.position.x);
-                int blockY = Mathf.RoundToInt(block.Transf.position.y);
-                Vector2Int pos = new Vector2Int(blockX, blockY);
-
-                if (blockY > _lastRange)
-                    _lastRange = blockY;
-
-                _heap[pos] = block;
-                block.Transf.SetParent(_transf);
-            }
+            if (_heap == null)
+                Debug.LogError("Not setted heap object", this);
         }
         private void InputCheck()
         {

@@ -69,6 +69,8 @@ namespace Tetris.View
             _rightBorder.gameObject.SetActive(false);
             _topBorder.gameObject.SetActive(false);
             _bottomBorder.gameObject.SetActive(false);
+
+            SetScores(0);
         }
         public void SetScores(int scoresArg)
         {
