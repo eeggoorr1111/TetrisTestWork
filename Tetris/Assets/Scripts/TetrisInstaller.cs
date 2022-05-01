@@ -12,19 +12,17 @@ namespace Tetris
     {
         private static readonly Vector2Int MinSizeMap;
 
-
-        [Header("COMMON")]
+        [Header("MODEL")]
         [SerializeField] protected CalculateParams _calculateParams;
-
-        [Header("LEVELS")]
-        [SerializeField] protected LevelParams _level1;
-        [SerializeField] protected LevelParams _level2;
 
         [Header("VIEW")]
         [SerializeField] protected TetrisView _view;
         [SerializeField] protected BlocksOfFigure _blockFigure;
         [SerializeField] protected Block _block;
-        
+
+        [Header("LEVELS")]
+        [SerializeField] protected LevelParams _level1;
+        [SerializeField] protected LevelParams _level2;
 
 
         public override void InstallBindings()
@@ -48,22 +46,29 @@ namespace Tetris
         protected void InstallModel()
         {
             Container.Bind<TetrisModel>().AsSingle();
-            Container.Bind<HeapFigures>().AsSingle();
+            Container.Bind<Model.HeapFigures>().AsSingle();
             Container.Bind<FigureGenerator>().AsSingle();
             Container.Bind<CheckCollisionHeap>().AsSingle();
 
             Container.Bind<TransfBlockedWall>().AsSingle();
             Container.Bind<TransformatorThroughtWall>().AsSingle();
         }
-        protected void InstallView()
+        private void InstallView()
         {
             int countBlocksMode1 = Mathf.RoundToInt(_level1.CountCellsAll * 0.5f);
             int countBlocksMode2 = Mathf.RoundToInt(_level2.CountCellsAll * 0.5f);
+            int initCountBlocks = Mathf.Min(countBlocksMode1, countBlocksMode2);
+            Transform transfFigures = new GameObject("Figures").GetComponent<Transform>();
+            Transform transfBlocks = new GameObject("Blocks").GetComponent<Transform>();
+            Transform transfView = _view.transform;
+
+            transfFigures.SetParent(transfView);
+            transfBlocks.SetParent(transfView);
 
             Container.Bind<TetrisView>().FromInstance(_view).AsSingle();
-            Container.Bind<BlocksOfFigure>().WithId("BlocksFigure1").FromComponentInNewPrefab(_blockFigure).AsCached();
-            Container.Bind<BlocksOfFigure>().WithId("BlocksFigure2").FromComponentInNewPrefab(_blockFigure).AsCached();
-            Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(Mathf.Max(countBlocksMode1, countBlocksMode2)).FromComponentInNewPrefab(_block);
+            Container.Bind<BlocksOfFigure>().WithId("BlocksFigure1").FromComponentInNewPrefab(_blockFigure).UnderTransform(transfFigures).AsCached();
+            Container.Bind<BlocksOfFigure>().WithId("BlocksFigure2").FromComponentInNewPrefab(_blockFigure).UnderTransform(transfFigures).AsCached();
+            Container.BindMemoryPool<Block, Block.Pool>().WithInitialSize(initCountBlocks).FromComponentInNewPrefab(_block).UnderTransform(transfBlocks); 
 
             Container.Bind<FigureBlockedWall>().AsSingle();
             Container.Bind<FigureThroughtWall>().AsSingle();
@@ -78,7 +83,7 @@ namespace Tetris
 
             return new LevelsParams(lvlsParams, 0);
         }
-        protected bool IsValidInputData()
+        private bool IsValidInputData()
         {
             bool valid = true;
 
