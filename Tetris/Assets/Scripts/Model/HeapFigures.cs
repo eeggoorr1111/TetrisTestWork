@@ -145,12 +145,14 @@ namespace Tetris.Model
 
                 if (blockX < minCell.x)
                     minCell.x = blockX;
-                else if (blockX > maxCell.x)
+                
+                if (blockX > maxCell.x)
                     maxCell.x = blockX;
 
                 if (blockY < minCell.y)
                     minCell.y = blockY;
-                else if (blockY > maxCell.y)
+                
+                if (blockY > maxCell.y)
                     maxCell.y = blockY;
             }
 
