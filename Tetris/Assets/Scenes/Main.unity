@@ -1223,6 +1223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27cf4fe7f0f0317418e41462c74d2352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cam: {fileID: 1342129008}
 --- !u!1 &756696090
 GameObject:
   m_ObjectHideFlags: 0
@@ -2079,6 +2080,7 @@ MonoBehaviour:
   _btnLvl1: {fileID: 953125447}
   _btnLvl2: {fileID: 419196688}
   _btnToMenu: {fileID: 1253411614}
+  _gamePanel: {fileID: 479963516}
 --- !u!1 &1561081824
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,6 +20,7 @@ namespace Tetris.View
         [SerializeField] private Button _btnLvl1;
         [SerializeField] private Button _btnLvl2;
         [SerializeField] private Button _btnToMenu;
+        [SerializeField] private Image _gamePanel;
 
 
         private Transform _cameraTransf;
@@ -29,6 +30,7 @@ namespace Tetris.View
         private Transform _rightBorder;
         private Transform _topBorder;
         private Transform _bottomBorder;
+        private float _heightMenuCanvas;
 
 
         public void StartCustom(MapData mapDataArg)
@@ -47,6 +49,8 @@ namespace Tetris.View
             _rightBorder.gameObject.SetActive(false);
             _topBorder.gameObject.SetActive(false);
             _bottomBorder.gameObject.SetActive(false);
+
+            _heightMenuCanvas = _gamePanel.GetComponent<RectTransform>().rect.height * _gameUi.transform.localScale.y;
         }
         public void StartGame()
         {
@@ -84,7 +88,7 @@ namespace Tetris.View
             Vector3 marginBorderH = new Vector3(sizeBorder.x / 2, 0, 0);
             Vector3 marginBorderV = new Vector3(0, sizeBorder.x / 2, 0);
             float widthWith2Border = _map.SizeX + sizeBorder.x * 2;
-            float heightWithBorder = _map.SizeY + sizeBorder.x * 2;
+            float heightWith2Border = _map.SizeY + sizeBorder.x * 2;
 
             _leftBorder.position = _map.CenterLeft - marginBorderH;
             _rightBorder.position = _map.CenterRight + marginBorderH;
@@ -96,22 +100,34 @@ namespace Tetris.View
             _topBorder.localScale = sizeBorder.WithY(widthWith2Border);
             _bottomBorder.localScale = sizeBorder.WithY(widthWith2Border);
 
-            _cameraTransf.position = GetCameraPos(widthWith2Border, heightWithBorder);
+            SetCameraToSeeMap(widthWith2Border, heightWith2Border, sizeBorder.x);
         }
-        private Vector3 GetCameraPos(float widthWithBorderArg, float heightWithBorderArg)
+        private float GetZPosCameraForViewArea(float widthAreaArg, float heightAreaArg)
         {
-            float scalerFromWidth = widthWithBorderArg / heightWithBorderArg / _camera.aspect;
-            float frustumHeight = heightWithBorderArg;
+            float scalerForFillGameMapByHorizontal = widthAreaArg / heightAreaArg / _camera.aspect;
+            float frustumHeight = heightAreaArg;
 
-            if (scalerFromWidth > 1f)
-                frustumHeight *= scalerFromWidth;
+            if (scalerForFillGameMapByHorizontal > 1f)
+                frustumHeight *= scalerForFillGameMapByHorizontal;
 
-            float distance = frustumHeight * 0.5f / Mathf.Tan(_camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-
-            return new Vector3(_map.MaxCell.x / 2f, _map.MaxCell.y / 2f, -distance);
+            return -(frustumHeight * 0.5f / Mathf.Tan(_camera.fieldOfView * 0.5f * Mathf.Deg2Rad));
         }
+        private void SetCameraToSeeMap(float widthMapArg, float heightMapArg, float widthBorderArg)
+        {
+            float zPos = GetZPosCameraForViewArea(widthMapArg, heightMapArg);
 
+            _cameraTransf.position = new Vector3(_map.MaxCell.x / 2f, _map.MaxCell.y / 2f, zPos);
 
+            Vector3 pointEndMenu = _camera.ScreenToWorldPoint(new Vector3(0, _heightMenuCanvas, Mathf.Abs(zPos)));
+            Vector3 pointStartMenu = _camera.ScreenToWorldPoint(new Vector3(0, 0, Mathf.Abs(zPos)));
+
+            float heightMenuWorld = Mathf.Abs(pointEndMenu.y - pointStartMenu.y);
+            float finalPosZ = GetZPosCameraForViewArea(widthMapArg, heightMapArg + heightMenuWorld);
+            float offsetY = heightMenuWorld / 2 + 2 * widthBorderArg;
+            Vector3 camPos = new Vector3(_map.MaxCell.x / 2f, _map.MaxCell.y / 2f - offsetY, finalPosZ);
+
+            _cameraTransf.position = camPos;
+        }
         private void OnValidate()
         {
             if (_lblScores == null)
@@ -137,6 +153,9 @@ namespace Tetris.View
 
             if (_btnToMenu == null)
                 Debug.LogError("Button to menu is null", this);
+
+            if (_gamePanel == null)
+                Debug.LogError("Game panel is null", this);
         }
     }
 }
