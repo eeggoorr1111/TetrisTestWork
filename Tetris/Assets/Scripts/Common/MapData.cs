@@ -14,9 +14,10 @@ namespace Tetris
 
 
         public Vector2Int CountCells => _lvlsParams.Current.CountCells;
-        public Vector3Int CountCells3 => new Vector3Int(CountCells.x, CountCells.y, 0);
+        public Vector3Int CountCells3D => new Vector3Int(CountCells.x, CountCells.y, 0);
         public Vector3Int MinCell => Vector3Int.zero;
-        public Vector3Int MaxCell => CountCells3 + new Vector3Int(-1, -1, 0);
+        public Vector3Int MaxCell => CountCells3D + new Vector3Int(-1, -1, 0);
+        public Vector2Int MaxCell2D => CountCells + new Vector2Int(-1, -1);
         public Vector3 MinPoint =>  (MinCell - _sizeBlock / 2).WithZ(0);
         public Vector3 MaxPoint =>  (MaxCell + _sizeBlock / 2).WithZ(0);
         public float TopByY => TopRow + _sizeBlock.y / 2;

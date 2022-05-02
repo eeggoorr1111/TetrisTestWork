@@ -16,39 +16,31 @@ namespace Tetris.View
         [SerializeField] private Canvas _gameUi;
         [SerializeField] private Canvas _menu;
         [SerializeField] private Camera _camera;
-        [SerializeField] private MeshRenderer _borderSample;
         [SerializeField] private Button _btnLvl1;
         [SerializeField] private Button _btnLvl2;
         [SerializeField] private Button _btnToMenu;
         [SerializeField] private Image _gamePanel;
+        [SerializeField] private float _widthLineOfGrid;
+        [SerializeField] private MeshFilter _grid;
+        [SerializeField] private Transform _gridBack;
 
 
         private Transform _cameraTransf;
-        private Transform _borderSampleTransf;
         private MapData _map;
-        private Transform _leftBorder;
-        private Transform _rightBorder;
-        private Transform _topBorder;
-        private Transform _bottomBorder;
         private float _heightMenuCanvas;
+        private GridGenerator _gridGenerator;
 
 
         public void StartCustom(MapData mapDataArg)
         {
+            _gridGenerator = new GridGenerator(_widthLineOfGrid);
+
             _map = mapDataArg;
 
-            _borderSampleTransf = _borderSample.transform;
             _cameraTransf = _camera.transform;
 
-            _leftBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.identity).transform;
-            _rightBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.identity).transform;
-            _topBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.AngleAxis(90, Vector3.forward)).transform;
-            _bottomBorder = GameObject.Instantiate(_borderSample, Vector3.zero, Quaternion.AngleAxis(90, Vector3.forward)).transform;
-
-            _leftBorder.gameObject.SetActive(false);
-            _rightBorder.gameObject.SetActive(false);
-            _topBorder.gameObject.SetActive(false);
-            _bottomBorder.gameObject.SetActive(false);
+            _grid.gameObject.SetActive(false);
+            _gridBack.gameObject.SetActive(false);
 
             _heightMenuCanvas = _gamePanel.GetComponent<RectTransform>().rect.height * _gameUi.transform.localScale.y;
         }
@@ -57,22 +49,18 @@ namespace Tetris.View
             _menu.enabled = false;
             _gameUi.enabled = true;
 
-            _leftBorder.gameObject.SetActive(true);
-            _rightBorder.gameObject.SetActive(true);
-            _topBorder.gameObject.SetActive(true);
-            _bottomBorder.gameObject.SetActive(true);
+            _grid.gameObject.SetActive(true);
+            _gridBack.gameObject.SetActive(true);
 
-            SetCameraAndBorders();
+            SetCameraAndGrid();
         }
         public void EndGame()
         {
             _menu.enabled = true;
             _gameUi.enabled = false;
 
-            _leftBorder.gameObject.SetActive(false);
-            _rightBorder.gameObject.SetActive(false);
-            _topBorder.gameObject.SetActive(false);
-            _bottomBorder.gameObject.SetActive(false);
+            _grid.gameObject.SetActive(false);
+            _gridBack.gameObject.SetActive(false);
 
             SetScores(0);
         }
@@ -82,25 +70,16 @@ namespace Tetris.View
         }
 
 
-        private void SetCameraAndBorders()
+        private void SetCameraAndGrid()
         {
-            Vector3 sizeBorder = _borderSampleTransf.localScale;
-            Vector3 marginBorderH = new Vector3(sizeBorder.x / 2, 0, 0);
-            Vector3 marginBorderV = new Vector3(0, sizeBorder.x / 2, 0);
-            float widthWith2Border = _map.SizeX + sizeBorder.x * 2;
-            float heightWith2Border = _map.SizeY + sizeBorder.x * 2;
+            float widthWith2Border = _map.SizeX + _widthLineOfGrid * 2;
+            float heightWith2Border = _map.SizeY + _widthLineOfGrid * 2;
 
-            _leftBorder.position = _map.CenterLeft - marginBorderH;
-            _rightBorder.position = _map.CenterRight + marginBorderH;
-            _topBorder.position = _map.CenterTop + marginBorderV;
-            _bottomBorder.position = _map.CenterBottom - marginBorderV;
+            _grid.mesh = _gridGenerator.Generate(_map.MaxCell2D);
+            _gridBack.position = _map.Center.WithZ(_gridBack.position.z);
+            _gridBack.localScale = new Vector3(_map.SizeX, _map.SizeY, 1);
 
-            _leftBorder.localScale = sizeBorder.WithY(_map.SizeY);
-            _rightBorder.localScale = sizeBorder.WithY(_map.SizeY);
-            _topBorder.localScale = sizeBorder.WithY(widthWith2Border);
-            _bottomBorder.localScale = sizeBorder.WithY(widthWith2Border);
-
-            SetCameraToSeeMap(widthWith2Border, heightWith2Border, sizeBorder.x);
+            SetCameraToSeeMap(widthWith2Border, heightWith2Border, _widthLineOfGrid);
         }
         private float GetZPosCameraForViewArea(float widthAreaArg, float heightAreaArg)
         {
@@ -141,10 +120,7 @@ namespace Tetris.View
 
             if (_menu == null)
                 Debug.LogError("Menu is null", this);
-
-            if (_borderSample == null)
-                Debug.LogError("Border is null", this);
-
+            
             if (_btnLvl1 == null)
                 Debug.LogError("Button level 1 is null", this);
 
@@ -156,6 +132,13 @@ namespace Tetris.View
 
             if (_gamePanel == null)
                 Debug.LogError("Game panel is null", this);
+
+            if (_grid == null)
+                Debug.LogError("Grid is null", this);
+
+            if (_gridBack == null)
+                Debug.LogError("Grid back is null", this);
+
         }
     }
 }
