@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Tetris.View
 {
-    public sealed class HeapFigures : MonoBehaviour
+    public sealed class HeapBlocks : MonoBehaviour
     {
         private Dictionary<Vector2Int, Block> _heap;
         private int _lastRange;

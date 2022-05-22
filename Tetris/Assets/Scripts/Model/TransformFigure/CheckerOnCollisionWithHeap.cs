@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Tetris.Model
 {
-    public sealed class CheckCollisionHeap
+    public sealed class CheckerOnCollisionWithHeap
     {
-        public CheckCollisionHeap(HeapFigures heapArg, MapData mapArg)
+        public CheckerOnCollisionWithHeap(HeapBlocks heapArg, MapData mapArg)
         {
             _boundsRotate = new HashSet<Vector2Int>();
             _areaRotate = new HashSet<Vector2Int>();
@@ -16,7 +16,7 @@ namespace Tetris.Model
         }
 
 
-        private readonly HeapFigures _heapFigures;
+        private readonly HeapBlocks _heapFigures;
         private readonly HashSet<Vector2Int> _boundsRotate;
         private readonly HashSet<Vector2Int> _areaRotate;
         private readonly Vector2[] _pointsOfCell;

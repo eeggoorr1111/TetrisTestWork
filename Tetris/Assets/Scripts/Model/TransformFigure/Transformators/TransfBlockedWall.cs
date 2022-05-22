@@ -7,7 +7,7 @@ namespace Tetris.Model
 {
     public class TransfBlockedWall : Transformator
     {
-        public TransfBlockedWall(HeapFigures heapArg, ILevelsParams lvlsParamsArg, MapData mapArg, CalculateParams paramsArg, CheckCollisionHeap collisionHeapArg) : 
+        public TransfBlockedWall(HeapBlocks heapArg, ILevelsParams lvlsParamsArg, MapData mapArg, CalculateParams paramsArg, CheckerOnCollisionWithHeap collisionHeapArg) : 
             base(heapArg, lvlsParamsArg, mapArg, paramsArg, collisionHeapArg) 
         {
             _blocks = new List<Bounds>();

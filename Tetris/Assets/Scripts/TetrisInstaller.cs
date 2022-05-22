@@ -46,12 +46,12 @@ namespace Tetris
         protected void InstallModel()
         {
             Container.Bind<TetrisModel>().AsSingle();
-            Container.Bind<Model.HeapFigures>().AsSingle();
+            Container.Bind<Model.HeapBlocks>().AsSingle();
             Container.Bind<FigureGenerator>().AsSingle();
-            Container.Bind<CheckCollisionHeap>().AsSingle();
+            Container.Bind<CheckerOnCollisionWithHeap>().AsSingle();
 
             Container.Bind<TransfBlockedWall>().AsSingle();
-            Container.Bind<TransformatorThroughtWall>().AsSingle();
+            Container.Bind<TransfThroughtWall>().AsSingle();
         }
         private void InstallView()
         {

@@ -5,9 +5,9 @@ using Zenject;
 
 namespace Tetris.Model
 {
-    public sealed class HeapFigures
+    public sealed class HeapBlocks
     {
-        public HeapFigures(MapData mapArg)
+        public HeapBlocks(MapData mapArg)
         {
             _map = mapArg;
 

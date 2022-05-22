@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Tetris.Model
 {
-    public sealed class TransformatorThroughtWall : Transformator
+    public sealed class TransfThroughtWall : Transformator
     {
-        public TransformatorThroughtWall(   HeapFigures heapArg, 
+        public TransfThroughtWall(   HeapBlocks heapArg, 
                                             ILevelsParams lvlsParamsArg, 
                                             MapData mapArg, 
                                             CalculateParams paramsArg, 
-                                            CheckCollisionHeap collisionHeapArg) : 
+                                            CheckerOnCollisionWithHeap collisionHeapArg) : 
             base(heapArg, lvlsParamsArg, mapArg, paramsArg, collisionHeapArg) 
         {
             _replace = new HashSet<Vector2Int>();

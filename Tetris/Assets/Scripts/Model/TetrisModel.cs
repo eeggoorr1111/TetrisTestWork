@@ -12,9 +12,9 @@ namespace Tetris.Model
     /// </summary>
     public class TetrisModel
     {
-        public TetrisModel( TransformatorThroughtWall transfThroughtWallArg,
+        public TetrisModel( TransfThroughtWall transfThroughtWallArg,
                             TransfBlockedWall transfBlockedWallArg,
-                            HeapFigures heapFiguresArg, 
+                            HeapBlocks heapFiguresArg, 
                             MapData mapArg,
                             FigureGenerator generatorArg,
                             ILevelsParams lvlsParamsArg)
@@ -32,9 +32,9 @@ namespace Tetris.Model
         public int Scores { get; private set; }
 
 
-        private readonly TransformatorThroughtWall _transfThroughtWall;
+        private readonly TransfThroughtWall _transfThroughtWall;
         private readonly TransfBlockedWall _transfBlockedWall;
-        private readonly HeapFigures _heapFigures;
+        private readonly HeapBlocks _heapFigures;
         private readonly FigureGenerator _generator;
         private readonly MapData _map;
         private readonly ILevelsParams _lvlsParams;

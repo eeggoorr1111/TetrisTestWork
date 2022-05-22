@@ -31,7 +31,7 @@ namespace Tetris.View
 
 
         [SerializeField] private Material _blockMaterial;
-        [SerializeField] private HeapFigures _heap;
+        [SerializeField] private HeapBlocks _heap;
         private event Action _onRotate;
         private event Action<bool> _onMove;
         private event Action<bool> _onBoostFall;

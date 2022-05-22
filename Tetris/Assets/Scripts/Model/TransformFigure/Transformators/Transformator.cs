@@ -13,11 +13,11 @@ namespace Tetris.Model
                                                                         new Vector4(0f, 0f, 0f, 1f));
 
 
-        public Transformator(   HeapFigures heapArg,
+        public Transformator(   HeapBlocks heapArg,
                                 ILevelsParams lvlsParamsArg, 
                                 MapData mapArg, 
                                 CalculateParams paramsArg, 
-                                CheckCollisionHeap collisionArg)
+                                CheckerOnCollisionWithHeap collisionArg)
         {
             _heapFigures = heapArg;
             _lvlsParams = lvlsParamsArg;
@@ -33,11 +33,11 @@ namespace Tetris.Model
         public float TimeMoveToSide => _lvlsParams.Current.TimeMoveToSide;
 
 
-        protected readonly HeapFigures _heapFigures;
+        protected readonly HeapBlocks _heapFigures;
         protected readonly ILevelsParams _lvlsParams;
         protected readonly MapData _map;
         protected readonly CalculateParams _params;
-        protected readonly CheckCollisionHeap _collisionHeap;
+        protected readonly CheckerOnCollisionWithHeap _collisionHeap;
         private readonly List<Bounds> _blocks;
         protected Tween _moveToSide;
         protected Tween _rotate;
